@@ -12,18 +12,18 @@ New-Item -ItemType Directory -Force -Path $DestSkills | Out-Null
 Copy-Item (Join-Path $ScriptDir "skills\*") $DestSkills -Force
 
 Write-Host "[3/4] Injecting GEMINI.md into agy settings (systemPrompt)..."
-$GeminiContent = Get-Content (Join-Path $HomeDir "GEMINI.md") -Raw
+$GeminiContent = Get-Content (Join-Path $HomeDir "GEMINI.md") -Raw -Encoding UTF8
 
 if (Test-Path $AgyConfig) {
-    $Settings = Get-Content $AgyConfig -Raw | ConvertFrom-Json
+    $Settings = Get-Content $AgyConfig -Raw -Encoding UTF8 | ConvertFrom-Json
     $Settings.systemPrompt = $GeminiContent
-    $Settings | ConvertTo-Json -Depth 10 | Set-Content $AgyConfig
+    $Settings | ConvertTo-Json -Depth 10 | Set-Content $AgyConfig -Encoding UTF8
     Write-Host "      Merged into existing settings.json"
 } else {
     $SettingsDir = Split-Path $AgyConfig -Parent
     New-Item -ItemType Directory -Force -Path $SettingsDir | Out-Null
     $Settings = @{ systemPrompt = $GeminiContent }
-    $Settings | ConvertTo-Json -Depth 10 | Set-Content $AgyConfig
+    $Settings | ConvertTo-Json -Depth 10 | Set-Content $AgyConfig -Encoding UTF8
     Write-Host "      Created new settings.json"
 }
 

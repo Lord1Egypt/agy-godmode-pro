@@ -5,65 +5,63 @@
 
 set -e
 
+command -v python3 >/dev/null 2>&1 || { echo "Python 3 is required."; exit 1; }
+
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 HOME_DIR="${HOME:-/home/$(whoami)}"
 AGY_CONFIG="$HOME_DIR/.gemini/antigravity-cli/settings.json"
 
-echo "[1/4] Installing GEMINI.md to $HOME_DIR..."
-cp "$SCRIPT_DIR/GEMINI.md" "$HOME_DIR/GEMINI.md"
-echo "      Done — $HOME_DIR/GEMINI.md"
+echo "[1/4] Installing GEMINI.md to $HOME_DIR/.gemini/..."
+mkdir -p "$HOME_DIR/.gemini"
+cp "$SCRIPT_DIR/GEMINI.md" "$HOME_DIR/.gemini/GEMINI.md"
+echo "      Done — $HOME_DIR/.gemini/GEMINI.md"
 
-echo "[2/4] Installing skill files to $HOME_DIR/.gemini/skills/..."
+echo "[2/4] Symlinking skill files to $HOME_DIR/.gemini/skills/..."
 mkdir -p "$HOME_DIR/.gemini/skills"
-cp "$SCRIPT_DIR/skills/"*.md "$HOME_DIR/.gemini/skills/"
-echo "      Done — $(ls "$SCRIPT_DIR/skills/" | wc -l) skill files installed"
+# Use symlinks so git pull automatically updates live skills
+for f in "$SCRIPT_DIR/skills/"*.md; do
+    ln -sf "$f" "$HOME_DIR/.gemini/skills/$(basename "$f")"
+done
+echo "      Done — $(ls "$SCRIPT_DIR/skills/" | wc -l) skills linked"
 
 echo "[3/4] Injecting GEMINI.md into agy settings (systemPrompt)..."
 mkdir -p "$(dirname "$AGY_CONFIG")"
 
-GEMINI_CONTENT=$(cat "$HOME_DIR/GEMINI.md")
+export AGY_CONFIG_PATH="$AGY_CONFIG"
+export GEMINI_MD_PATH="$HOME_DIR/.gemini/GEMINI.md"
 
 if [ -f "$AGY_CONFIG" ]; then
-    # Preserve existing settings, overwrite/add systemPrompt using python3
-    python3 - <<PYEOF
-import json, sys
+    cp "$AGY_CONFIG" "${AGY_CONFIG}.bak"
+    echo "      Created backup at ${AGY_CONFIG}.bak"
+    
+    python3 -c '
+import json, sys, os
+try:
+    with open(os.environ["AGY_CONFIG_PATH"]) as f:
+        settings = json.load(f)
+except Exception:
+    settings = {}
 
-with open("$AGY_CONFIG") as f:
-    settings = json.load(f)
-
-with open("$HOME_DIR/GEMINI.md") as f:
+with open(os.environ["GEMINI_MD_PATH"]) as f:
     settings["systemPrompt"] = f.read()
 
-with open("$AGY_CONFIG", "w") as f:
+with open(os.environ["AGY_CONFIG_PATH"], "w") as f:
     json.dump(settings, f, indent=2)
-
-print("      Merged into existing settings.json")
-PYEOF
+'
+    echo "      Merged into existing settings.json"
 else
-    # Create minimal settings.json with systemPrompt
-    python3 - <<PYEOF
-import json
-
-with open("$HOME_DIR/GEMINI.md") as f:
+    python3 -c '
+import json, os
+with open(os.environ["GEMINI_MD_PATH"]) as f:
     content = f.read()
-
 settings = {"systemPrompt": content}
-
-with open("$AGY_CONFIG", "w") as f:
+with open(os.environ["AGY_CONFIG_PATH"], "w") as f:
     json.dump(settings, f, indent=2)
-
-print("      Created new settings.json")
-PYEOF
+'
+    echo "      Created new settings.json"
 fi
 
 echo "[4/4] Verifying..."
-echo "      GEMINI.md: $(wc -l < "$HOME_DIR/GEMINI.md") lines"
+echo "      GEMINI.md: $(wc -l < "$HOME_DIR/.gemini/GEMINI.md") lines"
 echo "      settings.json: $(wc -c < "$AGY_CONFIG") bytes"
-echo "      Skills:"
-for f in "$HOME_DIR/.gemini/skills/"*.md; do
-    echo "        - $(basename $f)"
-done
-
-echo ""
-echo "Setup complete. GEMINI.md loads automatically on every agy session."
-echo "Load a skill in any prompt: @~/.gemini/skills/rust.md <your task>"
+echo "Setup complete! Run 'agy' to begin."

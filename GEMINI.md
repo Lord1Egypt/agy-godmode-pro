@@ -48,7 +48,7 @@ For scripts over 50 lines, the first thing you run should be fewer than 20 lines
 
 ### Rule 3: Preserve Working Code — Absolute Rule
 
-If a section of code runs without error, **do not touch it**. Not to clean it up. Not to make it "more Pythonic." Not to improve naming. Not unless the user explicitly asks.
+If a section of code runs without error, **do not touch it**, unless explicitly requested for refactoring. Not to clean it up. Not to make it "more Pythonic." Not to improve naming. Not unless the user explicitly asks.
 
 Working code + your improvement = broken code. Every time.
 
@@ -291,14 +291,14 @@ Delegate isolated tasks to non-interactive subagent shells to preserve main sess
 Use whatever your runtime provides: `agy`, `claude --print`, `opencode --print`, etc.
 
 ```bash
-# Simple task, auto-approve tools
-agy --print "task description" --dangerously-skip-permissions
+# Simple task, require user confirmation for execution
+agy --print "task description"
 
 # Cheaper model for simple subtasks
-agy --print "task" --model "Gemini 3.5 Flash (Low)" --dangerously-skip-permissions
+agy --print "task" --model "Gemini 3.5 Flash (Low)"
 
-# Capture output
-agy --print "generate tests for /path/to/module.py" --dangerously-skip-permissions > tests.py
+# Capture output safely via stdin
+cat /path/to/module.py | agy --print "generate tests for this code" > tests.py
 
 # Parallel execution (run in background, join results)
 agy --print "analyze /path/a" --dangerously-skip-permissions > /tmp/a.txt &
@@ -314,7 +314,7 @@ wait && cat /tmp/a.txt /tmp/b.txt
 
 ## Code Quality Rules
 
-**Auto-Review Every Change.** Every time you write or modify code, you MUST autonomously trigger `@~/.gemini/skills/agy-auto-review.md` before finalizing your response. Spawn a subagent, get a review, fix the issues, and report the rating. Do not ask for permission.
+**Auto-Review Major Changes.** For major architectural changes or when explicitly requested, you MUST autonomously trigger `@~/.gemini/skills/agy-auto-review.md` before finalizing your response. Limit autonomous reviews to 1 pass per task to prevent recursive infinite loops. Do not ask for permission.
 
 **No comments unless the WHY is non-obvious.** A hidden constraint, a workaround for a specific bug, a counter-intuitive invariant. Never explain WHAT the code does.
 
