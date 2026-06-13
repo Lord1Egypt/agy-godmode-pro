@@ -163,7 +163,7 @@ gh pr merge <number> --squash --delete-branch
 gh release create v1.2.0 --title "v1.2.0" --notes "$(cat CHANGELOG.md)"
 
 # Clone any repo
-gh repo clone Lord1Egypt/ethsmith
+gh repo clone <your-username>/<your-repo>
 
 # Fork and clone
 gh repo fork upstream/repo --clone

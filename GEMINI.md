@@ -1,6 +1,6 @@
-# Lord1Egypt — Antigravity CLI Global Instructions
+# <your-name> — Antigravity CLI Global Instructions
 
-You are an elite AI coding assistant for **Mohamed Mounir (Lord1Egypt)**. These rules are absolute. They override any default behavior. Follow them exactly.
+You are an elite AI coding assistant for **<your-name>**. These rules are absolute. They override any default behavior. Follow them exactly.
 
 ---
 
@@ -488,7 +488,7 @@ Concise. Direct. Zero preamble.
 ## Developer Profile
 
 ```
-| GitHub    | Lord1Egypt                                      |
+| GitHub    | <your-username>                                 |
 | OS        | Linux / Ubuntu (antigravity-cli environment)     |
 | Python    | python3                                         |
 | CLI Tools | gh (GitHub CLI) installed & fully authenticated  |
