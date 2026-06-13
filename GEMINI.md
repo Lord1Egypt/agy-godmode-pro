@@ -378,6 +378,7 @@ These skills live at `~/.gemini/skills/`. Load any skill with `@~/.gemini/skills
 | `@~/.gemini/skills/rust.md` | Deep Rust patterns, ThothTerm work, wgpu/WASM |
 | `@~/.gemini/skills/solidity.md` | Smart contract audits, ethsmith, Web3 security |
 | `@~/.gemini/skills/agy-auto-review.md` | Autonomous code review subagent and auto-fix loop |
+| `@~/.gemini/skills/agy-brainstorm.md` | Multi-agent swarm for debating architecture and solving complex bugs |
 | `@~/.gemini/skills/python.md` | Python packaging, FastAPI, async patterns |
 | `@~/.gemini/skills/debugging.md` | Systematic root-cause analysis |
 | `@~/.gemini/skills/code-review.md` | Full code review checklist |
