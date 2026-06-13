@@ -1,6 +1,6 @@
 # Skill: gstack-sync-gbrain
 
-> Keep gbrain current with this repo's code and refresh agent search guidance in CLAUDE.md. Wraps the gstack-gbrain-sync orchestrator with state (gstack)
+> Keep gbrain current with this repo's code and refresh agent search guidance in GEMINI.md. Wraps the gstack-gbrain-sync orchestrator with state (gstack)
 
 ## When to invoke this skill
 
@@ -26,7 +26,7 @@ the skill itself, not a dispatcher binary):
 - `/sync-gbrain --audit` — emit summary of gstack-owned pages per project + sensitive-content audit (v1.48 / D10 lifecycle). Read-only.
 
 Pass-through args go straight to the orchestrator at
-`~/.claude/skills/gstack/bin/gstack-gbrain-sync.ts`.
+`~/.gemini/skills/gstack/bin/gstack-gbrain-sync.ts`.
 
 **`--refresh-cache` short-circuit:** when this flag is present, the skill
 runs ONLY the cache refresh (`gstack-brain-cache refresh --project <slug>`
@@ -47,7 +47,7 @@ modifications to brain or cache.
 Before doing anything, check that /setup-gbrain has been run on this Mac.
 
 ```bash
-~/.claude/skills/gstack/bin/gstack-gbrain-detect 2>/dev/null
+~/.gemini/skills/gstack/bin/gstack-gbrain-detect 2>/dev/null
 ```
 
 **Brain trust policy gate (v1.48 / Phase 1.5 / D4 — added by T13+T5c):**
@@ -57,8 +57,8 @@ the orchestrator runs. Local engines auto-set to `personal` silently per
 the per-transport default table.
 
 ```bash
-_HASH=$(~/.claude/skills/gstack/bin/gstack-config endpoint-hash 2>/dev/null)
-_POLICY=$(~/.claude/skills/gstack/bin/gstack-config get brain_trust_policy@$_HASH 2>/dev/null || echo unset)
+_HASH=$(~/.gemini/skills/gstack/bin/gstack-config endpoint-hash 2>/dev/null)
+_POLICY=$(~/.gemini/skills/gstack/bin/gstack-config get brain_trust_policy@$_HASH 2>/dev/null || echo unset)
 echo "BRAIN_TRUST_POLICY[$_HASH]: $_POLICY"
 ```
 
@@ -70,7 +70,7 @@ flip for personal). Then continue.
 If `_POLICY == "unset"` AND `_HASH == "local"`, auto-set personal:
 
 ```bash
-~/.claude/skills/gstack/bin/gstack-config set brain_trust_policy@$_HASH personal
+~/.gemini/skills/gstack/bin/gstack-config set brain_trust_policy@$_HASH personal
 ```
 
 **Split-engine model (v1.34.0.0+).** Code stage runs locally against the
@@ -141,7 +141,7 @@ Pass user args to the orchestrator. Do not paraphrase them — pass through
 as-is.
 
 ```bash
-bun run ~/.claude/skills/gstack/bin/gstack-gbrain-sync.ts <user-args>
+bun run ~/.gemini/skills/gstack/bin/gstack-gbrain-sync.ts <user-args>
 ```
 
 The orchestrator runs three stages: code → memory → brain-sync (per the
@@ -254,7 +254,7 @@ only that a cycle has run, not that edges exist (a non-code-aware pack reports
 `completed` with an empty graph). Step 5's verdict row surfaces the real state.
 
 
-## Step 4: Refresh `## GBrain Search Guidance` block in CLAUDE.md
+## Step 4: Refresh `## GBrain Search Guidance` block in GEMINI.md
 
 Capability check (per /plan-eng-review §6):
 
@@ -283,11 +283,11 @@ fi
 gbrain delete "$SLUG" 2>/dev/null || true
 ```
 
-Then update CLAUDE.md based on capability state:
+Then update GEMINI.md based on capability state:
 
 **If `CAPABILITY_OK=1`** — write or update the block. Idempotent: find the
 HTML-comment-delimited block; replace its body if it exists; append at the
-end of CLAUDE.md if it doesn't. NEVER duplicate. Block is machine-AGNOSTIC
+end of GEMINI.md if it doesn't. NEVER duplicate. Block is machine-AGNOSTIC
 (no engine, no page counts, no last-sync time — those are in the existing
 `## GBrain Configuration` block).
 
@@ -350,17 +350,17 @@ from `<!-- gstack-gbrain-search-guidance:start -->` through
 `<!-- gstack-gbrain-search-guidance:end -->`. If those markers are missing,
 search for `## GBrain Search Guidance (configured by /sync-gbrain)` heading
 and replace from there to the next `## ` or EOF. If no heading exists, append
-the entire block at the end of CLAUDE.md.
+the entire block at the end of GEMINI.md.
 
-**Atomic write:** write the new CLAUDE.md content to a tmp file alongside it
-(e.g., `CLAUDE.md.sync-gbrain.tmp`) then `mv` to atomic-rename, so a crash
+**Atomic write:** write the new GEMINI.md content to a tmp file alongside it
+(e.g., `GEMINI.md.sync-gbrain.tmp`) then `mv` to atomic-rename, so a crash
 mid-write never leaves the file half-modified.
 
 **If `CAPABILITY_OK=0`** — REMOVE the block entirely if present. Use the same
 Edit tool to strip the start/end-marker region. The `## GBrain Configuration`
 block stays in place (it's a record of the install, not a capability claim).
 
-Do NOT crash if CLAUDE.md is missing or unwritable — log a warning and
+Do NOT crash if GEMINI.md is missing or unwritable — log a warning and
 continue.
 
 
@@ -381,7 +381,7 @@ gbrain status: GREEN
   Call graph ...... OK   <N> edges resolved (code-callers/callees live)
   ~/.gstack source. OK   <gstack-brain-{user}> (page_count=<N>) — managed by /setup-gbrain
   Memory sync ..... OK   <artifacts_sync_mode>
-  CLAUDE.md ....... OK   ## GBrain Search Guidance present
+  GEMINI.md ....... OK   ## GBrain Search Guidance present
   Last sync ....... OK   <last_sync from state file>
 
 Run `/sync-gbrain` again any time gbrain feels off; safe and idempotent.
@@ -406,7 +406,7 @@ Any `WARN` Call graph row flips the verdict to YELLOW.
 
 If any row is YELLOW or RED, the verdict line says so and the failing rows
 surface a one-line "next action" (e.g., `Capability ...... ERR  capability
-check failed; CLAUDE.md guidance block REMOVED — run /setup-gbrain to repair`).
+check failed; GEMINI.md guidance block REMOVED — run /setup-gbrain to repair`).
 A `never`/`unknown` Call graph row flips the verdict to YELLOW.
 
 
@@ -414,22 +414,22 @@ A `never`/`unknown` Call graph row flips the verdict to YELLOW.
 
 This skill is safe to run concurrently from multiple terminals on the same
 Mac. The orchestrator acquires a lock at `~/.gstack/.sync-gbrain.lock` before
-any state-file or CLAUDE.md mutation and exits with code 2 if another sync is
+any state-file or GEMINI.md mutation and exits with code 2 if another sync is
 in flight. Stale locks (process died) auto-clear after 5 minutes.
 
 ## Cross-machine note
 
-The `## GBrain Search Guidance` block is committed to the repo's CLAUDE.md
+The `## GBrain Search Guidance` block is committed to the repo's GEMINI.md
 and travels with `git push`/`git pull` — NOT through `~/.gstack/.brain-allowlist`
 (which is for `~/.gstack/` brain-sync only). On a different Mac with a synced
-CLAUDE.md but no local gbrain, /sync-gbrain detects the mismatch via the
+GEMINI.md but no local gbrain, /sync-gbrain detects the mismatch via the
 capability check and REMOVES the block (the local agent shouldn't be told to
 use a tool that isn't installed).
 
 ## Status reporting
 
 End with a Completion Status (per the preamble protocol):
-- **DONE** — all stages green, CLAUDE.md guidance block present, verdict GREEN.
+- **DONE** — all stages green, GEMINI.md guidance block present, verdict GREEN.
 - **DONE_WITH_CONCERNS** — sync ran but at least one stage failed or capability
   check failed. List which.
 - **BLOCKED** — could not acquire lock, gbrain not on PATH, or per-repo policy

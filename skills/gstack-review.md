@@ -107,7 +107,7 @@ REPO=$(basename "$(git rev-parse --show-toplevel 2>/dev/null)")
 _PLAN_SLUG=$(git remote get-url origin 2>/dev/null | sed 's|.*[:/]\([^/]*/[^/]*\)\.git$|\1|;s|.*[:/]\([^/]*/[^/]*\)$|\1|' | tr '/' '-' | tr -cd 'a-zA-Z0-9._-') || true
 _PLAN_SLUG="${_PLAN_SLUG:-$(basename "$PWD" | tr -cd 'a-zA-Z0-9._-')}"
 # Search common plan file locations (project designs first, then personal/local)
-for PLAN_DIR in "$HOME/.gstack/projects/$_PLAN_SLUG" "$HOME/.claude/plans" "$HOME/.codex/plans" ".gstack/plans"; do
+for PLAN_DIR in "$HOME/.gstack/projects/$_PLAN_SLUG" "$HOME/.gemini/plans" "$HOME/.codex/plans" ".gstack/plans"; do
   [ -d "$PLAN_DIR" ] || continue
   PLAN=$(ls -t "$PLAN_DIR"/*.md 2>/dev/null | xargs grep -l "$BRANCH" 2>/dev/null | head -1)
   [ -z "$PLAN" ] && PLAN=$(ls -t "$PLAN_DIR"/*.md 2>/dev/null | xargs grep -l "$REPO" 2>/dev/null | head -1)
@@ -255,7 +255,7 @@ IMPACT: {HIGH|MEDIUM|LOW} — {what breaks or degrades if this stays undelivered
 **Only for discrepancies sourced from plan files** (not commit messages or TODOS.md), log a learning so future sessions know this pattern occurred:
 
 ```bash
-~/.claude/skills/gstack/bin/gstack-learnings-log '{
+~/.gemini/skills/gstack/bin/gstack-learnings-log '{
   "type": "pitfall",
   "key": "plan-delivery-gap-KEBAB_SUMMARY",
   "insight": "Planned X but delivered Y because Z",
@@ -297,14 +297,14 @@ Plan items: N DONE, M PARTIAL, K NOT DONE
 
 ## Step 2: Read the checklist
 
-Read `.claude/skills/review/checklist.md`.
+Read `.gemini/skills/review/checklist.md`.
 
 **If the file cannot be read, STOP and report the error.** Do not proceed without the checklist.
 
 
 ## Step 2.5: Check for Greptile review comments
 
-Read `.claude/skills/review/greptile-triage.md` and follow the fetch, filter, classify, and **escalation detection** steps.
+Read `.gemini/skills/review/greptile-triage.md` and follow the fetch, filter, classify, and **escalation detection** steps.
 
 **If no PR exists, `gh` fails, API returns an error, or there are zero Greptile comments:** Skip this step silently. Greptile integration is additive — the review works without it.
 
@@ -368,12 +368,12 @@ available (e.g., slop-scan not installed), skip this step silently.
 Search for relevant learnings from previous sessions:
 
 ```bash
-_CROSS_PROJ=$(~/.claude/skills/gstack/bin/gstack-config get cross_project_learnings 2>/dev/null || echo "unset")
+_CROSS_PROJ=$(~/.gemini/skills/gstack/bin/gstack-config get cross_project_learnings 2>/dev/null || echo "unset")
 echo "CROSS_PROJECT: $_CROSS_PROJ"
 if [ "$_CROSS_PROJ" = "true" ]; then
-  ~/.claude/skills/gstack/bin/gstack-learnings-search --limit 10 --cross-project 2>/dev/null || true
+  ~/.gemini/skills/gstack/bin/gstack-learnings-search --limit 10 --cross-project 2>/dev/null || true
 else
-  ~/.claude/skills/gstack/bin/gstack-learnings-search --limit 10 2>/dev/null || true
+  ~/.gemini/skills/gstack/bin/gstack-learnings-search --limit 10 2>/dev/null || true
 fi
 ```
 
@@ -388,8 +388,8 @@ Options:
 - A) Enable cross-project learnings (recommended)
 - B) Keep learnings project-scoped only
 
-If A: run `~/.claude/skills/gstack/bin/gstack-config set cross_project_learnings true`
-If B: run `~/.claude/skills/gstack/bin/gstack-config set cross_project_learnings false`
+If A: run `~/.gemini/skills/gstack/bin/gstack-config set cross_project_learnings true`
+If B: run `~/.gemini/skills/gstack/bin/gstack-config set cross_project_learnings false`
 
 Then re-run the search with the appropriate flag.
 
@@ -487,7 +487,7 @@ higher confidence.
 ### Detect stack and scope
 
 ```bash
-source <(~/.claude/skills/gstack/bin/gstack-diff-scope <base> 2>/dev/null) || true
+source <(~/.gemini/skills/gstack/bin/gstack-diff-scope <base> 2>/dev/null) || true
 # Detect stack for specialist context
 STACK=""
 [ -f Gemfile ] && STACK="${STACK}ruby "
@@ -514,7 +514,7 @@ echo "TEST_FW: ${TEST_FW:-unknown}"
 ### Read specialist hit rates (adaptive gating)
 
 ```bash
-~/.claude/skills/gstack/bin/gstack-specialist-stats 2>/dev/null || true
+~/.gemini/skills/gstack/bin/gstack-specialist-stats 2>/dev/null || true
 ```
 
 ### Select specialists
@@ -522,17 +522,17 @@ echo "TEST_FW: ${TEST_FW:-unknown}"
 Based on the scope signals above, select which specialists to dispatch.
 
 **Always-on (dispatch on every review with 50+ changed lines):**
-1. **Testing** — read `~/.claude/skills/gstack/review/specialists/testing.md`
-2. **Maintainability** — read `~/.claude/skills/gstack/review/specialists/maintainability.md`
+1. **Testing** — read `~/.gemini/skills/gstack/review/specialists/testing.md`
+2. **Maintainability** — read `~/.gemini/skills/gstack/review/specialists/maintainability.md`
 
 **If DIFF_LINES < 50:** Skip all specialists. Print: "Small diff ($DIFF_LINES lines) — specialists skipped." Continue to Step 5.
 
 **Conditional (dispatch if the matching scope signal is true):**
-3. **Security** — if SCOPE_AUTH=true, OR if SCOPE_BACKEND=true AND DIFF_LINES > 100. Read `~/.claude/skills/gstack/review/specialists/security.md`
-4. **Performance** — if SCOPE_BACKEND=true OR SCOPE_FRONTEND=true. Read `~/.claude/skills/gstack/review/specialists/performance.md`
-5. **Data Migration** — if SCOPE_MIGRATIONS=true. Read `~/.claude/skills/gstack/review/specialists/data-migration.md`
-6. **API Contract** — if SCOPE_API=true. Read `~/.claude/skills/gstack/review/specialists/api-contract.md`
-7. **Design** — if SCOPE_FRONTEND=true. Use the existing design review checklist at `~/.claude/skills/gstack/review/design-checklist.md`
+3. **Security** — if SCOPE_AUTH=true, OR if SCOPE_BACKEND=true AND DIFF_LINES > 100. Read `~/.gemini/skills/gstack/review/specialists/security.md`
+4. **Performance** — if SCOPE_BACKEND=true OR SCOPE_FRONTEND=true. Read `~/.gemini/skills/gstack/review/specialists/performance.md`
+5. **Data Migration** — if SCOPE_MIGRATIONS=true. Read `~/.gemini/skills/gstack/review/specialists/data-migration.md`
+6. **API Contract** — if SCOPE_API=true. Read `~/.gemini/skills/gstack/review/specialists/api-contract.md`
+7. **Design** — if SCOPE_FRONTEND=true. Use the existing design review checklist at `~/.gemini/skills/gstack/review/design-checklist.md`
 
 ### Adaptive gating
 
@@ -563,7 +563,7 @@ Construct the prompt for each specialist. The prompt includes:
 3. Past learnings for this domain (if any exist):
 
 ```bash
-~/.claude/skills/gstack/bin/gstack-learnings-search --type pitfall --query "{specialist domain}" --limit 5 2>/dev/null || true
+~/.gemini/skills/gstack/bin/gstack-learnings-search --type pitfall --query "{specialist domain}" --limit 5 2>/dev/null || true
 ```
 
 If learnings are found, include them: "Past learnings for this domain: {learnings}"
@@ -666,7 +666,7 @@ Remember these stats — you will need them for the review-log entry in Step 5.8
 If activated, dispatch one more subagent via the Agent tool (foreground, not background).
 
 The Red Team subagent receives:
-1. The red-team checklist from `~/.claude/skills/gstack/review/specialists/red-team.md`
+1. The red-team checklist from `~/.gemini/skills/gstack/review/specialists/red-team.md`
 2. The merged specialist findings from Step 4.6 (so it knows what was already caught)
 3. The git diff command
 
@@ -693,7 +693,7 @@ If the Red Team subagent fails or times out, skip silently and continue.
 Before classifying findings, check if any were previously skipped by the user in a prior review on this branch.
 
 ```bash
-~/.claude/skills/gstack/bin/gstack-review-read
+~/.gemini/skills/gstack/bin/gstack-review-read
 ```
 
 Parse the output: only lines BEFORE `---CONFIG---` are JSONL entries (the output also contains `---CONFIG---` and `---HEAD---` footer sections that are not JSONL — ignore those).
@@ -822,7 +822,7 @@ If TODOS.md doesn't exist, skip this step silently.
 
 ## Step 5.6: Documentation staleness check
 
-Cross-reference the diff against documentation files. For each `.md` file in the repo root (README.md, ARCHITECTURE.md, CONTRIBUTING.md, CLAUDE.md, etc.):
+Cross-reference the diff against documentation files. For each `.md` file in the repo root (README.md, ARCHITECTURE.md, CONTRIBUTING.md, GEMINI.md, etc.):
 
 1. Check if code changes in the diff affect features, components, or workflows described in that doc file.
 2. If the doc file was NOT updated in this branch but the code it describes WAS changed, flag it as an INFORMATIONAL finding:
@@ -835,7 +835,7 @@ If no documentation files exist, skip this step silently.
 
 ## Step 5.7: Adversarial review (always-on)
 
-Every diff gets adversarial review from both Claude and Codex. LOC is not a proxy for risk — a 5-line auth change can be critical.
+Every diff gets adversarial review from both Gemini and Codex. LOC is not a proxy for risk — a 5-line auth change can be critical.
 
 **Detect diff size:**
 
@@ -851,9 +851,9 @@ echo "DIFF_SIZE: $DIFF_TOTAL"
 
 ```bash
 # Codex preflight: one block (functions sourced here don't persist to later blocks).
-_TEL=$(~/.claude/skills/gstack/bin/gstack-config get telemetry 2>/dev/null || echo off)
-_CODEX_CFG=$(~/.claude/skills/gstack/bin/gstack-config get codex_reviews 2>/dev/null || echo enabled)
-source ~/.claude/skills/gstack/bin/gstack-codex-probe 2>/dev/null || true
+_TEL=$(~/.gemini/skills/gstack/bin/gstack-config get telemetry 2>/dev/null || echo off)
+_CODEX_CFG=$(~/.gemini/skills/gstack/bin/gstack-config get codex_reviews 2>/dev/null || echo enabled)
+source ~/.gemini/skills/gstack/bin/gstack-codex-probe 2>/dev/null || true
 if [ "$_CODEX_CFG" = "disabled" ]; then
   _CODEX_MODE="disabled"
 elif ! command -v codex >/dev/null 2>&1; then
@@ -867,20 +867,20 @@ echo "CODEX_MODE: $_CODEX_MODE"
 ```
 
 Branch on the echoed `CODEX_MODE`:
-- **`disabled`** — the user turned Codex reviews off (`codex_reviews=disabled`). Skip the Codex passes only; the Claude adversarial subagent below STILL runs (it is free and fast). Print: "Codex passes skipped (codex_reviews disabled) — running Claude adversarial only."
-- **`not_installed`** — Codex CLI absent. Print: "Codex not installed — using Claude subagent. Install for cross-model coverage: `npm install -g @openai/codex`." Fall back to the Claude subagent path.
-- **`not_authed`** — installed but no credentials. Print: "Codex installed but not authenticated — using Claude subagent. Run `codex login` or set `$CODEX_API_KEY`." Fall back to the Claude subagent path.
+- **`disabled`** — the user turned Codex reviews off (`codex_reviews=disabled`). Skip the Codex passes only; the Gemini adversarial subagent below STILL runs (it is free and fast). Print: "Codex passes skipped (codex_reviews disabled) — running Gemini adversarial only."
+- **`not_installed`** — Codex CLI absent. Print: "Codex not installed — using Gemini subagent. Install for cross-model coverage: `npm install -g @openai/codex`." Fall back to the Gemini subagent path.
+- **`not_authed`** — installed but no credentials. Print: "Codex installed but not authenticated — using Gemini subagent. Run `codex login` or set `$CODEX_API_KEY`." Fall back to the Gemini subagent path.
 - **`ready`** — run the Codex pass below.
 
 For this diff-review path, `CODEX_MODE: disabled` means skip the Codex passes ONLY — the
-Claude adversarial subagent below still runs (it's free and fast). `ready` runs the Codex
+Gemini adversarial subagent below still runs (it's free and fast). `ready` runs the Codex
 passes; `not_installed` / `not_authed` skip them with the printed note and continue with
-Claude only.
+Gemini only.
 
 **User override:** If the user explicitly requested "full review", "structured review", or "P1 gate", also run the Codex structured review regardless of diff size (still requires `CODEX_MODE: ready`).
 
 
-### Claude adversarial subagent (always runs)
+### Gemini adversarial subagent (always runs)
 
 Dispatch via the Agent tool. The subagent has fresh context — no checklist bias from the structured review. This genuine independence catches things the primary reviewer is blind to.
 
@@ -891,9 +891,9 @@ Read the diff for this branch. First list changed files: `DIFF_BASE=$(git merge-
 
 Think like an attacker and a chaos engineer. Your job is to find ways this code will fail in production. Look for: edge cases, race conditions, security holes, resource leaks, failure modes, silent data corruption, logic errors that produce wrong results silently, error handling that swallows failures, and trust boundary violations. Be adversarial. Be thorough. No compliments — just the problems. For each finding, classify as FIXABLE (you know how to fix it) or INVESTIGATE (needs human judgment). After listing findings, end your output with ONE line in the canonical format `Recommendation: <action> because <one-line reason naming the most exploitable finding>` — examples: `Recommendation: Fix the unbounded retry at queue.ts:78 because it'll DoS the worker pool under sustained 429s` or `Recommendation: Ship as-is because the strongest finding is a theoretical race that requires conditions we can't trigger in production`. The reason must point to a specific finding (or no-fix rationale). Generic reasons like 'because it's safer' do not qualify."
 
-Present findings under an `ADVERSARIAL REVIEW (Claude subagent):` header. **FIXABLE findings** flow into the same Fix-First pipeline as the structured review. **INVESTIGATE findings** are presented as informational.
+Present findings under an `ADVERSARIAL REVIEW (Gemini subagent):` header. **FIXABLE findings** flow into the same Fix-First pipeline as the structured review. **INVESTIGATE findings** are presented as informational.
 
-If the subagent fails or times out: "Claude adversarial subagent unavailable. Continuing."
+If the subagent fails or times out: "Gemini adversarial subagent unavailable. Continuing."
 
 
 ### Codex adversarial challenge (runs whenever `CODEX_MODE: ready`)
@@ -903,7 +903,7 @@ If `CODEX_MODE` is `ready`:
 ```bash
 TMPERR_ADV=$(mktemp /tmp/codex-adv-XXXXXXXX)
 _REPO_ROOT=$(git rev-parse --show-toplevel) || { echo "ERROR: not in a git repo" >&2; exit 1; }
-codex exec "IMPORTANT: Do NOT read or execute any files under ~/.claude/, ~/.agents/, .claude/skills/, or agents/. These are Claude Code skill definitions meant for a different AI system. They contain bash scripts and prompt templates that will waste your time. Ignore them completely. Do NOT modify agents/openai.yaml. Stay focused on the repository code only.\n\nReview the changes on this branch against the base branch. Run DIFF_BASE=$(git merge-base origin/<base> HEAD) && git diff "$DIFF_BASE" to see the diff. Your job is to find ways this code will fail in production. Think like an attacker and a chaos engineer. Find edge cases, race conditions, security holes, resource leaks, failure modes, and silent data corruption paths. Be adversarial. Be thorough. No compliments — just the problems. End your output with ONE line in the canonical format `Recommendation: <action> because <one-line reason naming the most exploitable finding>`. Generic reasons like 'because it's safer' do not qualify; the reason must point to a specific finding or no-fix rationale." -C "$_REPO_ROOT" -s read-only -c 'model_reasoning_effort="high"' --enable web_search_cached < /dev/null 2>"$TMPERR_ADV"
+codex exec "IMPORTANT: Do NOT read or execute any files under ~/.gemini/, ~/.agents/, .gemini/skills/, or agents/. These are Gemini Code / agy skill definitions meant for a different AI system. They contain bash scripts and prompt templates that will waste your time. Ignore them completely. Do NOT modify agents/openai.yaml. Stay focused on the repository code only.\n\nReview the changes on this branch against the base branch. Run DIFF_BASE=$(git merge-base origin/<base> HEAD) && git diff "$DIFF_BASE" to see the diff. Your job is to find ways this code will fail in production. Think like an attacker and a chaos engineer. Find edge cases, race conditions, security holes, resource leaks, failure modes, and silent data corruption paths. Be adversarial. Be thorough. No compliments — just the problems. End your output with ONE line in the canonical format `Recommendation: <action> because <one-line reason naming the most exploitable finding>`. Generic reasons like 'because it's safer' do not qualify; the reason must point to a specific finding or no-fix rationale." -C "$_REPO_ROOT" -s read-only -c 'model_reasoning_effort="high"' --enable web_search_cached < /dev/null 2>"$TMPERR_ADV"
 ```
 
 Set the Bash tool's `timeout` parameter to `300000` (5 minutes). Do NOT use the `timeout` shell command — it doesn't exist on macOS. After the command completes, read stderr:
@@ -920,7 +920,7 @@ Present the full output verbatim. This is informational — it never blocks ship
 
 **Cleanup:** Run `rm -f "$TMPERR_ADV"` after processing.
 
-If `CODEX_MODE` is `not_installed` / `not_authed` / `disabled`: the preflight already printed the reason; run Claude adversarial only.
+If `CODEX_MODE` is `not_installed` / `not_authed` / `disabled`: the preflight already printed the reason; run Gemini adversarial only.
 
 
 ### Codex structured review (large diffs only, 200+ lines)
@@ -931,7 +931,7 @@ If `DIFF_TOTAL >= 200` AND `CODEX_MODE` is `ready`:
 TMPERR=$(mktemp /tmp/codex-review-XXXXXXXX)
 _REPO_ROOT=$(git rev-parse --show-toplevel) || { echo "ERROR: not in a git repo" >&2; exit 1; }
 cd "$_REPO_ROOT"
-codex review "IMPORTANT: Do NOT read or execute any files under ~/.claude/, ~/.agents/, .claude/skills/, or agents/. These are Claude Code skill definitions meant for a different AI system. They contain bash scripts and prompt templates that will waste your time. Ignore them completely. Do NOT modify agents/openai.yaml. Stay focused on the repository code only.\n\nReview the changes on this branch against the base branch <base>. Run git diff origin/<base>...HEAD 2>/dev/null || git diff <base>...HEAD to see the diff and review only those changes." -c 'model_reasoning_effort="high"' --enable web_search_cached < /dev/null 2>"$TMPERR"
+codex review "IMPORTANT: Do NOT read or execute any files under ~/.gemini/, ~/.agents/, .gemini/skills/, or agents/. These are Gemini Code / agy skill definitions meant for a different AI system. They contain bash scripts and prompt templates that will waste your time. Ignore them completely. Do NOT modify agents/openai.yaml. Stay focused on the repository code only.\n\nReview the changes on this branch against the base branch <base>. Run git diff origin/<base>...HEAD 2>/dev/null || git diff <base>...HEAD to see the diff and review only those changes." -c 'model_reasoning_effort="high"' --enable web_search_cached < /dev/null 2>"$TMPERR"
 ```
 
 Set the Bash tool's `timeout` parameter to `300000` (5 minutes). Do NOT use the `timeout` shell command — it doesn't exist on macOS. Present output under `CODEX SAYS (code review):` header.
@@ -951,16 +951,16 @@ Read stderr for errors (same error handling as Codex adversarial above).
 
 After stderr: `rm -f "$TMPERR"`
 
-If `DIFF_TOTAL < 200`: skip this section silently. The Claude + Codex adversarial passes provide sufficient coverage for smaller diffs.
+If `DIFF_TOTAL < 200`: skip this section silently. The Gemini + Codex adversarial passes provide sufficient coverage for smaller diffs.
 
 
 ### Persist the review result
 
 After all passes complete, persist:
 ```bash
-~/.claude/skills/gstack/bin/gstack-review-log '{"skill":"adversarial-review","timestamp":"'"$(date -u +%Y-%m-%dT%H:%M:%SZ)"'","status":"STATUS","source":"SOURCE","tier":"always","gate":"GATE","commit":"'"$(git rev-parse --short HEAD)"'"}'
+~/.gemini/skills/gstack/bin/gstack-review-log '{"skill":"adversarial-review","timestamp":"'"$(date -u +%Y-%m-%dT%H:%M:%SZ)"'","status":"STATUS","source":"SOURCE","tier":"always","gate":"GATE","commit":"'"$(git rev-parse --short HEAD)"'"}'
 ```
-Substitute: STATUS = "clean" if no findings across ALL passes, "issues_found" if any pass found issues. SOURCE = "both" if Codex ran, "claude" if only Claude subagent ran. GATE = the Codex structured review gate result ("pass"/"fail"), "skipped" if diff < 200, or "informational" if Codex was unavailable. If all passes failed, do NOT persist.
+Substitute: STATUS = "clean" if no findings across ALL passes, "issues_found" if any pass found issues. SOURCE = "both" if Codex ran, "gemini" if only Gemini subagent ran. GATE = the Codex structured review gate result ("pass"/"fail"), "skipped" if diff < 200, or "informational" if Codex was unavailable. If all passes failed, do NOT persist.
 
 
 ### Cross-model synthesis
@@ -971,10 +971,10 @@ After all passes complete, synthesize findings across all sources:
 ADVERSARIAL REVIEW SYNTHESIS (always-on, N lines):
 ════════════════════════════════════════════════════════════
   High confidence (found by multiple sources): [findings agreed on by >1 pass]
-  Unique to Claude structured review: [from earlier step]
-  Unique to Claude adversarial: [from subagent]
+  Unique to Gemini structured review: [from earlier step]
+  Unique to Gemini adversarial: [from subagent]
   Unique to Codex: [from codex adversarial or code review, if ran]
-  Models used: Claude structured ✓  Claude adversarial ✓/✗  Codex ✓/✗
+  Models used: Gemini structured ✓  Gemini adversarial ✓/✗  Codex ✓/✗
 ════════════════════════════════════════════════════════════
 ```
 
@@ -989,7 +989,7 @@ recognize that Eng Review was run on this branch.
 Run:
 
 ```bash
-~/.claude/skills/gstack/bin/gstack-review-log '{"skill":"review","timestamp":"TIMESTAMP","status":"STATUS","issues_found":N,"critical":N,"informational":N,"quality_score":SCORE,"specialists":SPECIALISTS_JSON,"findings":FINDINGS_JSON,"commit":"COMMIT"}'
+~/.gemini/skills/gstack/bin/gstack-review-log '{"skill":"review","timestamp":"TIMESTAMP","status":"STATUS","issues_found":N,"critical":N,"informational":N,"quality_score":SCORE,"specialists":SPECIALISTS_JSON,"findings":FINDINGS_JSON,"commit":"COMMIT"}'
 ```
 
 Substitute:
@@ -1009,7 +1009,7 @@ If you discovered a non-obvious pattern, pitfall, or architectural insight durin
 this session, log it for future sessions:
 
 ```bash
-~/.claude/skills/gstack/bin/gstack-learnings-log '{"skill":"review","type":"TYPE","key":"SHORT_KEY","insight":"DESCRIPTION","confidence":N,"source":"SOURCE","files":["path/to/relevant/file"]}'
+~/.gemini/skills/gstack/bin/gstack-learnings-log '{"skill":"review","type":"TYPE","key":"SHORT_KEY","insight":"DESCRIPTION","confidence":N,"source":"SOURCE","files":["path/to/relevant/file"]}'
 ```
 
 **Types:** `pattern` (reusable approach), `pitfall` (what NOT to do), `preference`

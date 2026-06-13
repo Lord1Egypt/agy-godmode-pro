@@ -7,7 +7,7 @@
 Detects your deploy
 platform (Fly.io, Render, Vercel, Netlify, Heroku, GitHub Actions, custom),
 production URL, health check endpoints, and deploy status commands. Writes
-the configuration to CLAUDE.md so all future deploys are automatic.
+the configuration to GEMINI.md so all future deploys are automatic.
 Use when: "setup deploy", "configure deployment", "set up land-and-deploy",
 "how do I deploy with gstack", "add deploy config".
 
@@ -19,12 +19,12 @@ When the user types `/setup-deploy`, run this skill.
 ### Step 1: Check existing configuration
 
 ```bash
-grep -A 20 "## Deploy Configuration" CLAUDE.md 2>/dev/null || echo "NO_CONFIG"
+grep -A 20 "## Deploy Configuration" GEMINI.md 2>/dev/null || echo "NO_CONFIG"
 ```
 
 If configuration already exists, show it and ask:
 
-- **Context:** Deploy configuration already exists in CLAUDE.md.
+- **Context:** Deploy configuration already exists in GEMINI.md.
 - **RECOMMENDATION:** Choose A to update if your setup changed.
 - A) Reconfigure from scratch (overwrite existing)
 - B) Edit specific fields (show current config, let me change one thing)
@@ -138,7 +138,7 @@ Use AskUserQuestion to gather the information:
 
 ### Step 4: Write configuration
 
-Read CLAUDE.md (or create it). Find and replace the `## Deploy Configuration` section
+Read GEMINI.md (or create it). Find and replace the `## Deploy Configuration` section
 if it exists, or append it at the end.
 
 ```markdown
@@ -186,11 +186,11 @@ Health check:  {health check}
 Status cmd:    {status command}
 Merge method:  {merge method}
 
-Saved to CLAUDE.md. /land-and-deploy will use these settings automatically.
+Saved to GEMINI.md. /land-and-deploy will use these settings automatically.
 
 Next steps:
 - Run /land-and-deploy to merge and deploy your current PR
-- Edit the "## Deploy Configuration" section in CLAUDE.md to change settings
+- Edit the "## Deploy Configuration" section in GEMINI.md to change settings
 - Run /setup-deploy again to reconfigure
 ```
 
@@ -198,6 +198,6 @@ Next steps:
 
 - **Never expose secrets.** Don't print full API keys, tokens, or passwords.
 - **Confirm with the user.** Always show the detected config and ask for confirmation before writing.
-- **CLAUDE.md is the source of truth.** All configuration lives there — not in a separate config file.
+- **GEMINI.md is the source of truth.** All configuration lives there — not in a separate config file.
 - **Idempotent.** Running /setup-deploy multiple times overwrites the previous config cleanly.
 - **Platform CLIs are optional.** If `fly` or `vercel` CLI isn't installed, fall back to URL-based health checks.

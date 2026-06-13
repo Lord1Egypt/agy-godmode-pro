@@ -119,7 +119,7 @@ sections. Read a section in full before doing its step; do not work from memory.
 After completing the review, read the review log and config to display the dashboard.
 
 ```bash
-~/.claude/skills/gstack/bin/gstack-review-read
+~/.gemini/skills/gstack/bin/gstack-review-read
 ```
 
 Parse the output. Find the most recent entry for each skill (plan-ceo-review, plan-eng-review, review, plan-design-review, design-review-lite, adversarial-review, codex-review, codex-plan-review). Ignore entries with timestamps older than 7 days. For the Eng Review row, show whichever is more recent between `review` (diff-scoped pre-landing review) and `plan-eng-review` (plan-stage architecture review). Append "(DIFF)" or "(PLAN)" to the status to distinguish. For the Adversarial row, show whichever is more recent between `adversarial-review` (new auto-scaled) and `codex-review` (legacy). For Design Review, show whichever is more recent between `plan-design-review` (full visual audit) and `design-review-lite` (code-level check). Append "(FULL)" or "(LITE)" to the status to distinguish. For the Outside Voice row, show the most recent `codex-plan-review` entry — this captures outside voices from both /plan-ceo-review and /plan-eng-review.
@@ -150,8 +150,8 @@ Display:
 - **Eng Review (required by default):** The only review that gates shipping. Covers architecture, code quality, tests, performance. Can be disabled globally with \`gstack-config set skip_eng_review true\` (the "don't bother me" setting).
 - **CEO Review (optional):** Use your judgment. Recommend it for big product/business changes, new user-facing features, or scope decisions. Skip for bug fixes, refactors, infra, and cleanup.
 - **Design Review (optional):** Use your judgment. Recommend it for UI/UX changes. Skip for backend-only, infra, or prompt-only changes.
-- **Adversarial Review (automatic):** Always-on for every review. Every diff gets both Claude adversarial subagent and Codex adversarial challenge. Large diffs (200+ lines) additionally get Codex structured review with P1 gate. No configuration needed.
-- **Outside Voice (optional):** Independent plan review from a different AI model. Offered after all review sections complete in /plan-ceo-review and /plan-eng-review. Falls back to Claude subagent if Codex is unavailable. Never gates shipping.
+- **Adversarial Review (automatic):** Always-on for every review. Every diff gets both Gemini adversarial subagent and Codex adversarial challenge. Large diffs (200+ lines) additionally get Codex structured review with P1 gate. No configuration needed.
+- **Outside Voice (optional):** Independent plan review from a different AI model. Offered after all review sections complete in /plan-ceo-review and /plan-eng-review. Falls back to Gemini subagent if Codex is unavailable. Never gates shipping.
 
 **Verdict logic:**
 - **CLEARED**: Eng Review has >= 1 entry within 7 days from either \`review\` or \`plan-eng-review\` with status "clean" (or \`skip_eng_review\` is \`true\`)
@@ -173,7 +173,7 @@ Check diff size: `git diff <base>...HEAD --stat | tail -1`. If the diff is >200 
 
 If CEO Review is missing, mention as informational ("CEO Review not run — recommended for product changes") but do NOT block.
 
-For Design Review: run `source <(~/.claude/skills/gstack/bin/gstack-diff-scope <base> 2>/dev/null)`. If `SCOPE_FRONTEND=true` and no design review (plan-design-review or design-review-lite) exists in the dashboard, mention: "Design Review not run — this PR changes frontend code. The lite design check will run automatically in Step 9, but consider running /design-review for a full visual audit post-implementation." Still never block.
+For Design Review: run `source <(~/.gemini/skills/gstack/bin/gstack-diff-scope <base> 2>/dev/null)`. If `SCOPE_FRONTEND=true` and no design review (plan-design-review or design-review-lite) exists in the dashboard, mention: "Design Review not run — this PR changes frontend code. The lite design check will run automatically in Step 9, but consider running /design-review for a or a full visual audit post-implementation." Still never block.
 
 Continue to Step 2 — do NOT block or ask. Ship runs its own review in Step 9.
 
@@ -218,22 +218,22 @@ git fetch origin <base> && git merge origin/<base> --no-edit
 **If already up to date:** Continue silently.
 
 
-> **STOP.** Before running the test suites and (if prompt files changed) the eval suites (Steps 4-6), Read `~/.claude/skills/gstack/ship/sections/tests.md` and execute it
+> **STOP.** Before running the test suites and (if prompt files changed) the eval suites (Steps 4-6), Read `~/.gemini/skills/gstack/ship/sections/tests.md` and execute it
 > in full. Do not work from memory — that section is the source of truth for this step.
 
-> **STOP.** Before auditing test coverage of the diff (Step 7), Read `~/.claude/skills/gstack/ship/sections/test-coverage.md` and execute it
+> **STOP.** Before auditing test coverage of the diff (Step 7), Read `~/.gemini/skills/gstack/ship/sections/test-coverage.md` and execute it
 > in full. Do not work from memory — that section is the source of truth for this step.
 
-> **STOP.** Before auditing plan completion, verification, and scope drift (Step 8), Read `~/.claude/skills/gstack/ship/sections/plan-completion.md` and execute it
+> **STOP.** Before auditing plan completion, verification, and scope drift (Step 8), Read `~/.gemini/skills/gstack/ship/sections/plan-completion.md` and execute it
 > in full. Do not work from memory — that section is the source of truth for this step.
 
-> **STOP.** Before the pre-landing review and specialist dispatch (Step 9), Read `~/.claude/skills/gstack/ship/sections/review-army.md` and execute it
+> **STOP.** Before the pre-landing review and specialist dispatch (Step 9), Read `~/.gemini/skills/gstack/ship/sections/review-army.md` and execute it
 > in full. Do not work from memory — that section is the source of truth for this step.
 
-> **STOP.** Before addressing Greptile review comments when a PR exists (Step 10), Read `~/.claude/skills/gstack/ship/sections/greptile.md` and execute it
+> **STOP.** Before addressing Greptile review comments when a PR exists (Step 10), Read `~/.gemini/skills/gstack/ship/sections/greptile.md` and execute it
 > in full. Do not work from memory — that section is the source of truth for this step.
 
-> **STOP.** Before the adversarial review and learnings capture (Step 11), Read `~/.claude/skills/gstack/ship/sections/adversarial.md` and execute it
+> **STOP.** Before the adversarial review and learnings capture (Step 11), Read `~/.gemini/skills/gstack/ship/sections/adversarial.md` and execute it
 > in full. Do not work from memory — that section is the source of truth for this step.
 
 ## Step 12: Version bump (auto-decide)
@@ -244,7 +244,7 @@ stay agent judgment; the slot pick stays `gstack-next-version`.
 
 1. **Classify state** — pure reader, never writes:
    ```bash
-   bun run ~/.claude/skills/gstack/bin/gstack-version-bump classify --base <base>
+   bun run ~/.gemini/skills/gstack/bin/gstack-version-bump classify --base <base>
    ```
    Read the JSON `state` and dispatch:
    - **FRESH** → do the bump (steps 2-4).
@@ -259,31 +259,31 @@ stay agent judgment; the slot pick stays `gstack-next-version`.
 
 3. **Queue-aware pick** (workspace-aware ship):
    ```bash
-   QUEUE_JSON=$(bun run ~/.claude/skills/gstack/bin/gstack-next-version --base <base> --bump "$BUMP_LEVEL" --current-version "$BASE_VERSION" 2>/dev/null || echo '{"offline":true}')
+    QUEUE_JSON=$(bun run ~/.gemini/skills/gstack/bin/gstack-next-version --base <base> --bump "$BUMP_LEVEL" --current-version "$BASE_VERSION" 2>/dev/null || echo '{"offline":true}')
    NEW_VERSION=$(echo "$QUEUE_JSON" | jq -r '.version // empty')
    ```
    If `offline`/util fails: fall back to local `BUMP_LEVEL` arithmetic and print `⚠ workspace-aware ship offline — using local bump only`. If `claimed` is non-empty, render the queue table so the user sees landing order. If an active sibling workspace holds a version `>= NEW_VERSION`, **AskUserQuestion**: advance past (unrelated work) or abort and sync with the sibling.
 
 4. **Write the bump** (FRESH, or an approved rebump):
    ```bash
-   bun run ~/.claude/skills/gstack/bin/gstack-version-bump write --version "$NEW_VERSION"
+    bun run ~/.gemini/skills/gstack/bin/gstack-version-bump write --version "$NEW_VERSION"
    ```
    The CLI validates the 4-digit `MAJOR.MINOR.PATCH.MICRO` pattern and writes **both** VERSION and package.json. On a half-write (VERSION written, package.json failed) it exits 3 — re-run, and classify will report DRIFT_STALE_PKG for `repair` to fix.
 
 5. **Record the release decision** (durable cross-session memory). The bump level is a real decision the next session should not re-derive blind:
    ```bash
-   ~/.claude/skills/gstack/bin/gstack-decision-log '{"decision":"Ship NEW_VERSION (BUMP_LEVEL)","rationale":"WHY","scope":"repo","source":"skill","confidence":9}' 2>/dev/null || true
+    ~/.gemini/skills/gstack/bin/gstack-decision-log '{"decision":"Ship NEW_VERSION (BUMP_LEVEL)","rationale":"WHY","scope":"repo","source":"skill","confidence":9}' 2>/dev/null || true
    ```
    Substitute `NEW_VERSION`, `BUMP_LEVEL`, and a one-line `WHY` (the signal that set the level: diff scale, a new feature, a breaking change). Best-effort and non-interactive; never blocks the ship. Skip on the ALREADY_BUMPED path (the decision was logged on the run that did the bump).
 
-> **STOP.** Before writing the CHANGELOG entry (Step 13), Read `~/.claude/skills/gstack/ship/sections/changelog.md` and execute it
+> **STOP.** Before writing the CHANGELOG entry (Step 13), Read `~/.gemini/skills/gstack/ship/sections/changelog.md` and execute it
 > in full. Do not work from memory — that section is the source of truth for this step.
 
 ## Step 14: TODOS.md (auto-update)
 
 Cross-reference the project's TODOS.md against the changes being shipped. Mark completed items automatically; prompt only if the file is missing or disorganized.
 
-Read `.claude/skills/review/TODOS-format.md` for the canonical format reference.
+Read `.gemini/skills/review/TODOS-format.md` for the canonical format reference.
 
 **1. Check if TODOS.md exists** in the repository root.
 
@@ -431,7 +431,7 @@ user via AskUserQuestion rather than destroying non-WIP commits.
 git commit -m "$(cat <<'EOF'
 chore: bump version and changelog (vX.Y.Z.W)
 
-Co-Authored-By: Claude Opus 4.7 <noreply@anthropic.com>
+Co-Authored-By: Gemini 1.5 Pro <noreply@google.com>
 EOF
 )"
 ```
@@ -479,9 +479,9 @@ git push -u origin <branch-name>
 **You are NOT done.** The code is pushed but documentation sync and PR creation are mandatory final steps. Continue to Step 18.
 
 
-**PR/MR title invariant (always applies — do not skip even if you don't open the section below):** Any PR or MR you create OR update in the next step MUST have a title that starts with `v$NEW_VERSION` (the version bumped in Step 12), in the format `v<NEW_VERSION> <type>: <summary>`. Never create or edit a PR/MR title without this prefix. Compute the correct title with the single source of truth helper: `~/.claude/skills/gstack/bin/gstack-pr-title-rewrite.sh "$NEW_VERSION" "<current title>"`. The full create/update procedure (idempotency, redaction scan, self-check) is in the section below.
+**PR/MR title invariant (always applies — do not skip even if you don't open the section below):** Any PR or MR you create OR update in the next step MUST have a title that starts with `v$NEW_VERSION` (the version bumped in Step 12), in the format `v<NEW_VERSION> <type>: <summary>`. Never create or edit a PR/MR title without this prefix. Compute the correct title with the single source of truth helper: `~/.gemini/skills/gstack/bin/gstack-pr-title-rewrite.sh "$NEW_VERSION" "<current title>"`. The full create/update procedure (idempotency, redaction scan, self-check) is in the section below.
 
-> **STOP.** Before syncing docs and creating or updating the PR/MR (Steps 18-19), Read `~/.claude/skills/gstack/ship/sections/pr-body.md` and execute it
+> **STOP.** Before syncing docs and creating or updating the PR/MR (Steps 18-19), Read `~/.gemini/skills/gstack/ship/sections/pr-body.md` and execute it
 > in full. Do not work from memory — that section is the source of truth for this step.
 
 ## Step 20: Persist ship metrics
@@ -489,7 +489,7 @@ git push -u origin <branch-name>
 Log coverage and plan completion data so `/retro` can track trends:
 
 ```bash
-eval "$(~/.claude/skills/gstack/bin/gstack-slug 2>/dev/null)" && mkdir -p ~/.gstack/projects/$SLUG
+eval "$(~/.gemini/skills/gstack/bin/gstack-slug 2>/dev/null)" && mkdir -p ~/.gstack/projects/$SLUG
 ```
 
 Append to `~/.gstack/projects/$SLUG/$BRANCH-reviews.jsonl`:
@@ -516,7 +516,7 @@ per machine. Single line, non-blocking, marker-gated so it never re-fires.
 
 ```bash
 _NUDGE_MARKER="$HOME/.gstack/.plan-tune-nudge-shown"
-_QT=$(~/.claude/skills/gstack/bin/gstack-config get question_tuning 2>/dev/null || echo "false")
+_QT=$(~/.gemini/skills/gstack/bin/gstack-config get question_tuning 2>/dev/null || echo "false")
 if [ ! -f "$_NUDGE_MARKER" ] && [ "$_QT" = "false" ]; then
   echo ""
   echo "gstack can learn from your AskUserQuestion answers. Run /plan-tune to opt in"

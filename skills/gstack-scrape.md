@@ -130,7 +130,7 @@ If you discovered a non-obvious pattern, pitfall, or architectural insight durin
 this session, log it for future sessions:
 
 ```bash
-~/.claude/skills/gstack/bin/gstack-learnings-log '{"skill":"scrape","type":"TYPE","key":"SHORT_KEY","insight":"DESCRIPTION","confidence":N,"source":"SOURCE","files":["path/to/relevant/file"]}'
+~/.gemini/skills/gstack/bin/gstack-learnings-log '{"skill":"scrape","type":"TYPE","key":"SHORT_KEY","insight":"DESCRIPTION","confidence":N,"source":"SOURCE","files":["path/to/relevant/file"]}'
 ```
 
 **Types:** `pattern` (reusable approach), `pitfall` (what NOT to do), `preference`
@@ -138,7 +138,7 @@ this session, log it for future sessions:
 `operational` (project environment/CLI/workflow knowledge).
 
 **Sources:** `observed` (you found this in the code), `user-stated` (user told you),
-`inferred` (AI deduction), `cross-model` (both Claude and Codex agree).
+`inferred` (AI deduction), `cross-model` (both Gemini and Codex agree).
 
 **Confidence:** 1-10. Be honest. An observed pattern you verified in the code is 8-9.
 An inference you're not sure about is 4-5. A user preference they explicitly stated is 10.

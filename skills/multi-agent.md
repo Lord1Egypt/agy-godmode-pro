@@ -23,7 +23,7 @@ agy --print "TASK_DESCRIPTION" --dangerously-skip-permissions
 ```bash
 # Complex reasoning → expensive model
 agy --print "audit this Solidity contract for reentrancy: $(cat contract.sol)" \
-    --model "Claude Opus 4.6 (Thinking)" --dangerously-skip-permissions
+    --model "Gemini 1.5 Pro (Thinking)" --dangerously-skip-permissions
 
 # Simple tasks → cheap model  
 agy --print "summarize this file in 3 bullets: $(cat README.md)" \

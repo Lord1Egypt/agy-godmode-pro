@@ -14,8 +14,8 @@ test a site, verify a deployment, dogfood a user flow, or file a bug with screen
 ```bash
 _ROOT=$(git rev-parse --show-toplevel 2>/dev/null)
 B=""
-[ -n "$_ROOT" ] && [ -x "$_ROOT/.claude/skills/gstack/browse/dist/browse" ] && B="$_ROOT/.claude/skills/gstack/browse/dist/browse"
-[ -z "$B" ] && B="$HOME/.claude/skills/gstack/browse/dist/browse"
+[ -n "$_ROOT" ] && [ -x "$_ROOT/.gemini/skills/gstack/browse/dist/browse" ] && B="$_ROOT/.gemini/skills/gstack/browse/dist/browse"
+[ -z "$B" ] && B="$HOME/.gemini/skills/gstack/browse/dist/browse"
 if [ -x "$B" ]; then
   echo "READY: $B"
 else
@@ -255,7 +255,7 @@ $B css ".button" "background-color"
 ## Snapshot System
 
 The snapshot is your primary tool for understanding and interacting with pages.
-`$B` is the browse binary (resolved from `$_ROOT/.claude/skills/gstack/browse/dist/browse` or `~/.claude/skills/gstack/browse/dist/browse`).
+`$B` is the browse binary (resolved from `$_ROOT/.gemini/skills/gstack/browse/dist/browse` or `~/.gemini/skills/gstack/browse/dist/browse`).
 
 **Syntax:** `$B snapshot [flags]`
 

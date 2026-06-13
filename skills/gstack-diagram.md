@@ -37,11 +37,11 @@ so concurrent sessions and mixed gstack versions never clobber each other:
 
 ```bash
 BUNDLE=""
-for c in "$HOME/.claude/skills/gstack/lib/diagram-render/dist/diagram-render.html" \
+for c in "$HOME/.gemini/skills/gstack/lib/diagram-render/dist/diagram-render.html" \
          "$(git rev-parse --show-toplevel 2>/dev/null)/lib/diagram-render/dist/diagram-render.html"; do
   [ -f "$c" ] && BUNDLE="$c" && break
 done
-[ -z "$BUNDLE" ] && echo "BUNDLE_MISSING — run: cd ~/.claude/skills/gstack && bun run build:diagram-render" && exit 1
+[ -z "$BUNDLE" ] && echo "BUNDLE_MISSING — run: cd ~/.gemini/skills/gstack && bun run build:diagram-render" && exit 1
 SHA=$(shasum -a 256 "$BUNDLE" | cut -c1-16)
 STAGED="/tmp/gstack-diagram-render-$SHA.html"
 [ -f "$STAGED" ] && shasum -a 256 "$STAGED" | grep -q "^$SHA" || { cp "$BUNDLE" "$STAGED.$$" && mv "$STAGED.$$" "$STAGED"; }

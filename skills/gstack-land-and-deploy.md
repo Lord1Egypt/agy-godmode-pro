@@ -14,8 +14,8 @@ creates the PR. Use when: "merge", "land", "deploy", "merge and verify",
 ```bash
 _ROOT=$(git rev-parse --show-toplevel 2>/dev/null)
 B=""
-[ -n "$_ROOT" ] && [ -x "$_ROOT/.claude/skills/gstack/browse/dist/browse" ] && B="$_ROOT/.claude/skills/gstack/browse/dist/browse"
-[ -z "$B" ] && B="$HOME/.claude/skills/gstack/browse/dist/browse"
+[ -n "$_ROOT" ] && [ -x "$_ROOT/.gemini/skills/gstack/browse/dist/browse" ] && B="$_ROOT/.gemini/skills/gstack/browse/dist/browse"
+[ -z "$B" ] && B="$HOME/.gemini/skills/gstack/browse/dist/browse"
 if [ -x "$B" ]; then
   echo "READY: $B"
 else
@@ -165,13 +165,13 @@ Check whether this project has been through a successful `/land-and-deploy` befo
 and whether the deploy configuration has changed since then:
 
 ```bash
-eval "$(~/.claude/skills/gstack/bin/gstack-slug 2>/dev/null)"
+eval "$(~/.gemini/skills/gstack/bin/gstack-slug 2>/dev/null)"
 if [ ! -f ~/.gstack/projects/$SLUG/land-deploy-confirmed ]; then
   echo "FIRST_RUN"
 else
   # Check if deploy config has changed since confirmation
   SAVED_HASH=$(cat ~/.gstack/projects/$SLUG/land-deploy-confirmed 2>/dev/null)
-  CURRENT_HASH=$(sed -n '/## Deploy Configuration/,/^## /p' CLAUDE.md 2>/dev/null | shasum -a 256 | cut -d' ' -f1)
+  CURRENT_HASH=$(sed -n '/## Deploy Configuration/,/^## /p' GEMINI.md 2>/dev/null | shasum -a 256 | cut -d' ' -f1)
   # Also hash workflow files that affect deploy behavior
   WORKFLOW_HASH=$(find .github/workflows -maxdepth 1 \( -name '*deploy*' -o -name '*cd*' \) 2>/dev/null | xargs cat 2>/dev/null | shasum -a 256 | cut -d' ' -f1)
   COMBINED_HASH="${CURRENT_HASH}-${WORKFLOW_HASH}"
@@ -209,8 +209,8 @@ Let me take a look at your setup."
 Run the deploy configuration bootstrap to detect the platform and settings:
 
 ```bash
-# Check for persisted deploy config in CLAUDE.md
-DEPLOY_CONFIG=$(grep -A 20 "## Deploy Configuration" CLAUDE.md 2>/dev/null || echo "NO_CONFIG")
+# Check for persisted deploy config in GEMINI.md
+DEPLOY_CONFIG=$(grep -A 20 "## Deploy Configuration" GEMINI.md 2>/dev/null || echo "NO_CONFIG")
 echo "$DEPLOY_CONFIG"
 
 # If config exists, parse it
@@ -236,7 +236,7 @@ for f in $(find .github/workflows -maxdepth 1 \( -name '*.yml' -o -name '*.yaml'
 done
 ```
 
-If `PERSISTED_PLATFORM` and `PERSISTED_URL` were found in CLAUDE.md, use them directly
+If `PERSISTED_PLATFORM` and `PERSISTED_URL` were found in GEMINI.md, use them directly
 and skip manual detection. If no persisted config exists, use the auto-detected platform
 to guide deploy verification. If nothing is detected, ask the user via AskUserQuestion
 in the decision tree below.
@@ -244,7 +244,7 @@ in the decision tree below.
 If you want to persist deploy settings for future runs, suggest the user run `/setup-deploy`.
 
 Parse the output and record: the detected platform, production URL, deploy workflow (if any),
-and any persisted config from CLAUDE.md.
+and any persisted config from GEMINI.md.
 
 ### 1.5b: Command validation
 
@@ -309,9 +309,9 @@ CLI to verify the deploy worked."
 
 Check for staging environments in this order:
 
-1. **CLAUDE.md persisted config:** Check for a staging URL in the Deploy Configuration section:
+1. **GEMINI.md persisted config:** Check for a staging URL in the Deploy Configuration section:
 ```bash
-grep -i "staging" CLAUDE.md 2>/dev/null | head -3
+grep -i "staging" GEMINI.md 2>/dev/null | head -3
 ```
 
 2. **GitHub Actions staging workflow:** Check for workflow files with "staging" in the name or content:
@@ -336,7 +336,7 @@ Tell the user: "Before I merge any PR, I run a series of readiness checks — co
 Preview the readiness checks that will run at Step 3.5 (without re-running tests):
 
 ```bash
-~/.claude/skills/gstack/bin/gstack-review-read 2>/dev/null
+~/.gemini/skills/gstack/bin/gstack-review-read 2>/dev/null
 ```
 
 Show a summary of review status: which reviews have been run, how stale they are.
@@ -365,7 +365,7 @@ Present the full dry-run results to the user via AskUserQuestion:
 Save the deploy config fingerprint so we can detect future changes:
 ```bash
 mkdir -p ~/.gstack/projects/$SLUG
-CURRENT_HASH=$(sed -n '/## Deploy Configuration/,/^## /p' CLAUDE.md 2>/dev/null | shasum -a 256 | cut -d' ' -f1)
+CURRENT_HASH=$(sed -n '/## Deploy Configuration/,/^## /p' GEMINI.md 2>/dev/null | shasum -a 256 | cut -d' ' -f1)
 WORKFLOW_HASH=$(find .github/workflows -maxdepth 1 \( -name '*deploy*' -o -name '*cd*' \) 2>/dev/null | xargs cat 2>/dev/null | shasum -a 256 | cut -d' ' -f1)
 echo "${CURRENT_HASH}-${WORKFLOW_HASH}" > ~/.gstack/projects/$SLUG/land-deploy-confirmed
 ```
@@ -373,7 +373,7 @@ Continue to Step 2.
 
 **If B:** **STOP.** "Tell me what's different about your setup and I'll adjust. You can also run `/setup-deploy` to walk through the full configuration."
 
-**If C:** **STOP.** "Running `/setup-deploy` will walk through your deploy platform, production URL, and health checks in detail. It saves everything to CLAUDE.md so I'll know exactly what to do next time. Run `/land-and-deploy` again when that's done."
+**If C:** **STOP.** "Running `/setup-deploy` will walk through your deploy platform, production URL, and health checks in detail. It saves everything to GEMINI.md so I'll know exactly what to do next time. Run `/land-and-deploy` again when that's done."
 
 
 ## Step 2: Pre-merge checks
@@ -468,7 +468,7 @@ Collect evidence for each check below. Track warnings (yellow) and blockers (red
 ### 3.5a: Review staleness check
 
 ```bash
-~/.claude/skills/gstack/bin/gstack-review-read 2>/dev/null
+~/.gemini/skills/gstack/bin/gstack-review-read 2>/dev/null
 ```
 
 Parse the output. For each review skill (plan-eng-review, plan-ceo-review,
@@ -514,7 +514,7 @@ Use AskUserQuestion:
 
 Read the review checklist:
 ```bash
-cat ~/.claude/skills/gstack/review/checklist.md 2>/dev/null || echo "Checklist not found"
+cat ~/.gemini/skills/gstack/review/checklist.md 2>/dev/null || echo "Checklist not found"
 ```
 Apply each checklist item to the current diff. This is the same quick review that `/ship`
 runs in its Step 3.5. Auto-fix trivial issues (whitespace, imports). For critical findings
@@ -535,7 +535,7 @@ and tell the user: "I found and fixed a few issues during the review. The fixes 
 
 **Free tests — run them now:**
 
-Read CLAUDE.md to find the project's test command. If not specified, use `bun test`.
+Read GEMINI.md to find the project's test command. If not specified, use `bun test`.
 Run the test command and capture the exit code and output.
 
 ```bash
@@ -599,7 +599,7 @@ git log --oneline --all-match --grep="docs:" $(gh pr view --json baseRefName -q 
 
 Also check if key doc files were modified:
 ```bash
-git diff --name-only $(gh pr view --json baseRefName -q .baseRefName 2>/dev/null || echo main)...HEAD -- README.md CHANGELOG.md ARCHITECTURE.md CONTRIBUTING.md CLAUDE.md VERSION
+git diff --name-only $(gh pr view --json baseRefName -q .baseRefName 2>/dev/null || echo main)...HEAD -- README.md CHANGELOG.md ARCHITECTURE.md CONTRIBUTING.md GEMINI.md VERSION
 ```
 
 If CHANGELOG.md and VERSION were NOT modified on this branch and the diff includes
@@ -789,8 +789,8 @@ Determine what kind of project this is and how to verify the deploy.
 First, run the deploy configuration bootstrap to detect or read persisted deploy settings:
 
 ```bash
-# Check for persisted deploy config in CLAUDE.md
-DEPLOY_CONFIG=$(grep -A 20 "## Deploy Configuration" CLAUDE.md 2>/dev/null || echo "NO_CONFIG")
+# Check for persisted deploy config in GEMINI.md
+DEPLOY_CONFIG=$(grep -A 20 "## Deploy Configuration" GEMINI.md 2>/dev/null || echo "NO_CONFIG")
 echo "$DEPLOY_CONFIG"
 
 # If config exists, parse it
@@ -816,7 +816,7 @@ for f in $(find .github/workflows -maxdepth 1 \( -name '*.yml' -o -name '*.yaml'
 done
 ```
 
-If `PERSISTED_PLATFORM` and `PERSISTED_URL` were found in CLAUDE.md, use them directly
+If `PERSISTED_PLATFORM` and `PERSISTED_URL` were found in GEMINI.md, use them directly
 and skip manual detection. If no persisted config exists, use the auto-detected platform
 to guide deploy verification. If nothing is detected, ask the user via AskUserQuestion
 in the decision tree below.
@@ -826,7 +826,7 @@ If you want to persist deploy settings for future runs, suggest the user run `/s
 Then run `gstack-diff-scope` to classify the changes:
 
 ```bash
-eval $(~/.claude/skills/gstack/bin/gstack-diff-scope $(gh pr view --json baseRefName -q .baseRefName 2>/dev/null || echo main) 2>/dev/null)
+eval $(~/.gemini/skills/gstack/bin/gstack-diff-scope $(gh pr view --json baseRefName -q .baseRefName 2>/dev/null || echo main) 2>/dev/null)
 echo "FRONTEND=$SCOPE_FRONTEND BACKEND=$SCOPE_BACKEND DOCS=$SCOPE_DOCS CONFIG=$SCOPE_CONFIG"
 ```
 
@@ -850,7 +850,7 @@ Look for workflow names containing "deploy", "release", "production", or "cd". I
 
 ### 5a: Staging-first option
 
-If staging was detected in Step 1.5c (or from CLAUDE.md deploy config), and the changes
+If staging was detected in Step 1.5c (or from GEMINI.md deploy config), and the changes
 include code (not docs-only), offer the staging-first option:
 
 Use AskUserQuestion:
@@ -900,7 +900,7 @@ gh run view <run-id> --json status,conclusion
 
 ### Strategy B: Platform CLI (Fly.io, Render, Heroku)
 
-If a deploy status command was configured in CLAUDE.md (e.g., `fly status --app myapp`), use it instead of or in addition to GitHub Actions polling.
+If a deploy status command was configured in GEMINI.md (e.g., `fly status --app myapp`), use it instead of or in addition to GitHub Actions polling.
 
 **Fly.io:** After merge, Fly deploys via GitHub Actions or `fly deploy`. Check with:
 ```bash
@@ -925,7 +925,7 @@ Vercel and Netlify deploy automatically on merge. No explicit deploy trigger nee
 
 ### Strategy D: Custom deploy hooks
 
-If CLAUDE.md has a custom deploy status command in the "Custom deploy hooks" section, run that command and check its exit code.
+If GEMINI.md has a custom deploy status command in the "Custom deploy hooks" section, run that command and check its exit code.
 
 ### Common: Timing and failure handling
 
@@ -1076,7 +1076,7 @@ Save report to `.gstack/deploy-reports/{date}-pr{number}-deploy.md`.
 Log to the review dashboard:
 
 ```bash
-eval "$(~/.claude/skills/gstack/bin/gstack-slug 2>/dev/null)"
+eval "$(~/.gemini/skills/gstack/bin/gstack-slug 2>/dev/null)"
 mkdir -p ~/.gstack/projects/$SLUG
 ```
 

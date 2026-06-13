@@ -222,7 +222,7 @@ git diff <base> --stat
 
 Then read:
 - The plan file (current plan or branch diff)
-- CLAUDE.md — project conventions
+- GEMINI.md — project conventions
 - DESIGN.md — if it exists, ALL design decisions calibrate against it
 - TODOS.md — any design-related TODOs this plan touches
 
@@ -245,16 +245,16 @@ Report findings before proceeding to Step 0.
 ```bash
 _ROOT=$(git rev-parse --show-toplevel 2>/dev/null)
 D=""
-[ -n "$_ROOT" ] && [ -x "$_ROOT/.claude/skills/gstack/design/dist/design" ] && D="$_ROOT/.claude/skills/gstack/design/dist/design"
-[ -z "$D" ] && D="$HOME/.claude/skills/gstack/design/dist/design"
+[ -n "$_ROOT" ] && [ -x "$_ROOT/.gemini/skills/gstack/design/dist/design" ] && D="$_ROOT/.gemini/skills/gstack/design/dist/design"
+[ -z "$D" ] && D="$HOME/.gemini/skills/gstack/design/dist/design"
 if [ -x "$D" ]; then
   echo "DESIGN_READY: $D"
 else
   echo "DESIGN_NOT_AVAILABLE"
 fi
 B=""
-[ -n "$_ROOT" ] && [ -x "$_ROOT/.claude/skills/gstack/browse/dist/browse" ] && B="$_ROOT/.claude/skills/gstack/browse/dist/browse"
-[ -z "$B" ] && B="$HOME/.claude/skills/gstack/browse/dist/browse"
+[ -n "$_ROOT" ] && [ -x "$_ROOT/.gemini/skills/gstack/browse/dist/browse" ] && B="$_ROOT/.gemini/skills/gstack/browse/dist/browse"
+[ -z "$B" ] && B="$HOME/.gemini/skills/gstack/browse/dist/browse"
 if [ -x "$B" ]; then
   echo "BROWSE_READY: $B"
 else
@@ -292,15 +292,15 @@ present in the loaded context; ground recommendations in what the brain
 already knows about the user, the product, the goals, and recent decisions.
 
 ```bash
-eval "$(~/.claude/skills/gstack/bin/gstack-slug 2>/dev/null)" 2>/dev/null || true
+eval "$(~/.gemini/skills/gstack/bin/gstack-slug 2>/dev/null)" 2>/dev/null || true
 {
   printf '## Brain Context\n\n'
   printf '\n### %s\n\n' "product"
-  ~/.claude/skills/gstack/bin/gstack-brain-cache get product --project "$SLUG" 2>/dev/null || printf '_(no product digest available yet)_\n'
+  ~/.gemini/skills/gstack/bin/gstack-brain-cache get product --project "$SLUG" 2>/dev/null || printf '_(no product digest available yet)_\n'
   printf '\n### %s\n\n' "brand"
-  ~/.claude/skills/gstack/bin/gstack-brain-cache get brand --project "$SLUG" 2>/dev/null || printf '_(no brand digest available yet)_\n'
+  ~/.gemini/skills/gstack/bin/gstack-brain-cache get brand --project "$SLUG" 2>/dev/null || printf '_(no brand digest available yet)_\n'
   printf '\n### %s\n\n' "recent-decisions"
-  ~/.claude/skills/gstack/bin/gstack-brain-cache get recent-decisions --project "$SLUG" 2>/dev/null || printf '_(no recent-decisions digest available yet)_\n'
+  ~/.gemini/skills/gstack/bin/gstack-brain-cache get recent-decisions --project "$SLUG" 2>/dev/null || printf '_(no recent-decisions digest available yet)_\n'
 } > /tmp/.gstack-brain-context-$$.md 2>/dev/null
 [ -s /tmp/.gstack-brain-context-$$.md ] && cat /tmp/.gstack-brain-context-$$.md
 rm -f /tmp/.gstack-brain-context-$$.md 2>/dev/null || true
@@ -377,7 +377,7 @@ Allowed commands under this exception:
 First, set up the output directory. Name it after the screen/feature being designed and today's date:
 
 ```bash
-eval "$(~/.claude/skills/gstack/bin/gstack-slug 2>/dev/null)"
+eval "$(~/.gemini/skills/gstack/bin/gstack-slug 2>/dev/null)"
 _DESIGN_DIR="$HOME/.gstack/projects/$SLUG/designs/<screen-name>-$(date +%Y%m%d)"
 mkdir -p "$_DESIGN_DIR"
 echo "DESIGN_DIR: $_DESIGN_DIR"
@@ -534,7 +534,7 @@ Note which direction was approved. This becomes the visual reference for all sub
 ## Design Outside Voices (parallel)
 
 Use AskUserQuestion:
-> "Want outside design voices before the detailed review? Codex evaluates against OpenAI's design hard rules + litmus checks; Claude subagent does an independent completeness review."
+> "Want outside design voices before the detailed review? Codex evaluates against OpenAI's design hard rules + litmus checks; Gemini subagent does an independent completeness review."
 >
 > A) Yes — run outside design voices
 > B) No — proceed without
@@ -584,7 +584,7 @@ Use a 5-minute timeout (`timeout: 300000`). After the command completes, read st
 cat "$TMPERR_DESIGN" && rm -f "$TMPERR_DESIGN"
 ```
 
-2. **Claude design subagent** (via Agent tool):
+2. **Gemini design subagent** (via Agent tool):
 Dispatch a subagent with this prompt:
 "Read the plan file at [plan-file-path]. You are an independent senior product designer reviewing this plan. You have NOT seen any prior review. Evaluate:
 
@@ -600,18 +600,18 @@ For each finding: what's wrong, severity (critical/high/medium), and the fix."
 - **Auth failure:** If stderr contains "auth", "login", "unauthorized", or "API key": "Codex authentication failed. Run `codex login` to authenticate."
 - **Timeout:** "Codex timed out after 5 minutes."
 - **Empty response:** "Codex returned no response."
-- On any Codex error: proceed with Claude subagent output only, tagged `[single-model]`.
-- If Claude subagent also fails: "Outside voices unavailable — continuing with primary review."
+- On any Codex error: proceed with Gemini subagent output only, tagged `[single-model]`.
+- If Gemini subagent also fails: "Outside voices unavailable — continuing with primary review."
 
 Present Codex output under a `CODEX SAYS (design critique):` header.
-Present subagent output under a `CLAUDE SUBAGENT (design completeness):` header.
+Present subagent output under a `GEMINI SUBAGENT (design completeness):` header.
 
 **Synthesis — Litmus scorecard:**
 
 ```
 DESIGN OUTSIDE VOICES — LITMUS SCORECARD:
 ═══════════════════════════════════════════════════════════════
-  Check                                    Claude  Codex  Consensus
+  Check                                    Gemini  Codex  Consensus
   ─────────────────────────────────────── ─────── ─────── ─────────
   1. Brand unmistakable in first screen?   —       —      —
   2. One strong visual anchor?             —       —      —
@@ -635,7 +635,7 @@ Fill in each cell from the Codex and subagent outputs. CONFIRMED = both agree. D
 
 **Log the result:**
 ```bash
-~/.claude/skills/gstack/bin/gstack-review-log '{"skill":"design-outside-voices","timestamp":"'"$(date -u +%Y-%m-%dT%H:%M:%SZ)"'","status":"STATUS","source":"SOURCE","commit":"'"$(git rev-parse --short HEAD)"'"}'
+~/.gemini/skills/gstack/bin/gstack-review-log '{"skill":"design-outside-voices","timestamp":"'"$(date -u +%Y-%m-%dT%H:%M:%SZ)"'","status":"STATUS","source":"SOURCE","commit":"'"$(git rev-parse --short HEAD)"'"}'
 ```
 Replace STATUS with "clean" or "issues_found", SOURCE with "codex+subagent", "codex-only", "subagent-only", or "unavailable".
 
@@ -668,7 +668,7 @@ Show the mockup to the user via the Read tool. This makes the gap between
 If the design binary is not available, skip this and continue with text-based
 descriptions of what 10/10 looks like.
 
-> **STOP.** Before running the 7 design passes, required outputs, and review report (only after Step 0 scope is agreed), Read `~/.claude/skills/gstack/plan-design-review/sections/review-sections.md` and execute it
+> **STOP.** Before running the 7 design passes, required outputs, and review report (only after Step 0 scope is agreed), Read `~/.gemini/skills/gstack/plan-design-review/sections/review-sections.md` and execute it
 > in full. Do not work from memory — that section is the source of truth for this step.
 
 ## Section self-check (before you finish)

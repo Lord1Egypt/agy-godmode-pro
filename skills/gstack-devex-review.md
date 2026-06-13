@@ -57,8 +57,8 @@ branch name wherever the instructions say "the base branch" or `<default>`.
 ```bash
 _ROOT=$(git rev-parse --show-toplevel 2>/dev/null)
 B=""
-[ -n "$_ROOT" ] && [ -x "$_ROOT/.claude/skills/gstack/browse/dist/browse" ] && B="$_ROOT/.claude/skills/gstack/browse/dist/browse"
-[ -z "$B" ] && B="$HOME/.claude/skills/gstack/browse/dist/browse"
+[ -n "$_ROOT" ] && [ -x "$_ROOT/.gemini/skills/gstack/browse/dist/browse" ] && B="$_ROOT/.gemini/skills/gstack/browse/dist/browse"
+[ -z "$B" ] && B="$HOME/.gemini/skills/gstack/browse/dist/browse"
 if [ -x "$B" ]; then
   echo "READY: $B"
 else
@@ -161,7 +161,7 @@ Internalize these; don't enumerate them.
 ## Hall of Fame Reference
 
 During each review pass, load the relevant section from:
-\`~/.claude/skills/gstack/plan-devex-review/dx-hall-of-fame.md\`
+\`~/.gemini/skills/gstack/plan-devex-review/dx-hall-of-fame.md\`
 
 Read ONLY the section for the current pass (e.g., "## Pass 1" for Getting Started).
 Do NOT read the entire file at once. This keeps context focused.
@@ -180,7 +180,7 @@ INFERRED from artifacts. Never guess. State your evidence source for every score
 
 ## Step 0: Target Discovery
 
-1. Read CLAUDE.md for project URL, docs URL, CLI install command
+1. Read GEMINI.md for project URL, docs URL, CLI install command
 2. Read README.md for getting started instructions
 3. Read package.json or equivalent for install commands
 
@@ -191,8 +191,8 @@ If URLs are missing, AskUserQuestion: "What's the URL for the docs/product I sho
 Check for prior /plan-devex-review scores:
 
 ```bash
-eval "$(~/.claude/skills/gstack/bin/gstack-slug 2>/dev/null)"
-~/.claude/skills/gstack/bin/gstack-review-read 2>/dev/null | grep plan-devex-review || echo "NO_PRIOR_PLAN_REVIEW"
+eval "$(~/.gemini/skills/gstack/bin/gstack-slug 2>/dev/null)"
+~/.gemini/skills/gstack/bin/gstack-review-read 2>/dev/null | grep plan-devex-review || echo "NO_PRIOR_PLAN_REVIEW"
 ```
 
 If prior scores exist, display them. These are your baseline for the boomerang comparison.
@@ -327,7 +327,7 @@ Flag any dimension where live score < plan score - 2 (reality fell short of plan
 **PLAN MODE EXCEPTION — ALWAYS RUN:**
 
 ```bash
-~/.claude/skills/gstack/bin/gstack-review-log '{"skill":"devex-review","timestamp":"TIMESTAMP","status":"STATUS","overall_score":N,"product_type":"TYPE","tthw_measured":"TTHW","dimensions_tested":N,"dimensions_inferred":N,"boomerang":"YES_OR_NO","commit":"COMMIT"}'
+~/.gemini/skills/gstack/bin/gstack-review-log '{"skill":"devex-review","timestamp":"TIMESTAMP","status":"STATUS","overall_score":N,"product_type":"TYPE","tthw_measured":"TTHW","dimensions_tested":N,"dimensions_inferred":N,"boomerang":"YES_OR_NO","commit":"COMMIT"}'
 ```
 
 ## Review Readiness Dashboard
@@ -335,7 +335,7 @@ Flag any dimension where live score < plan score - 2 (reality fell short of plan
 After completing the review, read the review log and config to display the dashboard.
 
 ```bash
-~/.claude/skills/gstack/bin/gstack-review-read
+~/.gemini/skills/gstack/bin/gstack-review-read
 ```
 
 Parse the output. Find the most recent entry for each skill (plan-ceo-review, plan-eng-review, review, plan-design-review, design-review-lite, adversarial-review, codex-review, codex-plan-review). Ignore entries with timestamps older than 7 days. For the Eng Review row, show whichever is more recent between `review` (diff-scoped pre-landing review) and `plan-eng-review` (plan-stage architecture review). Append "(DIFF)" or "(PLAN)" to the status to distinguish. For the Adversarial row, show whichever is more recent between `adversarial-review` (new auto-scaled) and `codex-review` (legacy). For Design Review, show whichever is more recent between `plan-design-review` (full visual audit) and `design-review-lite` (code-level check). Append "(FULL)" or "(LITE)" to the status to distinguish. For the Outside Voice row, show the most recent `codex-plan-review` entry — this captures outside voices from both /plan-ceo-review and /plan-eng-review.
@@ -366,8 +366,8 @@ Display:
 - **Eng Review (required by default):** The only review that gates shipping. Covers architecture, code quality, tests, performance. Can be disabled globally with \`gstack-config set skip_eng_review true\` (the "don't bother me" setting).
 - **CEO Review (optional):** Use your judgment. Recommend it for big product/business changes, new user-facing features, or scope decisions. Skip for bug fixes, refactors, infra, and cleanup.
 - **Design Review (optional):** Use your judgment. Recommend it for UI/UX changes. Skip for backend-only, infra, or prompt-only changes.
-- **Adversarial Review (automatic):** Always-on for every review. Every diff gets both Claude adversarial subagent and Codex adversarial challenge. Large diffs (200+ lines) additionally get Codex structured review with P1 gate. No configuration needed.
-- **Outside Voice (optional):** Independent plan review from a different AI model. Offered after all review sections complete in /plan-ceo-review and /plan-eng-review. Falls back to Claude subagent if Codex is unavailable. Never gates shipping.
+- **Adversarial Review (automatic):** Always-on for every review. Every diff gets both Gemini adversarial subagent and Codex adversarial challenge. Large diffs (200+ lines) additionally get Codex structured review with P1 gate. No configuration needed.
+- **Outside Voice (optional):** Independent plan review from a different AI model. Offered after all review sections complete in /plan-ceo-review and /plan-eng-review. Falls back to Gemini subagent if Codex is unavailable. Never gates shipping.
 
 **Verdict logic:**
 - **CLEARED**: Eng Review has >= 1 entry within 7 days from either \`review\` or \`plan-eng-review\` with status "clean" (or \`skip_eng_review\` is \`true\`)
@@ -433,7 +433,7 @@ Below the table, add these lines. **CODEX** and **CROSS-MODEL** are optional (om
 empty); **VERDICT** is always present:
 
 - **CODEX:** (only if codex-review ran) — one-line summary of codex fixes
-- **CROSS-MODEL:** (only if both Claude and Codex reviews exist) — overlap analysis
+- **CROSS-MODEL:** (only if both Gemini and Codex reviews exist) — overlap analysis
 - **VERDICT:** list reviews that are CLEAR (e.g., "CEO + ENG CLEARED — ready to implement").
   If Eng Review is not CLEAR and not skipped globally, append "eng review required".
 
@@ -483,7 +483,7 @@ If you discovered a non-obvious pattern, pitfall, or architectural insight durin
 this session, log it for future sessions:
 
 ```bash
-~/.claude/skills/gstack/bin/gstack-learnings-log '{"skill":"devex-review","type":"TYPE","key":"SHORT_KEY","insight":"DESCRIPTION","confidence":N,"source":"SOURCE","files":["path/to/relevant/file"]}'
+~/.gemini/skills/gstack/bin/gstack-learnings-log '{"skill":"devex-review","type":"TYPE","key":"SHORT_KEY","insight":"DESCRIPTION","confidence":N,"source":"SOURCE","files":["path/to/relevant/file"]}'
 ```
 
 **Types:** `pattern` (reusable approach), `pitfall` (what NOT to do), `preference`
@@ -491,7 +491,7 @@ this session, log it for future sessions:
 `operational` (project environment/CLI/workflow knowledge).
 
 **Sources:** `observed` (you found this in the code), `user-stated` (user told you),
-`inferred` (AI deduction), `cross-model` (both Claude and Codex agree).
+`inferred` (AI deduction), `cross-model` (both Gemini and Codex agree).
 
 **Confidence:** 1-10. Be honest. An observed pattern you verified in the code is 8-9.
 An inference you're not sure about is 4-5. A user preference they explicitly stated is 10.

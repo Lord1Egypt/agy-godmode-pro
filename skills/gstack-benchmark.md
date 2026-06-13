@@ -17,8 +17,8 @@ Voice triggers (speech-to-text aliases): "speed test", "check performance".
 ```bash
 _ROOT=$(git rev-parse --show-toplevel 2>/dev/null)
 B=""
-[ -n "$_ROOT" ] && [ -x "$_ROOT/.claude/skills/gstack/browse/dist/browse" ] && B="$_ROOT/.claude/skills/gstack/browse/dist/browse"
-[ -z "$B" ] && B="$HOME/.claude/skills/gstack/browse/dist/browse"
+[ -n "$_ROOT" ] && [ -x "$_ROOT/.gemini/skills/gstack/browse/dist/browse" ] && B="$_ROOT/.gemini/skills/gstack/browse/dist/browse"
+[ -z "$B" ] && B="$HOME/.gemini/skills/gstack/browse/dist/browse"
 if [ -x "$B" ]; then
   echo "READY: $B"
 else
@@ -70,7 +70,7 @@ When the user types `/benchmark`, run this skill.
 ### Phase 1: Setup
 
 ```bash
-eval "$(~/.claude/skills/gstack/bin/gstack-slug 2>/dev/null || echo "SLUG=unknown")"
+eval "$(~/.gemini/skills/gstack/bin/gstack-slug 2>/dev/null || echo "SLUG=unknown")"
 mkdir -p .gstack/benchmark-reports
 mkdir -p .gstack/benchmark-reports/baselines
 ```

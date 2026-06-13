@@ -61,8 +61,8 @@ After the user chooses, execute their choice (commit or stash), then continue wi
 ```bash
 _ROOT=$(git rev-parse --show-toplevel 2>/dev/null)
 B=""
-[ -n "$_ROOT" ] && [ -x "$_ROOT/.claude/skills/gstack/browse/dist/browse" ] && B="$_ROOT/.claude/skills/gstack/browse/dist/browse"
-[ -z "$B" ] && B="$HOME/.claude/skills/gstack/browse/dist/browse"
+[ -n "$_ROOT" ] && [ -x "$_ROOT/.gemini/skills/gstack/browse/dist/browse" ] && B="$_ROOT/.gemini/skills/gstack/browse/dist/browse"
+[ -z "$B" ] && B="$HOME/.gemini/skills/gstack/browse/dist/browse"
 if [ -x "$B" ]; then
   echo "READY: $B"
 else
@@ -222,9 +222,9 @@ Write TESTING.md with:
 - Test layers: Unit tests (what, where, when), Integration tests, Smoke tests, E2E tests
 - Conventions: file naming, assertion style, setup/teardown patterns
 
-### B7. Update CLAUDE.md
+### B7. Update GEMINI.md
 
-First check: If CLAUDE.md already has a `## Testing` section → skip. Don't duplicate.
+First check: If GEMINI.md already has a `## Testing` section → skip. Don't duplicate.
 
 Append a `## Testing` section:
 - Run command and test directory
@@ -243,7 +243,7 @@ Append a `## Testing` section:
 git status --porcelain
 ```
 
-Only commit if there are changes. Stage all bootstrap files (config, test directory, TESTING.md, CLAUDE.md, .github/workflows/test.yml if created):
+Only commit if there are changes. Stage all bootstrap files (config, test directory, TESTING.md, GEMINI.md, .github/workflows/test.yml if created):
 `git commit -m "chore: bootstrap test framework ({framework name})"`
 
 
@@ -254,16 +254,16 @@ Only commit if there are changes. Stage all bootstrap files (config, test direct
 ```bash
 _ROOT=$(git rev-parse --show-toplevel 2>/dev/null)
 D=""
-[ -n "$_ROOT" ] && [ -x "$_ROOT/.claude/skills/gstack/design/dist/design" ] && D="$_ROOT/.claude/skills/gstack/design/dist/design"
-[ -z "$D" ] && D="$HOME/.claude/skills/gstack/design/dist/design"
+[ -n "$_ROOT" ] && [ -x "$_ROOT/.gemini/skills/gstack/design/dist/design" ] && D="$_ROOT/.gemini/skills/gstack/design/dist/design"
+[ -z "$D" ] && D="$HOME/.gemini/skills/gstack/design/dist/design"
 if [ -x "$D" ]; then
   echo "DESIGN_READY: $D"
 else
   echo "DESIGN_NOT_AVAILABLE"
 fi
 B=""
-[ -n "$_ROOT" ] && [ -x "$_ROOT/.claude/skills/gstack/browse/dist/browse" ] && B="$_ROOT/.claude/skills/gstack/browse/dist/browse"
-[ -z "$B" ] && B="$HOME/.claude/skills/gstack/browse/dist/browse"
+[ -n "$_ROOT" ] && [ -x "$_ROOT/.gemini/skills/gstack/browse/dist/browse" ] && B="$_ROOT/.gemini/skills/gstack/browse/dist/browse"
+[ -z "$B" ] && B="$HOME/.gemini/skills/gstack/browse/dist/browse"
 if [ -x "$B" ]; then
   echo "BROWSE_READY: $B"
 else
@@ -299,7 +299,7 @@ If `DESIGN_NOT_AVAILABLE`: skip mockup generation — the fix loop works without
 **Create output directories:**
 
 ```bash
-eval "$(~/.claude/skills/gstack/bin/gstack-slug 2>/dev/null)"
+eval "$(~/.gemini/skills/gstack/bin/gstack-slug 2>/dev/null)"
 REPORT_DIR="$HOME/.gstack/projects/$SLUG/designs/design-audit-$(date +%Y%m%d)"
 mkdir -p "$REPORT_DIR/screenshots"
 echo "REPORT_DIR: $REPORT_DIR"
@@ -311,12 +311,12 @@ echo "REPORT_DIR: $REPORT_DIR"
 Search for relevant learnings from previous sessions:
 
 ```bash
-_CROSS_PROJ=$(~/.claude/skills/gstack/bin/gstack-config get cross_project_learnings 2>/dev/null || echo "unset")
+_CROSS_PROJ=$(~/.gemini/skills/gstack/bin/gstack-config get cross_project_learnings 2>/dev/null || echo "unset")
 echo "CROSS_PROJECT: $_CROSS_PROJ"
 if [ "$_CROSS_PROJ" = "true" ]; then
-  ~/.claude/skills/gstack/bin/gstack-learnings-search --limit 10 --cross-project 2>/dev/null || true
+  ~/.gemini/skills/gstack/bin/gstack-learnings-search --limit 10 --cross-project 2>/dev/null || true
 else
-  ~/.claude/skills/gstack/bin/gstack-learnings-search --limit 10 2>/dev/null || true
+  ~/.gemini/skills/gstack/bin/gstack-learnings-search --limit 10 2>/dev/null || true
 fi
 ```
 
@@ -331,8 +331,8 @@ Options:
 - A) Enable cross-project learnings (recommended)
 - B) Keep learnings project-scoped only
 
-If A: run `~/.claude/skills/gstack/bin/gstack-config set cross_project_learnings true`
-If B: run `~/.claude/skills/gstack/bin/gstack-config set cross_project_learnings false`
+If A: run `~/.gemini/skills/gstack/bin/gstack-config set cross_project_learnings true`
+If B: run `~/.gemini/skills/gstack/bin/gstack-config set cross_project_learnings false`
 
 Then re-run the search with the appropriate flag.
 
@@ -733,7 +733,7 @@ Compare screenshots and observations across pages for:
 
 **Project-scoped:**
 ```bash
-eval "$(~/.claude/skills/gstack/bin/gstack-slug 2>/dev/null)" && mkdir -p ~/.gstack/projects/$SLUG
+eval "$(~/.gemini/skills/gstack/bin/gstack-slug 2>/dev/null)" && mkdir -p ~/.gstack/projects/$SLUG
 ```
 Write to: `~/.gstack/projects/{slug}/{user}-{branch}-design-audit-{datetime}.md`
 
@@ -960,7 +960,7 @@ Use a 5-minute timeout (`timeout: 300000`). After the command completes, read st
 cat "$TMPERR_DESIGN" && rm -f "$TMPERR_DESIGN"
 ```
 
-2. **Claude design subagent** (via Agent tool):
+2. **Gemini design subagent** (via Agent tool):
 Dispatch a subagent with this prompt:
 "Review the frontend source code in this repo. You are an independent senior product designer doing a source-code design audit. Focus on CONSISTENCY PATTERNS across files rather than individual violations:
 - Are spacing values systematic across the codebase?
@@ -974,11 +974,11 @@ For each finding: what's wrong, severity (critical/high/medium), and the file:li
 - **Auth failure:** If stderr contains "auth", "login", "unauthorized", or "API key": "Codex authentication failed. Run `codex login` to authenticate."
 - **Timeout:** "Codex timed out after 5 minutes."
 - **Empty response:** "Codex returned no response."
-- On any Codex error: proceed with Claude subagent output only, tagged `[single-model]`.
-- If Claude subagent also fails: "Outside voices unavailable — continuing with primary review."
+- On any Codex error: proceed with Gemini subagent output only, tagged `[single-model]`.
+- If Gemini subagent also fails: "Outside voices unavailable — continuing with primary review."
 
 Present Codex output under a `CODEX SAYS (design source audit):` header.
-Present subagent output under a `CLAUDE SUBAGENT (design consistency):` header.
+Present subagent output under a `GEMINI SUBAGENT (design consistency):` header.
 
 **Synthesis — Litmus scorecard:**
 
@@ -987,7 +987,7 @@ Merge findings into the triage with `[codex]` / `[subagent]` / `[cross-model]` t
 
 **Log the result:**
 ```bash
-~/.claude/skills/gstack/bin/gstack-review-log '{"skill":"design-outside-voices","timestamp":"'"$(date -u +%Y-%m-%dT%H:%M:%SZ)"'","status":"STATUS","source":"SOURCE","commit":"'"$(git rev-parse --short HEAD)"'"}'
+~/.gemini/skills/gstack/bin/gstack-review-log '{"skill":"design-outside-voices","timestamp":"'"$(date -u +%Y-%m-%dT%H:%M:%SZ)"'","status":"STATUS","source":"SOURCE","commit":"'"$(git rev-parse --short HEAD)"'"}'
 ```
 Replace STATUS with "clean" or "issues_found", SOURCE with "codex+subagent", "codex-only", "subagent-only", or "unavailable".
 
@@ -1115,7 +1115,7 @@ Write the report to `$REPORT_DIR` (already set up in the setup phase):
 
 **Also write a summary to the project index:**
 ```bash
-eval "$(~/.claude/skills/gstack/bin/gstack-slug 2>/dev/null)" && mkdir -p ~/.gstack/projects/$SLUG
+eval "$(~/.gemini/skills/gstack/bin/gstack-slug 2>/dev/null)" && mkdir -p ~/.gstack/projects/$SLUG
 ```
 Write a one-line summary to `~/.gstack/projects/{slug}/{user}-{branch}-design-audit-{datetime}.md` with a pointer to the full report in `$REPORT_DIR`.
 
@@ -1150,7 +1150,7 @@ If you discovered a non-obvious pattern, pitfall, or architectural insight durin
 this session, log it for future sessions:
 
 ```bash
-~/.claude/skills/gstack/bin/gstack-learnings-log '{"skill":"design-review","type":"TYPE","key":"SHORT_KEY","insight":"DESCRIPTION","confidence":N,"source":"SOURCE","files":["path/to/relevant/file"]}'
+~/.gemini/skills/gstack/bin/gstack-learnings-log '{"skill":"design-review","type":"TYPE","key":"SHORT_KEY","insight":"DESCRIPTION","confidence":N,"source":"SOURCE","files":["path/to/relevant/file"]}'
 ```
 
 **Types:** `pattern` (reusable approach), `pitfall` (what NOT to do), `preference`
@@ -1158,7 +1158,7 @@ this session, log it for future sessions:
 `operational` (project environment/CLI/workflow knowledge).
 
 **Sources:** `observed` (you found this in the code), `user-stated` (user told you),
-`inferred` (AI deduction), `cross-model` (both Claude and Codex agree).
+`inferred` (AI deduction), `cross-model` (both Gemini and Codex agree).
 
 **Confidence:** 1-10. Be honest. An observed pattern you verified in the code is 8-9.
 An inference you're not sure about is 4-5. A user preference they explicitly stated is 10.

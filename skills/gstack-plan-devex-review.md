@@ -140,7 +140,7 @@ Internalize these; don't enumerate them.
 ## Hall of Fame Reference
 
 During each review pass, load the relevant section from:
-\`~/.claude/skills/gstack/plan-devex-review/dx-hall-of-fame.md\`
+\`~/.gemini/skills/gstack/plan-devex-review/dx-hall-of-fame.md\`
 
 Read ONLY the section for the current pass (e.g., "## Pass 1" for Getting Started).
 Do NOT read the entire file at once. This keeps context focused.
@@ -165,7 +165,7 @@ git diff $(git merge-base HEAD main 2>/dev/null || echo HEAD~10) --stat 2>/dev/n
 
 Then read:
 - The plan file (current plan or branch diff)
-- CLAUDE.md for project conventions
+- GEMINI.md for project conventions
 - README.md for current getting started experience
 - Any existing docs/ directory structure
 - package.json or equivalent (what developers will install)
@@ -180,7 +180,7 @@ Then read:
 **Design doc check:**
 ```bash
 setopt +o nomatch 2>/dev/null || true
-SLUG=$(~/.claude/skills/gstack/browse/bin/remote-slug 2>/dev/null || basename "$(git rev-parse --show-toplevel 2>/dev/null || pwd)")
+SLUG=$(~/.gemini/skills/gstack/browse/bin/remote-slug 2>/dev/null || basename "$(git rev-parse --show-toplevel 2>/dev/null || pwd)")
 BRANCH=$(git rev-parse --abbrev-ref HEAD 2>/dev/null | tr '/' '-' || echo 'no-branch')
 DESIGN=$(ls -t ~/.gstack/projects/$SLUG/*-$BRANCH-design-*.md 2>/dev/null | head -1)
 [ -z "$DESIGN" ] && DESIGN=$(ls -t ~/.gstack/projects/$SLUG/*-design-*.md 2>/dev/null | head -1)
@@ -217,7 +217,7 @@ If they choose A:
 Say: "Running /office-hours inline. Once the design doc is ready, I'll pick up
 the review right where we left off."
 
-Read the `/office-hours` skill file at `~/.claude/skills/gstack/office-hours/SKILL.md` using the Read tool.
+Read the `/office-hours` skill file at `~/.gemini/skills/gstack/office-hours/SKILL.md` using the Read tool.
 
 **If unreadable:** Skip with "Could not load /office-hours — skipping." and continue.
 
@@ -240,7 +240,7 @@ Execute every other section at full depth. When the loaded skill's instructions 
 After /office-hours completes, re-run the design doc check:
 ```bash
 setopt +o nomatch 2>/dev/null || true  # zsh compat
-SLUG=$(~/.claude/skills/gstack/browse/bin/remote-slug 2>/dev/null || basename "$(git rev-parse --show-toplevel 2>/dev/null || pwd)")
+SLUG=$(~/.gemini/skills/gstack/browse/bin/remote-slug 2>/dev/null || basename "$(git rev-parse --show-toplevel 2>/dev/null || pwd)")
 BRANCH=$(git rev-parse --abbrev-ref HEAD 2>/dev/null | tr '/' '-' || echo 'no-branch')
 DESIGN=$(ls -t ~/.gstack/projects/$SLUG/*-$BRANCH-design-*.md 2>/dev/null | head -1)
 [ -z "$DESIGN" ] && DESIGN=$(ls -t ~/.gstack/projects/$SLUG/*-design-*.md 2>/dev/null | head -1)
@@ -259,7 +259,7 @@ Before proceeding, read the plan and infer the developer product type from conte
 - Mentions npm install, import, require, library, package → **Library/SDK**
 - Mentions deploy, hosting, infrastructure, provisioning → **Platform**
 - Mentions docs, guides, tutorials, examples → **Documentation**
-- Mentions SKILL.md, skill template, Claude Code, AI agent, MCP → **Claude Code Skill**
+- Mentions SKILL.md, skill template, Gemini, agy, AI agent, MCP → **Gemini/agy Skill**
 
 If NONE of the above: the plan has no developer-facing surface. Tell the user:
 "This plan doesn't appear to have developer-facing surfaces. /plan-devex-review
@@ -282,17 +282,17 @@ present in the loaded context; ground recommendations in what the brain
 already knows about the user, the product, the goals, and recent decisions.
 
 ```bash
-eval "$(~/.claude/skills/gstack/bin/gstack-slug 2>/dev/null)" 2>/dev/null || true
+eval "$(~/.gemini/skills/gstack/bin/gstack-slug 2>/dev/null)" 2>/dev/null || true
 {
   printf '## Brain Context\n\n'
   printf '\n### %s\n\n' "product"
-  ~/.claude/skills/gstack/bin/gstack-brain-cache get product --project "$SLUG" 2>/dev/null || printf '_(no product digest available yet)_\n'
+  ~/.gemini/skills/gstack/bin/gstack-brain-cache get product --project "$SLUG" 2>/dev/null || printf '_(no product digest available yet)_\n'
   printf '\n### %s\n\n' "developer-persona"
-  ~/.claude/skills/gstack/bin/gstack-brain-cache get developer-persona --project "$SLUG" 2>/dev/null || printf '_(no developer-persona digest available yet)_\n'
+  ~/.gemini/skills/gstack/bin/gstack-brain-cache get developer-persona --project "$SLUG" 2>/dev/null || printf '_(no developer-persona digest available yet)_\n'
   printf '\n### %s\n\n' "recent-decisions"
-  ~/.claude/skills/gstack/bin/gstack-brain-cache get recent-decisions --project "$SLUG" 2>/dev/null || printf '_(no recent-decisions digest available yet)_\n'
+  ~/.gemini/skills/gstack/bin/gstack-brain-cache get recent-decisions --project "$SLUG" 2>/dev/null || printf '_(no recent-decisions digest available yet)_\n'
   printf '\n### %s\n\n' "competitive-intel"
-  ~/.claude/skills/gstack/bin/gstack-brain-cache get competitive-intel --project "$SLUG" 2>/dev/null || printf '_(no competitive-intel digest available yet)_\n'
+  ~/.gemini/skills/gstack/bin/gstack-brain-cache get competitive-intel --project "$SLUG" 2>/dev/null || printf '_(no competitive-intel digest available yet)_\n'
 } > /tmp/.gstack-brain-context-$$.md 2>/dev/null
 [ -s /tmp/.gstack-brain-context-$$.md ] && cat /tmp/.gstack-brain-context-$$.md
 rm -f /tmp/.gstack-brain-context-$$.md 2>/dev/null || true
@@ -442,7 +442,7 @@ AskUserQuestion:
 Every great developer tool has a magical moment: the instant a developer goes from
 "is this worth my time?" to "oh wow, this is real."
 
-Load the "## Pass 1" section from `~/.claude/skills/gstack/plan-devex-review/dx-hall-of-fame.md`
+Load the "## Pass 1" section from `~/.gemini/skills/gstack/plan-devex-review/dx-hall-of-fame.md`
 for gold standard examples.
 
 Identify the most likely magical moment for this product type, then present delivery
@@ -627,7 +627,7 @@ Pattern:
 - **DX TRIAGE:** Only flag gaps that would block adoption (score below 5). Skip gaps
   that are nice-to-have (score 5-7).
 
-> **STOP.** Before running the 8 DX passes, required outputs, and review report (only after Step 0 investigation is complete), Read `~/.claude/skills/gstack/plan-devex-review/sections/review-sections.md` and execute it
+> **STOP.** Before running the 8 DX passes, required outputs, and review report (only after Step 0 investigation is complete), Read `~/.gemini/skills/gstack/plan-devex-review/sections/review-sections.md` and execute it
 > in full. Do not work from memory — that section is the source of truth for this step.
 
 ## Section self-check (before you finish)

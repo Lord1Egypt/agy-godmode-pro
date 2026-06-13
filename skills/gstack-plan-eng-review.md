@@ -60,13 +60,13 @@ present in the loaded context; ground recommendations in what the brain
 already knows about the user, the product, the goals, and recent decisions.
 
 ```bash
-eval "$(~/.claude/skills/gstack/bin/gstack-slug 2>/dev/null)" 2>/dev/null || true
+eval "$(~/.gemini/skills/gstack/bin/gstack-slug 2>/dev/null)" 2>/dev/null || true
 {
   printf '## Brain Context\n\n'
   printf '\n### %s\n\n' "product"
-  ~/.claude/skills/gstack/bin/gstack-brain-cache get product --project "$SLUG" 2>/dev/null || printf '_(no product digest available yet)_\n'
+  ~/.gemini/skills/gstack/bin/gstack-brain-cache get product --project "$SLUG" 2>/dev/null || printf '_(no product digest available yet)_\n'
   printf '\n### %s\n\n' "recent-decisions"
-  ~/.claude/skills/gstack/bin/gstack-brain-cache get recent-decisions --project "$SLUG" 2>/dev/null || printf '_(no recent-decisions digest available yet)_\n'
+  ~/.gemini/skills/gstack/bin/gstack-brain-cache get recent-decisions --project "$SLUG" 2>/dev/null || printf '_(no recent-decisions digest available yet)_\n'
 } > /tmp/.gstack-brain-context-$$.md 2>/dev/null
 [ -s /tmp/.gstack-brain-context-$$.md ] && cat /tmp/.gstack-brain-context-$$.md
 rm -f /tmp/.gstack-brain-context-$$.md 2>/dev/null || true
@@ -98,7 +98,7 @@ sections. Read a section in full before doing its step; do not work from memory.
 ### Design Doc Check
 ```bash
 setopt +o nomatch 2>/dev/null || true  # zsh compat
-SLUG=$(~/.claude/skills/gstack/browse/bin/remote-slug 2>/dev/null || basename "$(git rev-parse --show-toplevel 2>/dev/null || pwd)")
+SLUG=$(~/.gemini/skills/gstack/browse/bin/remote-slug 2>/dev/null || basename "$(git rev-parse --show-toplevel 2>/dev/null || pwd)")
 BRANCH=$(git rev-parse --abbrev-ref HEAD 2>/dev/null | tr '/' '-' || echo 'no-branch')
 DESIGN=$(ls -t ~/.gstack/projects/$SLUG/*-$BRANCH-design-*.md 2>/dev/null | head -1)
 [ -z "$DESIGN" ] && DESIGN=$(ls -t ~/.gstack/projects/$SLUG/*-design-*.md 2>/dev/null | head -1)
@@ -130,7 +130,7 @@ If they choose A:
 Say: "Running /office-hours inline. Once the design doc is ready, I'll pick up
 the review right where we left off."
 
-Read the `/office-hours` skill file at `~/.claude/skills/gstack/office-hours/SKILL.md` using the Read tool.
+Read the `/office-hours` skill file at `~/.gemini/skills/gstack/office-hours/SKILL.md` using the Read tool.
 
 **If unreadable:** Skip with "Could not load /office-hours — skipping." and continue.
 
@@ -153,7 +153,7 @@ Execute every other section at full depth. When the loaded skill's instructions 
 After /office-hours completes, re-run the design doc check:
 ```bash
 setopt +o nomatch 2>/dev/null || true  # zsh compat
-SLUG=$(~/.claude/skills/gstack/browse/bin/remote-slug 2>/dev/null || basename "$(git rev-parse --show-toplevel 2>/dev/null || pwd)")
+SLUG=$(~/.gemini/skills/gstack/browse/bin/remote-slug 2>/dev/null || basename "$(git rev-parse --show-toplevel 2>/dev/null || pwd)")
 BRANCH=$(git rev-parse --abbrev-ref HEAD 2>/dev/null | tr '/' '-' || echo 'no-branch')
 DESIGN=$(ls -t ~/.gstack/projects/$SLUG/*-$BRANCH-design-*.md 2>/dev/null | head -1)
 [ -z "$DESIGN" ] && DESIGN=$(ls -t ~/.gstack/projects/$SLUG/*-design-*.md 2>/dev/null | head -1)
@@ -196,7 +196,7 @@ Always work through the full interactive review: one section at a time (Architec
 
 **Critical: Once the user accepts or rejects a scope reduction recommendation, commit fully.** Do not re-argue for smaller scope during later review sections. Do not silently reduce scope or skip planned components.
 
-> **STOP.** Before running the 4-section review, outside voice, required outputs, and review report (only after Step 0 scope is agreed), Read `~/.claude/skills/gstack/plan-eng-review/sections/review-sections.md` and execute it
+> **STOP.** Before running the 4-section review, outside voice, required outputs, and review report (only after Step 0 scope is agreed), Read `~/.gemini/skills/gstack/plan-eng-review/sections/review-sections.md` and execute it
 > in full. Do not work from memory — that section is the source of truth for this step.
 
 ## Section self-check (before you finish)

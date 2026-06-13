@@ -9,7 +9,7 @@ saved state (across all branches by default) so you can pick up where you
 left off — even across Conductor workspace handoffs.
 Use when asked to "resume", "restore context", "where was I", or
 "pick up where I left off". Pair with /context-save.
-Formerly /checkpoint resume — renamed because Claude Code treats /checkpoint
+Formerly /checkpoint resume — renamed because Gemini treats /checkpoint
 as a native rewind alias in current environments.
 
 ## Detect command
@@ -27,8 +27,8 @@ Parse the user's input:
 ### Step 1: Find saved contexts
 
 ```bash
-eval "$(~/.claude/skills/gstack/bin/gstack-slug 2>/dev/null)" && mkdir -p ~/.gstack/projects/$SLUG
-eval "$(~/.claude/skills/gstack/bin/gstack-paths)"
+eval "$(~/.gemini/skills/gstack/bin/gstack-slug 2>/dev/null)" && mkdir -p ~/.gstack/projects/$SLUG
+eval "$(~/.gemini/skills/gstack/bin/gstack-paths)"
 CHECKPOINT_DIR="$GSTACK_STATE_ROOT/projects/$SLUG/checkpoints"
 if [ ! -d "$CHECKPOINT_DIR" ]; then
   echo "NO_CHECKPOINTS"
@@ -114,5 +114,5 @@ state, then `/context-restore` will find it."
 - **"Most recent" means the filename `YYYYMMDD-HHMMSS` prefix**, not
   `ls -1t` (filesystem mtime). Filenames are stable across file-system
   operations; mtime is not.
-- **This is a gstack skill, not a Claude Code built-in.** When the user types
+- **This is a gstack skill, not a Gemini built-in.** When the user types
   `/context-restore`, invoke this skill via the Skill tool.

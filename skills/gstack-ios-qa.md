@@ -173,7 +173,7 @@ the app:
 agent MUST drive every action through visible UI (`/tap`, `/swipe`, `/type`)
 and NEVER use `POST /state/*` writes to skip steps. Viewers see the agent
 type every key, tap every button. The on-device DebugOverlay attribution
-chip shows "Driven by Claude Code (demo)" or the remote agent identity.
+chip shows "Driven by Gemini (demo)" or the remote agent identity.
 
 In demo mode, the screencap rate is bumped to 4fps so the recording feels
 live.

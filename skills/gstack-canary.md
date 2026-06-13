@@ -15,8 +15,8 @@ on anomalies. Use when: "monitor deploy", "canary", "post-deploy check",
 ```bash
 _ROOT=$(git rev-parse --show-toplevel 2>/dev/null)
 B=""
-[ -n "$_ROOT" ] && [ -x "$_ROOT/.claude/skills/gstack/browse/dist/browse" ] && B="$_ROOT/.claude/skills/gstack/browse/dist/browse"
-[ -z "$B" ] && B="$HOME/.claude/skills/gstack/browse/dist/browse"
+[ -n "$_ROOT" ] && [ -x "$_ROOT/.gemini/skills/gstack/browse/dist/browse" ] && B="$_ROOT/.gemini/skills/gstack/browse/dist/browse"
+[ -z "$B" ] && B="$HOME/.gemini/skills/gstack/browse/dist/browse"
 if [ -x "$B" ]; then
   echo "READY: $B"
 else
@@ -105,7 +105,7 @@ When the user types `/canary`, run this skill.
 ### Phase 1: Setup
 
 ```bash
-eval "$(~/.claude/skills/gstack/bin/gstack-slug 2>/dev/null || echo "SLUG=unknown")"
+eval "$(~/.gemini/skills/gstack/bin/gstack-slug 2>/dev/null || echo "SLUG=unknown")"
 mkdir -p .gstack/canary-reports
 mkdir -p .gstack/canary-reports/baselines
 mkdir -p .gstack/canary-reports/screenshots
@@ -255,7 +255,7 @@ Save report to `.gstack/canary-reports/{date}-canary.md` and `.gstack/canary-rep
 Log the result for the review dashboard:
 
 ```bash
-eval "$(~/.claude/skills/gstack/bin/gstack-slug 2>/dev/null)"
+eval "$(~/.gemini/skills/gstack/bin/gstack-slug 2>/dev/null)"
 mkdir -p ~/.gstack/projects/$SLUG
 ```
 

@@ -16,7 +16,7 @@ When the user types `/health`, run this skill.
 
 ## Step 1: Detect Health Stack
 
-Read CLAUDE.md and look for a `## Health Stack` section. If found, parse the tools
+Read GEMINI.md and look for a `## Health Stack` section. If found, parse the tools
 listed there and skip auto-detection.
 
 If no `## Health Stack` section exists, auto-detect available tools:
@@ -64,12 +64,12 @@ After auto-detection, present the detected tools via AskUserQuestion:
 - Dead code: `knip`
 - Shell lint: `shellcheck *.sh`
 
-A) Looks right -- persist to CLAUDE.md and continue
+A) Looks right -- persist to GEMINI.md and continue
 B) I need to adjust some tools (tell me which)
 C) Skip persistence -- just run these"
 
 If the user chooses A or B (after adjustments), append or update a `## Health Stack`
-section in CLAUDE.md:
+section in GEMINI.md:
 
 ```markdown
 ## Health Stack
@@ -199,7 +199,7 @@ DETAILS: Lint (3 warnings)
 ## Step 5: Persist to Health History
 
 ```bash
-eval "$(~/.claude/skills/gstack/bin/gstack-slug 2>/dev/null)" && mkdir -p ~/.gstack/projects/$SLUG
+eval "$(~/.gemini/skills/gstack/bin/gstack-slug 2>/dev/null)" && mkdir -p ~/.gstack/projects/$SLUG
 ```
 
 Append one JSONL line to `~/.gstack/projects/$SLUG/health-history.jsonl`:
@@ -226,7 +226,7 @@ Read the last 10 entries from `~/.gstack/projects/$SLUG/health-history.jsonl` (i
 file exists and has prior entries).
 
 ```bash
-eval "$(~/.claude/skills/gstack/bin/gstack-slug 2>/dev/null)" && mkdir -p ~/.gstack/projects/$SLUG
+eval "$(~/.gemini/skills/gstack/bin/gstack-slug 2>/dev/null)" && mkdir -p ~/.gstack/projects/$SLUG
 tail -10 ~/.gstack/projects/$SLUG/health-history.jsonl 2>/dev/null || echo "NO_HISTORY"
 ```
 
@@ -281,7 +281,7 @@ Rank by `weight * (10 - score)` descending. Only show categories below 10.
 
 1. **Wrap, don't replace.** Run the project's own tools. Never substitute your own analysis for what the tool reports.
 2. **Read-only.** Never fix issues. Present the dashboard and let the user decide.
-3. **Respect CLAUDE.md.** If `## Health Stack` is configured, use those exact commands. Do not second-guess.
+3. **Respect GEMINI.md.** If `## Health Stack` is configured, use those exact commands. Do not second-guess.
 4. **Skipped is not failed.** If a tool isn't available, skip it gracefully and redistribute weight. Do not penalize the score.
 5. **Show raw output for failures.** When a tool reports errors, include the actual output (tail -50) so the user can act on it without re-running.
 6. **Trends require history.** On first run, say "First health check -- no trend data yet. Run /health again after making changes to track progress."

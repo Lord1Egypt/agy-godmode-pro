@@ -27,8 +27,8 @@ Parse the user's input to determine which command to run:
 Show the most recent 20 learnings, grouped by type.
 
 ```bash
-eval "$(~/.claude/skills/gstack/bin/gstack-slug 2>/dev/null)"
-~/.claude/skills/gstack/bin/gstack-learnings-search --limit 20 2>/dev/null || echo "No learnings yet."
+eval "$(~/.gemini/skills/gstack/bin/gstack-slug 2>/dev/null)"
+~/.gemini/skills/gstack/bin/gstack-learnings-search --limit 20 2>/dev/null || echo "No learnings yet."
 ```
 
 Present the output in a readable format. If no learnings exist, tell the user:
@@ -39,8 +39,8 @@ gstack will automatically capture patterns, pitfalls, and insights it discovers.
 ## Search
 
 ```bash
-eval "$(~/.claude/skills/gstack/bin/gstack-slug 2>/dev/null)"
-~/.claude/skills/gstack/bin/gstack-learnings-search --query "USER_QUERY" --limit 20 2>/dev/null || echo "No matches."
+eval "$(~/.gemini/skills/gstack/bin/gstack-slug 2>/dev/null)"
+~/.gemini/skills/gstack/bin/gstack-learnings-search --query "USER_QUERY" --limit 20 2>/dev/null || echo "No matches."
 ```
 
 Replace USER_QUERY with the user's search terms. Present results clearly.
@@ -51,8 +51,8 @@ Replace USER_QUERY with the user's search terms. Present results clearly.
 Check learnings for staleness and contradictions.
 
 ```bash
-eval "$(~/.claude/skills/gstack/bin/gstack-slug 2>/dev/null)"
-~/.claude/skills/gstack/bin/gstack-learnings-search --limit 100 2>/dev/null
+eval "$(~/.gemini/skills/gstack/bin/gstack-slug 2>/dev/null)"
+~/.gemini/skills/gstack/bin/gstack-learnings-search --limit 100 2>/dev/null
 ```
 
 For each learning in the output:
@@ -77,11 +77,11 @@ latest entry wins).
 
 ## Export
 
-Export learnings as markdown suitable for adding to CLAUDE.md or project documentation.
+Export learnings as markdown suitable for adding to GEMINI.md or project documentation.
 
 ```bash
-eval "$(~/.claude/skills/gstack/bin/gstack-slug 2>/dev/null)"
-~/.claude/skills/gstack/bin/gstack-learnings-search --limit 50 2>/dev/null
+eval "$(~/.gemini/skills/gstack/bin/gstack-slug 2>/dev/null)"
+~/.gemini/skills/gstack/bin/gstack-learnings-search --limit 50 2>/dev/null
 ```
 
 Format the output as a markdown section:
@@ -102,7 +102,7 @@ Format the output as a markdown section:
 - **[key]**: [insight] (confidence: N/10)
 ```
 
-Present the formatted output to the user. Ask if they want to append it to CLAUDE.md
+Present the formatted output to the user. Ask if they want to append it to GEMINI.md
 or save it as a separate file.
 
 
@@ -111,8 +111,8 @@ or save it as a separate file.
 Show summary statistics about the project's learnings.
 
 ```bash
-eval "$(~/.claude/skills/gstack/bin/gstack-slug 2>/dev/null)"
-eval "$(~/.claude/skills/gstack/bin/gstack-paths)"
+eval "$(~/.gemini/skills/gstack/bin/gstack-slug 2>/dev/null)"
+eval "$(~/.gemini/skills/gstack/bin/gstack-paths)"
 LEARN_FILE="$GSTACK_STATE_ROOT/projects/$SLUG/learnings.jsonl"
 if [ -f "$LEARN_FILE" ]; then
   TOTAL=$(wc -l < "$LEARN_FILE" | tr -d ' ')
@@ -163,5 +163,5 @@ The user wants to manually add a learning. Use AskUserQuestion to gather:
 Then log it:
 
 ```bash
-~/.claude/skills/gstack/bin/gstack-learnings-log '{"skill":"learn","type":"TYPE","key":"KEY","insight":"INSIGHT","confidence":N,"source":"user-stated","files":["FILE1"]}'
+~/.gemini/skills/gstack/bin/gstack-learnings-log '{"skill":"learn","type":"TYPE","key":"KEY","insight":"INSIGHT","confidence":N,"source":"user-stated","files":["FILE1"]}'
 ```

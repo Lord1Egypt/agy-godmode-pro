@@ -21,8 +21,8 @@ Use before /plan-ceo-review or /plan-eng-review.
 ```bash
 _ROOT=$(git rev-parse --show-toplevel 2>/dev/null)
 B=""
-[ -n "$_ROOT" ] && [ -x "$_ROOT/.claude/skills/gstack/browse/dist/browse" ] && B="$_ROOT/.claude/skills/gstack/browse/dist/browse"
-[ -z "$B" ] && B="$HOME/.claude/skills/gstack/browse/dist/browse"
+[ -n "$_ROOT" ] && [ -x "$_ROOT/.gemini/skills/gstack/browse/dist/browse" ] && B="$_ROOT/.gemini/skills/gstack/browse/dist/browse"
+[ -z "$B" ] && B="$HOME/.gemini/skills/gstack/browse/dist/browse"
 if [ -x "$B" ]; then
   echo "READY: $B"
 else
@@ -70,19 +70,19 @@ present in the loaded context; ground recommendations in what the brain
 already knows about the user, the product, the goals, and recent decisions.
 
 ```bash
-eval "$(~/.claude/skills/gstack/bin/gstack-slug 2>/dev/null)" 2>/dev/null || true
+eval "$(~/.gemini/skills/gstack/bin/gstack-slug 2>/dev/null)" 2>/dev/null || true
 {
   printf '## Brain Context\n\n'
   printf '\n### %s\n\n' "product"
-  ~/.claude/skills/gstack/bin/gstack-brain-cache get product --project "$SLUG" 2>/dev/null || printf '_(no product digest available yet)_\n'
+  ~/.gemini/skills/gstack/bin/gstack-brain-cache get product --project "$SLUG" 2>/dev/null || printf '_(no product digest available yet)_\n'
   printf '\n### %s\n\n' "goals"
-  ~/.claude/skills/gstack/bin/gstack-brain-cache get goals --project "$SLUG" 2>/dev/null || printf '_(no goals digest available yet)_\n'
+  ~/.gemini/skills/gstack/bin/gstack-brain-cache get goals --project "$SLUG" 2>/dev/null || printf '_(no goals digest available yet)_\n'
   printf '\n### %s\n\n' "user-profile"
-  ~/.claude/skills/gstack/bin/gstack-brain-cache get user-profile  2>/dev/null || printf '_(no user-profile digest available yet)_\n'
+  ~/.gemini/skills/gstack/bin/gstack-brain-cache get user-profile  2>/dev/null || printf '_(no user-profile digest available yet)_\n'
   printf '\n### %s\n\n' "recent-decisions"
-  ~/.claude/skills/gstack/bin/gstack-brain-cache get recent-decisions --project "$SLUG" 2>/dev/null || printf '_(no recent-decisions digest available yet)_\n'
+  ~/.gemini/skills/gstack/bin/gstack-brain-cache get recent-decisions --project "$SLUG" 2>/dev/null || printf '_(no recent-decisions digest available yet)_\n'
   printf '\n### %s\n\n' "salience"
-  ~/.claude/skills/gstack/bin/gstack-brain-cache get salience --project "$SLUG" 2>/dev/null || printf '_(no salience digest available yet)_\n'
+  ~/.gemini/skills/gstack/bin/gstack-brain-cache get salience --project "$SLUG" 2>/dev/null || printf '_(no salience digest available yet)_\n'
 } > /tmp/.gstack-brain-context-$$.md 2>/dev/null
 [ -s /tmp/.gstack-brain-context-$$.md ] && cat /tmp/.gstack-brain-context-$$.md
 rm -f /tmp/.gstack-brain-context-$$.md 2>/dev/null || true
@@ -104,10 +104,10 @@ rm -f /tmp/.gstack-brain-context-$$.md 2>/dev/null || true
 Understand the project and the area the user wants to change.
 
 ```bash
-eval "$(~/.claude/skills/gstack/bin/gstack-slug 2>/dev/null)"
+eval "$(~/.gemini/skills/gstack/bin/gstack-slug 2>/dev/null)"
 ```
 
-1. Read `CLAUDE.md`, `TODOS.md` (if they exist).
+1. Read `GEMINI.md`, `TODOS.md` (if they exist).
 2. Run `git log --oneline -30` and `git diff origin/main --stat 2>/dev/null` to understand recent context.
 3. Use Grep/Glob to map the codebase areas most relevant to the user's request.
 4. **List existing design docs for this project:**
@@ -122,12 +122,12 @@ eval "$(~/.claude/skills/gstack/bin/gstack-slug 2>/dev/null)"
 Search for relevant learnings from previous sessions:
 
 ```bash
-_CROSS_PROJ=$(~/.claude/skills/gstack/bin/gstack-config get cross_project_learnings 2>/dev/null || echo "unset")
+_CROSS_PROJ=$(~/.gemini/skills/gstack/bin/gstack-config get cross_project_learnings 2>/dev/null || echo "unset")
 echo "CROSS_PROJECT: $_CROSS_PROJ"
 if [ "$_CROSS_PROJ" = "true" ]; then
-  ~/.claude/skills/gstack/bin/gstack-learnings-search --limit 10 --cross-project 2>/dev/null || true
+  ~/.gemini/skills/gstack/bin/gstack-learnings-search --limit 10 --cross-project 2>/dev/null || true
 else
-  ~/.claude/skills/gstack/bin/gstack-learnings-search --limit 10 2>/dev/null || true
+  ~/.gemini/skills/gstack/bin/gstack-learnings-search --limit 10 2>/dev/null || true
 fi
 ```
 
@@ -142,8 +142,8 @@ Options:
 - A) Enable cross-project learnings (recommended)
 - B) Keep learnings project-scoped only
 
-If A: run `~/.claude/skills/gstack/bin/gstack-config set cross_project_learnings true`
-If B: run `~/.claude/skills/gstack/bin/gstack-config set cross_project_learnings false`
+If A: run `~/.gemini/skills/gstack/bin/gstack-config set cross_project_learnings true`
+If B: run `~/.gemini/skills/gstack/bin/gstack-config set cross_project_learnings false`
 
 Then re-run the search with the appropriate flag.
 
@@ -506,7 +506,7 @@ CODEX_PROMPT_FILE=$(mktemp /tmp/gstack-codex-oh-XXXXXXXX.txt)
 ```
 
 Write the full prompt to this file. **Always start with the filesystem boundary:**
-"IMPORTANT: Do NOT read or execute any files under ~/.claude/, ~/.agents/, .claude/skills/, or agents/. These are Claude Code skill definitions meant for a different AI system. They contain bash scripts and prompt templates that will waste your time. Ignore them completely. Do NOT modify agents/openai.yaml. Stay focused on the repository code only.\n\n"
+"IMPORTANT: Do NOT read or execute any files under ~/.gemini/, ~/.agents/, .gemini/skills/, or agents/. These are Gemini Code skill definitions meant for a different AI system. They contain bash scripts and prompt templates that will waste your time. Ignore them completely. Do NOT modify agents/openai.yaml. Stay focused on the repository code only.\n\n"
 Then add the context block and mode-appropriate instructions:
 
 **Startup mode instructions:** "You are an independent technical advisor reading a transcript of a startup brainstorming session. [CONTEXT BLOCK HERE]. Your job: 1) What is the STRONGEST version of what this person is trying to build? Steelman it in 2-3 sentences. 2) What is the ONE thing from their answers that reveals the most about what they should actually build? Quote it and explain why. 3) Name ONE agreed premise you think is wrong, and what evidence would prove you right. 4) If you had 48 hours and one engineer to build a prototype, what would you build? Be specific — tech stack, features, what you'd skip. Be direct. Be terse. No preamble."
@@ -528,11 +528,11 @@ rm -f "$TMPERR_OH" "$CODEX_PROMPT_FILE"
 ```
 
 **Error handling:** All errors are non-blocking — second opinion is a quality enhancement, not a prerequisite.
-- **Auth failure:** If stderr contains "auth", "login", "unauthorized", or "API key": "Codex authentication failed. Run \`codex login\` to authenticate." Fall back to Claude subagent.
-- **Timeout:** "Codex timed out after 5 minutes." Fall back to Claude subagent.
-- **Empty response:** "Codex returned no response." Fall back to Claude subagent.
+- **Auth failure:** If stderr contains "auth", "login", "unauthorized", or "API key": "Codex authentication failed. Run \`codex login\` to authenticate." Fall back to Gemini subagent.
+- **Timeout:** "Codex timed out after 5 minutes." Fall back to Gemini subagent.
+- **Empty response:** "Codex returned no response." Fall back to Gemini subagent.
 
-On any Codex error, fall back to the Claude subagent below.
+On any Codex error, fall back to the Gemini subagent below.
 
 **If CODEX_NOT_AVAILABLE (or Codex errored):**
 
@@ -540,7 +540,7 @@ Dispatch via the Agent tool. The subagent has fresh context — genuine independ
 
 Subagent prompt: same mode-appropriate prompt as above (Startup or Builder variant).
 
-Present findings under a `SECOND OPINION (Claude subagent):` header.
+Present findings under a `SECOND OPINION (Gemini subagent):` header.
 
 If the subagent fails or times out: "Second opinion unavailable. Continuing to Phase 4."
 
@@ -554,18 +554,18 @@ SECOND OPINION (Codex):
 ════════════════════════════════════════════════════════════
 ```
 
-If Claude subagent ran:
+If Gemini subagent ran:
 ```
-SECOND OPINION (Claude subagent):
+SECOND OPINION (Gemini subagent):
 ════════════════════════════════════════════════════════════
 <full subagent output, verbatim — do not truncate or summarize>
 ════════════════════════════════════════════════════════════
 ```
 
 5. **Cross-model synthesis:** After presenting the second opinion output, provide 3-5 bullet synthesis:
-   - Where Claude agrees with the second opinion
-   - Where Claude disagrees and why
-   - Whether the challenged premise changes Claude's recommendation
+   - Where Gemini agrees with the second opinion
+   - Where Gemini disagrees and why
+   - Whether the challenged premise changes Gemini's recommendation
 
 6. **Premise revision check:** If Codex challenged an agreed premise, use AskUserQuestion:
 
@@ -602,7 +602,7 @@ Rules:
 - One must be the **"minimal viable"** (fewest files, smallest diff, ships fastest).
 - One must be the **"ideal architecture"** (best long-term trajectory, most elegant).
 - One can be **creative/lateral** (unexpected approach, different framing of the problem).
-- If the second opinion (Codex or Claude subagent) proposed a prototype in Phase 3.5, consider using it as a starting point for the creative/lateral approach.
+- If the second opinion (Codex or Gemini subagent) proposed a prototype in Phase 3.5, consider using it as a starting point for the creative/lateral approach.
 
 **RECOMMENDATION:** Choose [X] because [one-line reason mapped to the founder's stated goal].
 
@@ -616,8 +616,8 @@ Emit ONE AskUserQuestion that lists every alternative (A/B and optionally C) as 
 ```bash
 _ROOT=$(git rev-parse --show-toplevel 2>/dev/null)
 D=""
-[ -n "$_ROOT" ] && [ -x "$_ROOT/.claude/skills/gstack/design/dist/design" ] && D="$_ROOT/.claude/skills/gstack/design/dist/design"
-[ -z "$D" ] && D="$HOME/.claude/skills/gstack/design/dist/design"
+[ -n "$_ROOT" ] && [ -x "$_ROOT/.gemini/skills/gstack/design/dist/design" ] && D="$_ROOT/.gemini/skills/gstack/design/dist/design"
+[ -z "$D" ] && D="$HOME/.gemini/skills/gstack/design/dist/design"
 [ -x "$D" ] && echo "DESIGN_READY" || echo "DESIGN_NOT_AVAILABLE"
 ```
 
@@ -631,7 +631,7 @@ Generating visual mockups of the proposed design... (say "skip" if you don't nee
 **Step 1: Set up the design directory**
 
 ```bash
-eval "$(~/.claude/skills/gstack/bin/gstack-slug 2>/dev/null)"
+eval "$(~/.gemini/skills/gstack/bin/gstack-slug 2>/dev/null)"
 _DESIGN_DIR="$HOME/.gstack/projects/$SLUG/designs/mockup-$(date +%Y%m%d)"
 mkdir -p "$_DESIGN_DIR"
 echo "DESIGN_DIR: $_DESIGN_DIR"
@@ -755,7 +755,7 @@ command -v codex >/dev/null 2>&1 && echo "CODEX_AVAILABLE" || echo "CODEX_NOT_AV
 ```
 
 If Codex is available, use AskUserQuestion:
-> "Want outside design perspectives on the chosen approach? Codex proposes a visual thesis, content plan, and interaction ideas. A Claude subagent proposes an alternative aesthetic direction."
+> "Want outside design perspectives on the chosen approach? Codex proposes a visual thesis, content plan, and interaction ideas. A Gemini subagent proposes an alternative aesthetic direction."
 >
 > A) Yes — get outside design voices
 > B) No — proceed without
@@ -770,10 +770,10 @@ codex exec "For this product approach, provide: a visual thesis (one sentence �
 ```
 Use a 5-minute timeout (`timeout: 300000`). After completion: `cat "$TMPERR_SKETCH" && rm -f "$TMPERR_SKETCH"`
 
-2. **Claude subagent** (via Agent tool):
+2. **Gemini subagent** (via Agent tool):
 "For this product approach, what design direction would you recommend? What aesthetic, typography, and interaction patterns fit? What would make this approach feel inevitable to the user? Be specific — font names, hex colors, spacing values."
 
-Present Codex output under `CODEX SAYS (design sketch):` and subagent output under `CLAUDE SUBAGENT (design direction):`.
+Present Codex output under `CODEX SAYS (design sketch):` and subagent output under `GEMINI SUBAGENT (design direction):`.
 Error handling: all non-blocking. On failure, skip and continue.
 
 
@@ -812,7 +812,7 @@ Append one JSON line with these fields (substitute actual values from this sessi
 - `topics`: array of 2-3 topic keywords that describe what this session was about
 
 ```bash
-~/.claude/skills/gstack/bin/gstack-developer-profile --log-session '{"date":"TIMESTAMP","mode":"MODE","project_slug":"SLUG","signal_count":N,"signals":SIGNALS_ARRAY,"design_doc":"DOC_PATH","assignment":"ASSIGNMENT_TEXT","resources_shown":[],"topics":TOPICS_ARRAY}' 2>/dev/null || true
+~/.gemini/skills/gstack/bin/gstack-developer-profile --log-session '{"date":"TIMESTAMP","mode":"MODE","project_slug":"SLUG","signal_count":N,"signals":SIGNALS_ARRAY,"design_doc":"DOC_PATH","assignment":"ASSIGNMENT_TEXT","resources_shown":[],"topics":TOPICS_ARRAY}' 2>/dev/null || true
 ```
 
 The session entry is appended to `developer-profile.json`'s `sessions[]` array. A second
@@ -820,7 +820,7 @@ session entry with `mode: "resources"` is appended via `--log-session` after res
 selection in Phase 6 Beat 3.5.
 
 
-> **STOP.** Before writing the design doc and running the tiered relationship handoff (Phases 5-6, after the conversation and alternatives are done), Read `~/.claude/skills/gstack/office-hours/sections/design-and-handoff.md` and execute it
+> **STOP.** Before writing the design doc and running the tiered relationship handoff (Phases 5-6, after the conversation and alternatives are done), Read `~/.gemini/skills/gstack/office-hours/sections/design-and-handoff.md` and execute it
 > in full. Do not work from memory — that section is the source of truth for this step.
 
 ## Section self-check (before you finish)
@@ -834,7 +834,7 @@ If you discovered a non-obvious pattern, pitfall, or architectural insight durin
 this session, log it for future sessions:
 
 ```bash
-~/.claude/skills/gstack/bin/gstack-learnings-log '{"skill":"office-hours","type":"TYPE","key":"SHORT_KEY","insight":"DESCRIPTION","confidence":N,"source":"SOURCE","files":["path/to/relevant/file"]}'
+~/.gemini/skills/gstack/bin/gstack-learnings-log '{"skill":"office-hours","type":"TYPE","key":"SHORT_KEY","insight":"DESCRIPTION","confidence":N,"source":"SOURCE","files":["path/to/relevant/file"]}'
 ```
 
 **Types:** `pattern` (reusable approach), `pitfall` (what NOT to do), `preference`
@@ -842,7 +842,7 @@ this session, log it for future sessions:
 `operational` (project environment/CLI/workflow knowledge).
 
 **Sources:** `observed` (you found this in the code), `user-stated` (user told you),
-`inferred` (AI deduction), `cross-model` (both Claude and Codex agree).
+`inferred` (AI deduction), `cross-model` (both Gemini and Codex agree).
 
 **Confidence:** 1-10. Be honest. An observed pattern you verified in the code is 8-9.
 An inference you're not sure about is 4-5. A user preference they explicitly stated is 10.

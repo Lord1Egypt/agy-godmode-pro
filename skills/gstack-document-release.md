@@ -6,7 +6,7 @@
 
 Reads all project docs, cross-references the
 diff, builds a Diataxis coverage map (reference/how-to/tutorial/explanation),
-updates README/ARCHITECTURE/CONTRIBUTING/CLAUDE.md to match what shipped,
+updates README/ARCHITECTURE/CONTRIBUTING/GEMINI.md to match what shipped,
 detects architecture diagram drift, polishes CHANGELOG voice with a sell-test
 rubric, cleans up TODOS, and optionally bumps VERSION. Surfaces documentation
 debt in the PR body. Use when asked to "update the docs", "sync documentation",
@@ -164,7 +164,7 @@ summary in the PR body). Do NOT auto-generate missing documentation pages — fl
 When significant gaps are found, suggest running `/document-generate` to fill them.
 
 
-> **STOP.** Before auditing each doc file and applying updates, polishing CHANGELOG voice, checking cross-doc consistency, cleaning up TODOS, the VERSION bump, and committing (Steps 2-9, after the coverage map in Step 1.5), Read `~/.claude/skills/gstack/document-release/sections/release-body.md` and execute it
+> **STOP.** Before auditing each doc file and applying updates, polishing CHANGELOG voice, checking cross-doc consistency, cleaning up TODOS, the VERSION bump, and committing (Steps 2-9, after the coverage map in Step 1.5), Read `~/.gemini/skills/gstack/document-release/sections/release-body.md` and execute it
 > in full. Do not work from memory — that section is the source of truth for this step.
 
 
@@ -175,7 +175,7 @@ When significant gaps are found, suggest running `/document-generate` to fill th
 - **Never bump VERSION silently.** Always ask. Even if already bumped, check whether it covers the full scope of changes.
 - **Be explicit about what changed.** Every edit gets a one-line summary.
 - **Generic heuristics, not project-specific.** The audit checks work on any repo.
-- **Discoverability matters.** Every doc file should be reachable from README or CLAUDE.md.
+- **Discoverability matters.** Every doc file should be reachable from README or GEMINI.md.
 - **Coverage map informs, never generates.** The Diataxis coverage map flags gaps for the PR body
   and future work. It does NOT auto-generate missing documentation pages or sections. When gaps
   are found, suggest `/document-generate` as the follow-up skill.

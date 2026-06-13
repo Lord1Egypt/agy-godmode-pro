@@ -49,7 +49,7 @@ sections. Read a section in full before doing its step; do not work from memory.
 
 ## Important: Use the Grep tool for all code searches
 
-The bash blocks throughout this skill show WHAT patterns to search for, not HOW to run them. Use Claude Code's Grep tool (which handles permissions and access correctly) rather than raw bash grep. The bash blocks are illustrative examples — do NOT copy-paste them into a terminal. Do NOT use `| head` to truncate results.
+The bash blocks throughout this skill show WHAT patterns to search for, not HOW to run them. Use Gemini's Grep tool (which handles permissions and access correctly) rather than raw bash grep. The bash blocks are illustrative examples — do NOT copy-paste them into a terminal. Do NOT use `| head` to truncate results.
 
 ## Instructions
 
@@ -87,7 +87,7 @@ grep -q "laravel" composer.json 2>/dev/null && echo "FRAMEWORK: Laravel"
 **Soft gate, not hard gate:** Stack detection determines scan PRIORITY, not scan SCOPE. In subsequent phases, PRIORITIZE scanning for detected languages/frameworks first and most thoroughly. However, do NOT skip undetected languages entirely — after the targeted scan, run a brief catch-all pass with high-signal patterns (SQL injection, command injection, hardcoded secrets, SSRF) across ALL file types. A Python service nested in `ml/` that wasn't detected at root still gets basic coverage.
 
 **Mental model:**
-- Read CLAUDE.md, README, key config files
+- Read GEMINI.md, README, key config files
 - Map the application architecture: what components exist, how they connect, where trust boundaries are
 - Identify the data flow: where does user input enter? Where does it exit? What transformations happen?
 - Document invariants and assumptions the code relies on
@@ -100,12 +100,12 @@ This is NOT a checklist — it's a reasoning phase. The output is understanding,
 Search for relevant learnings from previous sessions:
 
 ```bash
-_CROSS_PROJ=$(~/.claude/skills/gstack/bin/gstack-config get cross_project_learnings 2>/dev/null || echo "unset")
+_CROSS_PROJ=$(~/.gemini/skills/gstack/bin/gstack-config get cross_project_learnings 2>/dev/null || echo "unset")
 echo "CROSS_PROJECT: $_CROSS_PROJ"
 if [ "$_CROSS_PROJ" = "true" ]; then
-  ~/.claude/skills/gstack/bin/gstack-learnings-search --limit 10 --cross-project 2>/dev/null || true
+  ~/.gemini/skills/gstack/bin/gstack-learnings-search --limit 10 --cross-project 2>/dev/null || true
 else
-  ~/.claude/skills/gstack/bin/gstack-learnings-search --limit 10 2>/dev/null || true
+  ~/.gemini/skills/gstack/bin/gstack-learnings-search --limit 10 2>/dev/null || true
 fi
 ```
 
@@ -120,8 +120,8 @@ Options:
 - A) Enable cross-project learnings (recommended)
 - B) Keep learnings project-scoped only
 
-If A: run `~/.claude/skills/gstack/bin/gstack-config set cross_project_learnings true`
-If B: run `~/.claude/skills/gstack/bin/gstack-config set cross_project_learnings false`
+If A: run `~/.gemini/skills/gstack/bin/gstack-config set cross_project_learnings true`
+If B: run `~/.gemini/skills/gstack/bin/gstack-config set cross_project_learnings false`
 
 Then re-run the search with the appropriate flag.
 
@@ -171,7 +171,7 @@ INFRASTRUCTURE SURFACE
   Secret management:     [env vars | KMS | vault | unknown]
 ```
 
-> **STOP.** Before running the scope-dependent audit phases (Phases 2-11) selected by the resolved mode, after the Phase 0 stack detection and Phase 1 attack-surface census, Read `~/.claude/skills/gstack/cso/sections/audit-phases.md` and execute it
+> **STOP.** Before running the scope-dependent audit phases (Phases 2-11) selected by the resolved mode, after the Phase 0 stack detection and Phase 1 attack-surface census, Read `~/.gemini/skills/gstack/cso/sections/audit-phases.md` and execute it
 > in full. Do not work from memory — that section is the source of truth for this step.
 ### Phase 12: False Positive Filtering + Active Verification
 
@@ -455,7 +455,7 @@ If you discovered a non-obvious pattern, pitfall, or architectural insight durin
 this session, log it for future sessions:
 
 ```bash
-~/.claude/skills/gstack/bin/gstack-learnings-log '{"skill":"cso","type":"TYPE","key":"SHORT_KEY","insight":"DESCRIPTION","confidence":N,"source":"SOURCE","files":["path/to/relevant/file"]}'
+~/.gemini/skills/gstack/bin/gstack-learnings-log '{"skill":"cso","type":"TYPE","key":"SHORT_KEY","insight":"DESCRIPTION","confidence":N,"source":"SOURCE","files":["path/to/relevant/file"]}'
 ```
 
 **Types:** `pattern` (reusable approach), `pitfall` (what NOT to do), `preference`
@@ -463,7 +463,7 @@ this session, log it for future sessions:
 `operational` (project environment/CLI/workflow knowledge).
 
 **Sources:** `observed` (you found this in the code), `user-stated` (user told you),
-`inferred` (AI deduction), `cross-model` (both Claude and Codex agree).
+`inferred` (AI deduction), `cross-model` (both Gemini and Codex agree).
 
 **Confidence:** 1-10. Be honest. An observed pattern you verified in the code is 8-9.
 An inference you're not sure about is 4-5. A user preference they explicitly stated is 10.

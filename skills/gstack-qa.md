@@ -110,8 +110,8 @@ After the user chooses, execute their choice (commit or stash), then continue wi
 ```bash
 _ROOT=$(git rev-parse --show-toplevel 2>/dev/null)
 B=""
-[ -n "$_ROOT" ] && [ -x "$_ROOT/.claude/skills/gstack/browse/dist/browse" ] && B="$_ROOT/.claude/skills/gstack/browse/dist/browse"
-[ -z "$B" ] && B="$HOME/.claude/skills/gstack/browse/dist/browse"
+[ -n "$_ROOT" ] && [ -x "$_ROOT/.gemini/skills/gstack/browse/dist/browse" ] && B="$_ROOT/.gemini/skills/gstack/browse/dist/browse"
+[ -z "$B" ] && B="$HOME/.gemini/skills/gstack/browse/dist/browse"
 if [ -x "$B" ]; then
   echo "READY: $B"
 else
@@ -271,9 +271,9 @@ Write TESTING.md with:
 - Test layers: Unit tests (what, where, when), Integration tests, Smoke tests, E2E tests
 - Conventions: file naming, assertion style, setup/teardown patterns
 
-### B7. Update CLAUDE.md
+### B7. Update GEMINI.md
 
-First check: If CLAUDE.md already has a `## Testing` section → skip. Don't duplicate.
+First check: If GEMINI.md already has a `## Testing` section → skip. Don't duplicate.
 
 Append a `## Testing` section:
 - Run command and test directory
@@ -292,7 +292,7 @@ Append a `## Testing` section:
 git status --porcelain
 ```
 
-Only commit if there are changes. Stage all bootstrap files (config, test directory, TESTING.md, CLAUDE.md, .github/workflows/test.yml if created):
+Only commit if there are changes. Stage all bootstrap files (config, test directory, TESTING.md, GEMINI.md, .github/workflows/test.yml if created):
 `git commit -m "chore: bootstrap test framework ({framework name})"`
 
 
@@ -308,12 +308,12 @@ mkdir -p .gstack/qa-reports/screenshots
 Search for relevant learnings from previous sessions:
 
 ```bash
-_CROSS_PROJ=$(~/.claude/skills/gstack/bin/gstack-config get cross_project_learnings 2>/dev/null || echo "unset")
+_CROSS_PROJ=$(~/.gemini/skills/gstack/bin/gstack-config get cross_project_learnings 2>/dev/null || echo "unset")
 echo "CROSS_PROJECT: $_CROSS_PROJ"
 if [ "$_CROSS_PROJ" = "true" ]; then
-  ~/.claude/skills/gstack/bin/gstack-learnings-search --limit 10 --query "qa testing bug regression flake fixture" --cross-project 2>/dev/null || true
+  ~/.gemini/skills/gstack/bin/gstack-learnings-search --limit 10 --query "qa testing bug regression flake fixture" --cross-project 2>/dev/null || true
 else
-  ~/.claude/skills/gstack/bin/gstack-learnings-search --limit 10 --query "qa testing bug regression flake fixture" 2>/dev/null || true
+  ~/.gemini/skills/gstack/bin/gstack-learnings-search --limit 10 --query "qa testing bug regression flake fixture" 2>/dev/null || true
 fi
 ```
 
@@ -328,8 +328,8 @@ Options:
 - A) Enable cross-project learnings (recommended)
 - B) Keep learnings project-scoped only
 
-If A: run `~/.claude/skills/gstack/bin/gstack-config set cross_project_learnings true`
-If B: run `~/.claude/skills/gstack/bin/gstack-config set cross_project_learnings false`
+If A: run `~/.gemini/skills/gstack/bin/gstack-config set cross_project_learnings true`
+If B: run `~/.gemini/skills/gstack/bin/gstack-config set cross_project_learnings false`
 
 Then re-run the search with the appropriate flag.
 
@@ -348,7 +348,7 @@ Before falling back to git diff heuristics, check for richer test plan sources:
 1. **Project-scoped test plans:** Check `~/.gstack/projects/` for recent `*-test-plan-*.md` files for this repo
    ```bash
    setopt +o nomatch 2>/dev/null || true  # zsh compat
-   eval "$(~/.claude/skills/gstack/bin/gstack-slug 2>/dev/null)"
+   eval "$(~/.gemini/skills/gstack/bin/gstack-slug 2>/dev/null)"
    ls -t ~/.gstack/projects/$SLUG/*-test-plan-*.md 2>/dev/null | head -1
    ```
 2. **Conversation context:** Check if a prior `/plan-eng-review` or `/plan-ceo-review` produced test plan output in this conversation
@@ -671,7 +671,7 @@ Pick ONE keyword that names the buggy component or page. The keyword should be a
 Worked examples (qa-specific): good keywords are `checkout-button`, `signup-form`, `payment`. Bad: `tests are failing`, `<failing-test>`, `app/views/_checkout.html.erb`.
 
 ```bash
-~/.claude/skills/gstack/bin/gstack-learnings-search --query "<your-keyword>" --limit 5 2>/dev/null || true
+~/.gemini/skills/gstack/bin/gstack-learnings-search --query "<your-keyword>" --limit 5 2>/dev/null || true
 ```
 
 If any learnings come back, name which one applies to the fix you're about to make in one sentence. If none come back, continue without reference — the absence is itself useful information.
@@ -816,7 +816,7 @@ Write the report to both local and project-scoped locations:
 
 **Project-scoped:** Write test outcome artifact for cross-session context:
 ```bash
-eval "$(~/.claude/skills/gstack/bin/gstack-slug 2>/dev/null)" && mkdir -p ~/.gstack/projects/$SLUG
+eval "$(~/.gemini/skills/gstack/bin/gstack-slug 2>/dev/null)" && mkdir -p ~/.gstack/projects/$SLUG
 ```
 Write to `~/.gstack/projects/{slug}/{user}-{branch}-test-outcome-{datetime}.md`
 
@@ -850,7 +850,7 @@ If you discovered a non-obvious pattern, pitfall, or architectural insight durin
 this session, log it for future sessions:
 
 ```bash
-~/.claude/skills/gstack/bin/gstack-learnings-log '{"skill":"qa","type":"TYPE","key":"SHORT_KEY","insight":"DESCRIPTION","confidence":N,"source":"SOURCE","files":["path/to/relevant/file"]}'
+~/.gemini/skills/gstack/bin/gstack-learnings-log '{"skill":"qa","type":"TYPE","key":"SHORT_KEY","insight":"DESCRIPTION","confidence":N,"source":"SOURCE","files":["path/to/relevant/file"]}'
 ```
 
 **Types:** `pattern` (reusable approach), `pitfall` (what NOT to do), `preference`
@@ -858,7 +858,7 @@ this session, log it for future sessions:
 `operational` (project environment/CLI/workflow knowledge).
 
 **Sources:** `observed` (you found this in the code), `user-stated` (user told you),
-`inferred` (AI deduction), `cross-model` (both Claude and Codex agree).
+`inferred` (AI deduction), `cross-model` (both Gemini and Codex agree).
 
 **Confidence:** 1-10. Be honest. An observed pattern you verified in the code is 8-9.
 An inference you're not sure about is 4-5. A user preference they explicitly stated is 10.

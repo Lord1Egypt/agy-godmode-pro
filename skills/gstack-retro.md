@@ -50,7 +50,7 @@ branch name wherever the instructions say "the base branch" or `<default>`.
 
 # /retro — Weekly Engineering Retrospective
 
-Generates a comprehensive engineering retrospective analyzing commit history, work patterns, and code quality metrics. Team-aware: identifies the user running the command, then analyzes every contributor with per-person praise and growth opportunities. Designed for a senior IC/CTO-level builder using Claude Code as a force multiplier.
+Generates a comprehensive engineering retrospective analyzing commit history, work patterns, and code quality metrics. Team-aware: identifies the user running the command, then analyzes every contributor with per-person praise and growth opportunities. Designed for a senior IC/CTO-level builder using Gemini / agy as a force multiplier.
 
 ## User-invocable
 When the user types `/retro`, run this skill.
@@ -93,12 +93,12 @@ Usage: /retro [window | compare | global]
 Search for relevant learnings from previous sessions:
 
 ```bash
-_CROSS_PROJ=$(~/.claude/skills/gstack/bin/gstack-config get cross_project_learnings 2>/dev/null || echo "unset")
+_CROSS_PROJ=$(~/.gemini/skills/gstack/bin/gstack-config get cross_project_learnings 2>/dev/null || echo "unset")
 echo "CROSS_PROJECT: $_CROSS_PROJ"
 if [ "$_CROSS_PROJ" = "true" ]; then
-  ~/.claude/skills/gstack/bin/gstack-learnings-search --limit 10 --cross-project 2>/dev/null || true
+  ~/.gemini/skills/gstack/bin/gstack-learnings-search --limit 10 --cross-project 2>/dev/null || true
 else
-  ~/.claude/skills/gstack/bin/gstack-learnings-search --limit 10 2>/dev/null || true
+  ~/.gemini/skills/gstack/bin/gstack-learnings-search --limit 10 2>/dev/null || true
 fi
 ```
 
@@ -113,8 +113,8 @@ Options:
 - A) Enable cross-project learnings (recommended)
 - B) Keep learnings project-scoped only
 
-If A: run `~/.claude/skills/gstack/bin/gstack-config set cross_project_learnings true`
-If B: run `~/.claude/skills/gstack/bin/gstack-config set cross_project_learnings false`
+If A: run `~/.gemini/skills/gstack/bin/gstack-config set cross_project_learnings true`
+If B: run `~/.gemini/skills/gstack/bin/gstack-config set cross_project_learnings false`
 
 Then re-run the search with the appropriate flag.
 
@@ -427,7 +427,7 @@ If you discovered a non-obvious pattern, pitfall, or architectural insight durin
 this session, log it for future sessions:
 
 ```bash
-~/.claude/skills/gstack/bin/gstack-learnings-log '{"skill":"retro","type":"TYPE","key":"SHORT_KEY","insight":"DESCRIPTION","confidence":N,"source":"SOURCE","files":["path/to/relevant/file"]}'
+~/.gemini/skills/gstack/bin/gstack-learnings-log '{"skill":"retro","type":"TYPE","key":"SHORT_KEY","insight":"DESCRIPTION","confidence":N,"source":"SOURCE","files":["path/to/relevant/file"]}'
 ```
 
 **Types:** `pattern` (reusable approach), `pitfall` (what NOT to do), `preference`
@@ -435,7 +435,7 @@ this session, log it for future sessions:
 `operational` (project environment/CLI/workflow knowledge).
 
 **Sources:** `observed` (you found this in the code), `user-stated` (user told you),
-`inferred` (AI deduction), `cross-model` (both Claude and Codex agree).
+`inferred` (AI deduction), `cross-model` (both Gemini and Codex agree).
 
 **Confidence:** 1-10. Be honest. An observed pattern you verified in the code is 8-9.
 An inference you're not sure about is 4-5. A user preference they explicitly stated is 10.
@@ -629,7 +629,7 @@ Check review JSONL logs for plan completion data from /ship runs this period:
 
 ```bash
 setopt +o nomatch 2>/dev/null || true  # zsh compat
-eval "$(~/.claude/skills/gstack/bin/gstack-slug 2>/dev/null)"
+eval "$(~/.gemini/skills/gstack/bin/gstack-slug 2>/dev/null)"
 cat ~/.gstack/projects/$SLUG/*-reviews.jsonl 2>/dev/null | grep '"skill":"ship"' | grep '"plan_items_total"' || echo "NO_PLAN_DATA"
 ```
 
@@ -679,7 +679,7 @@ For each teammate (sorted by commits descending), write a section:
   - "Most commits land in a single burst — spacing work across the day could reduce context-switching fatigue"
   - "All commits land between 1-4am — sustainable pace matters for code quality long-term"
 
-**AI collaboration note:** If many commits have `Co-Authored-By` AI trailers (e.g., Claude, Copilot), note the AI-assisted commit percentage as a team metric. Frame it neutrally — "N% of commits were AI-assisted" — without judgment.
+**AI collaboration note:** If many commits have `Co-Authored-By` AI trailers (e.g., Gemini, Copilot), note the AI-assisted commit percentage as a team metric. Frame it neutrally — "N% of commits were AI-assisted" — without judgment.
 
 ### Top 3 Team Wins
 Identify the 3 highest-impact things shipped in the window across the whole team. For each:
@@ -711,8 +711,8 @@ Locate and run the discovery script using this fallback chain:
 
 ```bash
 DISCOVER_BIN=""
-[ -x ~/.claude/skills/gstack/bin/gstack-global-discover ] && DISCOVER_BIN=~/.claude/skills/gstack/bin/gstack-global-discover
-[ -z "$DISCOVER_BIN" ] && [ -x .claude/skills/gstack/bin/gstack-global-discover ] && DISCOVER_BIN=.claude/skills/gstack/bin/gstack-global-discover
+[ -x ~/.gemini/skills/gstack/bin/gstack-global-discover ] && DISCOVER_BIN=~/.gemini/skills/gstack/bin/gstack-global-discover
+[ -z "$DISCOVER_BIN" ] && [ -x .gemini/skills/gstack/bin/gstack-global-discover ] && DISCOVER_BIN=.gemini/skills/gstack/bin/gstack-global-discover
 [ -z "$DISCOVER_BIN" ] && which gstack-global-discover >/dev/null 2>&1 && DISCOVER_BIN=$(which gstack-global-discover)
 [ -z "$DISCOVER_BIN" ] && [ -f bin/gstack-global-discover.ts ] && DISCOVER_BIN="bun run bin/gstack-global-discover.ts"
 echo "DISCOVER_BIN: $DISCOVER_BIN"
@@ -781,7 +781,7 @@ From the commit timestamps gathered in Step 3, group by date. For each date, cou
 From the discovery JSON, analyze tool usage patterns:
 - Which AI tool is used for which repos (exclusive vs. shared)
 - Session count per tool
-- Behavioral patterns (e.g., "Codex used exclusively for myapp, Claude Code for everything else")
+- Behavioral patterns (e.g., "Codex used exclusively for myapp, agy / Gemini for everything else")
 
 ### Global Step 7: Aggregate and generate narrative
 
@@ -909,7 +909,7 @@ Format:
 
 ### Tool Usage Analysis
 Per-tool breakdown with behavioral patterns:
-- Claude Code: N sessions across M repos — patterns observed
+- agy / Gemini: N sessions across M repos — patterns observed
 - Codex: N sessions across M repos — patterns observed
 - Gemini: N sessions across M repos — patterns observed
 
@@ -964,7 +964,7 @@ Use the Write tool to save JSON to `~/.gstack/retros/global-${today}-${next}.jso
       "commits": 47,
       "insertions": 3200,
       "deletions": 800,
-      "sessions": { "claude_code": 15, "codex": 3, "gemini": 0 }
+      "sessions": { "gemini": 15, "codex": 3, "agy": 0 }
     }
   ],
   "totals": {
@@ -973,11 +973,11 @@ Use the Write tool to save JSON to `~/.gstack/retros/global-${today}-${next}.jso
     "deletions": 4200,
     "projects": 5,
     "active_days": 6,
-    "sessions": { "claude_code": 48, "codex": 8, "gemini": 3 },
+    "sessions": { "gemini": 48, "codex": 8, "agy": 3 },
     "global_streak_days": 52,
     "avg_context_switches_per_day": 2.1
   },
-  "tweetable": "Week of Mar 14: 5 projects, 182 commits, 15.3k LOC | CC: 48, Codex: 8, Gemini: 3 | Focus: gstack (58%) | Streak: 52d"
+  "tweetable": "Week of Mar 14: 5 projects, 182 commits, 15.3k LOC | Gemini: 48, Codex: 8, agy: 3 | Focus: gstack (58%) | Streak: 52d"
 }
 ```
 
@@ -1013,6 +1013,6 @@ When the user runs `/retro compare` (or `/retro compare 14d`):
 - If the window has zero commits, say so and suggest a different window
 - Round LOC/hour to nearest 50
 - Treat merge commits as PR boundaries
-- Do not read CLAUDE.md or other docs — this skill is self-contained
+- Do not read GEMINI.md or other docs — this skill is self-contained
 - On first run (no prior retros), skip comparison sections gracefully
 - **Global mode:** Does NOT require being inside a git repo. Saves snapshots to `~/.gstack/retros/` (not `.context/retros/`). Gracefully skip AI tools that aren't installed. Only compare against prior global retros with the same window value. If streak hits 365d cap, display as "365+ days".

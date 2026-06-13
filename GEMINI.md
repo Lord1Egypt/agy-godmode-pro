@@ -437,7 +437,7 @@ These skills live at `~/.gemini/skills/`. Load any skill with `@~/.gemini/skills
 | `@~/.gemini/skills/gstack-ship.md` | Ship workflow: detect + merge base branch, run tests, review diff, bump VERSION, update CHANGELOG, commit, push, create PR. (gstack) |
 | `@~/.gemini/skills/gstack-skillify.md` | Codify the most recent successful /scrape flow into a permanent browser-skill on disk. (gstack) |
 | `@~/.gemini/skills/gstack-spec.md` | Turn vague intent into a precise, executable spec in five phases. (gstack) |
-| `@~/.gemini/skills/gstack-sync-gbrain.md` | Keep gbrain current with this repo's code and refresh agent search guidance in CLAUDE.md. Wraps the gstack-gbrain-sync orchestrator with state (gstack) |
+| `@~/.gemini/skills/gstack-sync-gbrain.md` | Keep gbrain current with this repo's code and refresh agent search guidance in GEMINI.md. Wraps the gstack-gbrain-sync orchestrator with state (gstack) |
 | `@~/.gemini/skills/gstack-unfreeze.md` | Clear the freeze boundary set by /freeze, allowing edits to all directories again. (gstack) |
 
 

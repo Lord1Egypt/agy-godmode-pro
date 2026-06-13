@@ -76,7 +76,7 @@ If they choose A:
 Say: "Running /office-hours inline. Once the design doc is ready, I'll pick up
 the review right where we left off."
 
-Read the `/office-hours` skill file at `~/.claude/skills/gstack/office-hours/SKILL.md` using the Read tool.
+Read the `/office-hours` skill file at `~/.gemini/skills/gstack/office-hours/SKILL.md` using the Read tool.
 
 **If unreadable:** Skip with "Could not load /office-hours — skipping." and continue.
 
@@ -99,7 +99,7 @@ Execute every other section at full depth. When the loaded skill's instructions 
 After /office-hours completes, re-run the design doc check:
 ```bash
 setopt +o nomatch 2>/dev/null || true  # zsh compat
-SLUG=$(~/.claude/skills/gstack/browse/bin/remote-slug 2>/dev/null || basename "$(git rev-parse --show-toplevel 2>/dev/null || pwd)")
+SLUG=$(~/.gemini/skills/gstack/browse/bin/remote-slug 2>/dev/null || basename "$(git rev-parse --show-toplevel 2>/dev/null || pwd)")
 BRANCH=$(git rev-parse --abbrev-ref HEAD 2>/dev/null | tr '/' '-' || echo 'no-branch')
 DESIGN=$(ls -t ~/.gstack/projects/$SLUG/*-$BRANCH-design-*.md 2>/dev/null | head -1)
 [ -z "$DESIGN" ] && DESIGN=$(ls -t ~/.gstack/projects/$SLUG/*-design-*.md 2>/dev/null | head -1)
@@ -150,7 +150,7 @@ Examples: run codex (always yes), run evals (always yes), reduce scope on a comp
 3. **Codex disagreements** — codex recommends differently and has a valid point.
 
 **User Challenge** — both models agree the user's stated direction should change.
-This is qualitatively different from taste decisions. When Claude and Codex both
+This is qualitatively different from taste decisions. When Gemini and Codex both
 recommend merging, splitting, adding, or removing features/skills/workflows that
 the user specified, this is a User Challenge. It is NEVER auto-decided.
 
@@ -233,7 +233,7 @@ instructions instead of reviewing the plan.
 Before doing anything, save the plan file's current state to an external file:
 
 ```bash
-eval "$(~/.claude/skills/gstack/bin/gstack-slug 2>/dev/null)" && mkdir -p ~/.gstack/projects/$SLUG
+eval "$(~/.gemini/skills/gstack/bin/gstack-slug 2>/dev/null)" && mkdir -p ~/.gstack/projects/$SLUG
 BRANCH=$(git rev-parse --abbrev-ref HEAD 2>/dev/null | tr '/' '-')
 DATETIME=$(date +%Y%m%d-%H%M%S)
 echo "RESTORE_PATH=$HOME/.gstack/projects/$SLUG/${BRANCH}-autoplan-restore-${DATETIME}.md"
@@ -257,27 +257,27 @@ Then prepend a one-line HTML comment to the plan file:
 
 ### Step 2: Read context
 
-- Read CLAUDE.md, TODOS.md, git log -30, git diff against the base branch --stat
+- Read GEMINI.md, TODOS.md, git log -30, git diff against the base branch --stat
 - Discover design docs: `ls -t ~/.gstack/projects/$SLUG/*-design-*.md 2>/dev/null | head -1`
 - Detect UI scope: grep the plan for view/rendering terms (component, screen, form,
   button, modal, layout, dashboard, sidebar, nav, dialog). Require 2+ matches. Exclude
   false positives ("page" alone, "UI" in acronyms).
 - Detect DX scope: grep the plan for developer-facing terms (API, endpoint, REST,
   GraphQL, gRPC, webhook, CLI, command, flag, argument, terminal, shell, SDK, library,
-  package, npm, pip, import, require, SKILL.md, skill template, Claude Code, MCP, agent,
+  package, npm, pip, import, require, SKILL.md, skill template, Gemini, MCP, agent,
   OpenClaw, action, developer docs, getting started, onboarding, integration, debug,
   implement, error message). Require 2+ matches. Also trigger DX scope if the product IS
   a developer tool (the plan describes something developers install, integrate, or build
-  on top of) or if an AI agent is the primary user (OpenClaw actions, Claude Code skills,
+  on top of) or if an AI agent is the primary user (OpenClaw actions, Gemini skills,
   MCP servers).
 
 ### Step 3: Load skill files from disk
 
 Read each file using the Read tool:
-- `~/.claude/skills/gstack/plan-ceo-review/SKILL.md`
-- `~/.claude/skills/gstack/plan-design-review/SKILL.md` (only if UI scope detected)
-- `~/.claude/skills/gstack/plan-eng-review/SKILL.md`
-- `~/.claude/skills/gstack/plan-devex-review/SKILL.md` (only if DX scope detected)
+- `~/.gemini/skills/gstack/plan-ceo-review/SKILL.md`
+- `~/.gemini/skills/gstack/plan-design-review/SKILL.md` (only if UI scope detected)
+- `~/.gemini/skills/gstack/plan-eng-review/SKILL.md`
+- `~/.gemini/skills/gstack/plan-devex-review/SKILL.md` (only if DX scope detected)
 
 **Section skip list — when following a loaded skill file, SKIP these sections
 (they are already handled by /autoplan):**
@@ -308,24 +308,24 @@ source it once here and the helper functions stay in scope for the rest of the
 workflow.
 
 ```bash
-_TEL=$(~/.claude/skills/gstack/bin/gstack-config get telemetry 2>/dev/null || echo off)
-_CODEX_CFG=$(~/.claude/skills/gstack/bin/gstack-config get codex_reviews 2>/dev/null || echo enabled)
-source ~/.claude/skills/gstack/bin/gstack-codex-probe
+_TEL=$(~/.gemini/skills/gstack/bin/gstack-config get telemetry 2>/dev/null || echo off)
+_CODEX_CFG=$(~/.gemini/skills/gstack/bin/gstack-config get codex_reviews 2>/dev/null || echo enabled)
+source ~/.gemini/skills/gstack/bin/gstack-codex-probe
 
 # Master switch first: codex_reviews=disabled turns off ALL Codex work globally,
 # including autoplan's own dual-voice orchestration. Honor it before probing.
 if [ "$_CODEX_CFG" = "disabled" ]; then
-  echo "[codex disabled by config — Claude-only voices] Re-enable: gstack-config set codex_reviews enabled"
+  echo "[codex disabled by config — Gemini-only voices] Re-enable: gstack-config set codex_reviews enabled"
   _CODEX_AVAILABLE=false
 # Check Codex binary. If missing, tag the degradation matrix and continue
-# with Claude subagent only (autoplan's existing degradation fallback).
+# with Gemini subagent only (autoplan's existing degradation fallback).
 elif ! command -v codex >/dev/null 2>&1; then
   _gstack_codex_log_event "codex_cli_missing"
-  echo "[codex-unavailable: binary not found] — proceeding with Claude subagent only"
+  echo "[codex-unavailable: binary not found] — proceeding with Gemini subagent only"
   _CODEX_AVAILABLE=false
 elif ! _gstack_codex_auth_probe >/dev/null; then
   _gstack_codex_log_event "codex_auth_failed"
-  echo "[codex-unavailable: auth missing] — proceeding with Claude subagent only. Run \`codex login\` or set \$CODEX_API_KEY to enable dual-voice review."
+  echo "[codex-unavailable: auth missing] — proceeding with Gemini subagent only. Run \`codex login\` or set \$CODEX_API_KEY to enable dual-voice review."
   _CODEX_AVAILABLE=false
 else
   _gstack_codex_version_check   # non-blocking warn if known-bad
@@ -335,7 +335,7 @@ fi
 
 If `_CODEX_AVAILABLE=false`, all Phase 1-3.5 Codex voices below degrade to
 `[codex-unavailable]` in the degradation matrix. /autoplan completes with
-Claude subagent only — saves token spend on Codex prompts we can't use.
+Gemini subagent only — saves token spend on Codex prompts we can't use.
 
 
 ## Phase 1: CEO Review (Strategy & Scope)
@@ -353,8 +353,8 @@ Override: every AskUserQuestion → auto-decide using the 6 principles.
 - Scope expansion: in blast radius + <1d CC → approve (P2). Outside → defer to TODOS.md (P3).
   Duplicates → reject (P4). Borderline (3-5 files) → mark TASTE DECISION.
 - All 10 review sections: run fully, auto-decide each issue, log every decision.
-- Dual voices: always run BOTH Claude subagent AND Codex if available (P6).
-  Run them sequentially in foreground. First the Claude subagent (Agent tool,
+- Dual voices: always run BOTH Gemini subagent AND Codex if available (P6).
+  Run them sequentially in foreground. First the Gemini subagent (Agent tool,
   foreground — do NOT use run_in_background), then Codex (Bash). Both must
   complete before building the consensus table.
 
@@ -374,12 +374,12 @@ Override: every AskUserQuestion → auto-decide using the 6 principles.
   if [ "$_CODEX_EXIT" = "124" ]; then
     _gstack_codex_log_event "codex_timeout" "600"
     _gstack_codex_log_hang "autoplan" "0"
-    echo "[codex stalled past 10 minutes — tagging as [codex-unavailable] for this phase and proceeding with Claude subagent only]"
+    echo "[codex stalled past 10 minutes — tagging as [codex-unavailable] for this phase and proceeding with Gemini subagent only]"
   fi
   ```
   Timeout: 10 minutes (shell-wrapper) + 12 minutes (Bash outer gate). On hang, auto-degrades this phase's Codex voice.
 
-  **Claude CEO subagent** (via Agent tool):
+  **Gemini CEO subagent** (via Agent tool):
   "Read the plan file at <plan_path>. You are an independent CEO/strategist
   reviewing this plan. You have NOT seen any prior review. Evaluate:
   1. Is this the right problem to solve? Could a reframing yield 10x impact?
@@ -390,7 +390,7 @@ Override: every AskUserQuestion → auto-decide using the 6 principles.
   For each finding: what's wrong, severity (critical/high/medium), and the fix."
 
   **Error handling:** Both calls block in foreground. Codex auth/timeout/empty → proceed with
-  Claude subagent only, tagged `[single-model]`. If Claude subagent also fails →
+  Gemini subagent only, tagged `[single-model]`. If Gemini subagent also fails →
   "Outside voices unavailable — continuing with primary review."
 
   **Degradation matrix:** Both fail → "single-reviewer mode". Codex only →
@@ -411,15 +411,15 @@ Step 0 (0A-0F) — run each sub-step and produce:
 - 0E: Temporal interrogation (HOUR 1 → HOUR 6+)
 - 0F: Mode selection confirmation
 
-Step 0.5 (Dual Voices): Run Claude subagent (foreground Agent tool) first, then
+Step 0.5 (Dual Voices): Run Gemini subagent (foreground Agent tool) first, then
 Codex (Bash). Present Codex output under CODEX SAYS (CEO — strategy challenge)
-header. Present subagent output under CLAUDE SUBAGENT (CEO — strategic independence)
+header. Present subagent output under GEMINI SUBAGENT (CEO — strategic independence)
 header. Produce CEO consensus table:
 
 ```
 CEO DUAL VOICES — CONSENSUS TABLE:
 ═══════════════════════════════════════════════════════════════
-  Dimension                           Claude  Codex  Consensus
+  Dimension                           Gemini  Codex  Consensus
   ──────────────────────────────────── ─────── ─────── ─────────
   1. Premises valid?                   —       —      —
   2. Right problem to solve?           —       —      —
@@ -447,7 +447,7 @@ Sections 1-10 — for EACH section, run the evaluation criteria from the loaded 
 - Completion Summary (the full summary table from the CEO skill)
 
 **PHASE 1 COMPLETE.** Emit phase-transition summary:
-> **Phase 1 complete.** Codex: [N concerns]. Claude subagent: [N issues].
+> **Phase 1 complete.** Codex: [N concerns]. Gemini subagent: [N issues].
 > Consensus: [X/6 confirmed, Y disagreements → surfaced at gate].
 > Passing to Phase 2.
 
@@ -457,7 +457,7 @@ and the premise gate has been passed.
 
 **Pre-Phase 2 checklist (verify before starting):**
 - [ ] CEO completion summary written to plan file
-- [ ] CEO dual voices ran (Codex + Claude subagent, or noted unavailable)
+- [ ] CEO dual voices ran (Codex + Gemini subagent, or noted unavailable)
 - [ ] CEO consensus table produced
 - [ ] Premise gate passed (user confirmed)
 - [ ] Phase-transition summary emitted
@@ -472,7 +472,7 @@ Override: every AskUserQuestion → auto-decide using the 6 principles.
 - Structural issues (missing states, broken hierarchy): auto-fix (P5)
 - Aesthetic/taste issues: mark TASTE DECISION
 - Design system alignment: auto-fix if DESIGN.md exists and fix is obvious
-- Dual voices: always run BOTH Claude subagent AND Codex if available (P6).
+- Dual voices: always run BOTH Gemini subagent AND Codex if available (P6).
 
   **Codex design voice** (via Bash):
   ```bash
@@ -496,12 +496,12 @@ Override: every AskUserQuestion → auto-decide using the 6 principles.
   if [ "$_CODEX_EXIT" = "124" ]; then
     _gstack_codex_log_event "codex_timeout" "600"
     _gstack_codex_log_hang "autoplan" "0"
-    echo "[codex stalled past 10 minutes — tagging as [codex-unavailable] for this phase and proceeding with Claude subagent only]"
+    echo "[codex stalled past 10 minutes — tagging as [codex-unavailable] for this phase and proceeding with Gemini subagent only]"
   fi
   ```
   Timeout: 10 minutes (shell-wrapper) + 12 minutes (Bash outer gate). On hang, auto-degrades this phase's Codex voice.
 
-  **Claude design subagent** (via Agent tool):
+  **Gemini design subagent** (via Agent tool):
   "Read the plan file at <plan_path>. You are an independent senior product designer
   reviewing this plan. You have NOT seen any prior review. Evaluate:
   1. Information hierarchy: what does the user see first, second, third? Is it right?
@@ -521,17 +521,17 @@ Override: every AskUserQuestion → auto-decide using the 6 principles.
 
 1. Step 0 (Design Scope): Rate completeness 0-10. Check DESIGN.md. Map existing patterns.
 
-2. Step 0.5 (Dual Voices): Run Claude subagent (foreground) first, then Codex. Present under
-   CODEX SAYS (design — UX challenge) and CLAUDE SUBAGENT (design — independent review)
+2. Step 0.5 (Dual Voices): Run Gemini subagent (foreground) first, then Codex. Present under
+   CODEX SAYS (design — UX challenge) and GEMINI SUBAGENT (design — independent review)
    headers. Produce design litmus scorecard (consensus table). Use the litmus scorecard
    format from plan-design-review. Include CEO phase findings in Codex prompt ONLY
-   (not Claude subagent — stays independent).
+   (not Gemini subagent — stays independent).
 
 3. Passes 1-7: Run each from loaded skill. Rate 0-10. Auto-decide each issue.
    DISAGREE items from scorecard → raised in the relevant pass with both perspectives.
 
 **PHASE 2 COMPLETE.** Emit phase-transition summary:
-> **Phase 2 complete.** Codex: [N concerns]. Claude subagent: [N issues].
+> **Phase 2 complete.** Codex: [N concerns]. Gemini subagent: [N issues].
 > Consensus: [X/Y confirmed, Z disagreements → surfaced at gate].
 > Passing to Phase 3.
 
@@ -552,7 +552,7 @@ Override: every AskUserQuestion → auto-decide using the 6 principles.
 
 **Override rules:**
 - Scope challenge: never reduce (P2)
-- Dual voices: always run BOTH Claude subagent AND Codex if available (P6).
+- Dual voices: always run BOTH Gemini subagent AND Codex if available (P6).
 
   **Codex eng voice** (via Bash):
   ```bash
@@ -571,12 +571,12 @@ Override: every AskUserQuestion → auto-decide using the 6 principles.
   if [ "$_CODEX_EXIT" = "124" ]; then
     _gstack_codex_log_event "codex_timeout" "600"
     _gstack_codex_log_hang "autoplan" "0"
-    echo "[codex stalled past 10 minutes — tagging as [codex-unavailable] for this phase and proceeding with Claude subagent only]"
+    echo "[codex stalled past 10 minutes — tagging as [codex-unavailable] for this phase and proceeding with Gemini subagent only]"
   fi
   ```
   Timeout: 10 minutes (shell-wrapper) + 12 minutes (Bash outer gate). On hang, auto-degrades this phase's Codex voice.
 
-  **Claude eng subagent** (via Agent tool):
+  **Gemini eng subagent** (via Agent tool):
   "Read the plan file at <plan_path>. You are an independent senior engineer
   reviewing this plan. You have NOT seen any prior review. Evaluate:
   1. Architecture: Is the component structure sound? Coupling concerns?
@@ -599,15 +599,15 @@ Override: every AskUserQuestion → auto-decide using the 6 principles.
 1. Step 0 (Scope Challenge): Read actual code referenced by the plan. Map each
    sub-problem to existing code. Run the complexity check. Produce concrete findings.
 
-2. Step 0.5 (Dual Voices): Run Claude subagent (foreground) first, then Codex. Present
+2. Step 0.5 (Dual Voices): Run Gemini subagent (foreground) first, then Codex. Present
    Codex output under CODEX SAYS (eng — architecture challenge) header. Present subagent
-   output under CLAUDE SUBAGENT (eng — independent review) header. Produce eng consensus
+   output under GEMINI SUBAGENT (eng — independent review) header. Produce eng consensus
    table:
 
 ```
 ENG DUAL VOICES — CONSENSUS TABLE:
 ═══════════════════════════════════════════════════════════════
-  Dimension                           Claude  Codex  Consensus
+  Dimension                           Gemini  Codex  Consensus
   ──────────────────────────────────── ─────── ─────── ─────────
   1. Architecture sound?               —       —      —
   2. Test coverage sufficient?         —       —      —
@@ -650,7 +650,7 @@ Missing voice = N/A (not CONFIRMED). Single critical finding from one voice = fl
 - TODOS.md updates (collected from all phases)
 
 **PHASE 3 COMPLETE.** Emit phase-transition summary:
-> **Phase 3 complete.** Codex: [N concerns]. Claude subagent: [N issues].
+> **Phase 3 complete.** Codex: [N concerns]. Gemini subagent: [N issues].
 > Consensus: [X/6 confirmed, Y disagreements → surfaced at gate].
 > Passing to Phase 3.5 (DX Review) or Phase 4 (Final Gate).
 
@@ -672,7 +672,7 @@ Log: "Phase 3.5 skipped — no developer-facing scope detected."
 - Error message quality: always require problem + cause + fix (P1, completeness)
 - API/CLI naming: consistency wins over cleverness (P5)
 - DX taste decisions (e.g., opinionated defaults vs flexibility): mark TASTE DECISION
-- Dual voices: always run BOTH Claude subagent AND Codex if available (P6).
+- Dual voices: always run BOTH Gemini subagent AND Codex if available (P6).
 
   **Codex DX voice** (via Bash):
   ```bash
@@ -696,12 +696,12 @@ Log: "Phase 3.5 skipped — no developer-facing scope detected."
   if [ "$_CODEX_EXIT" = "124" ]; then
     _gstack_codex_log_event "codex_timeout" "600"
     _gstack_codex_log_hang "autoplan" "0"
-    echo "[codex stalled past 10 minutes — tagging as [codex-unavailable] for this phase and proceeding with Claude subagent only]"
+    echo "[codex stalled past 10 minutes — tagging as [codex-unavailable] for this phase and proceeding with Gemini subagent only]"
   fi
   ```
   Timeout: 10 minutes (shell-wrapper) + 12 minutes (Bash outer gate). On hang, auto-degrades this phase's Codex voice.
 
-  **Claude DX subagent** (via Agent tool):
+  **Gemini DX subagent** (via Agent tool):
   "Read the plan file at <plan_path>. You are an independent DX engineer
   reviewing this plan. You have NOT seen any prior review. Evaluate:
   1. Getting started: how many steps from zero to hello world? What's the TTHW?
@@ -722,14 +722,14 @@ Log: "Phase 3.5 skipped — no developer-facing scope detected."
 1. Step 0 (DX Scope Assessment): Auto-detect product type. Map the developer journey.
    Rate initial DX completeness 0-10. Assess TTHW.
 
-2. Step 0.5 (Dual Voices): Run Claude subagent (foreground) first, then Codex. Present
-   under CODEX SAYS (DX — developer experience challenge) and CLAUDE SUBAGENT
+2. Step 0.5 (Dual Voices): Run Gemini subagent (foreground) first, then Codex. Present
+   under CODEX SAYS (DX — developer experience challenge) and GEMINI SUBAGENT
    (DX — independent review) headers. Produce DX consensus table:
 
 ```
 DX DUAL VOICES — CONSENSUS TABLE:
 ═══════════════════════════════════════════════════════════════
-  Dimension                           Claude  Codex  Consensus
+  Dimension                           Gemini  Codex  Consensus
   ──────────────────────────────────── ─────── ─────── ─────────
   1. Getting started < 5 min?          —       —      —
   2. API/CLI naming guessable?         —       —      —
@@ -756,7 +756,7 @@ Missing voice = N/A (not CONFIRMED). Single critical finding from one voice = fl
 
 **PHASE 3.5 COMPLETE.** Emit phase-transition summary:
 > **Phase 3.5 complete.** DX overall: [N]/10. TTHW: [N] min → [target] min.
-> Codex: [N concerns]. Claude subagent: [N issues].
+> Codex: [N concerns]. Gemini subagent: [N issues].
 > Consensus: [X/6 confirmed, Y disagreements → surfaced at gate].
 > Passing to Phase 4 (Final Gate).
 
@@ -791,7 +791,7 @@ produced. Check the plan file and conversation for each item.
 - [ ] "What already exists" section written
 - [ ] Dream state delta written
 - [ ] Completion Summary produced
-- [ ] Dual voices ran (Codex + Claude subagent, or noted unavailable)
+- [ ] Dual voices ran (Codex + Gemini subagent, or noted unavailable)
 - [ ] CEO consensus table produced
 
 **Phase 2 (Design) outputs — only if UI scope detected:**
@@ -809,7 +809,7 @@ produced. Check the plan file and conversation for each item.
 - [ ] "What already exists" section written
 - [ ] Failure modes registry with critical gap assessment
 - [ ] Completion Summary produced
-- [ ] Dual voices ran (Codex + Claude subagent, or noted unavailable)
+- [ ] Dual voices ran (Codex + Gemini subagent, or noted unavailable)
 - [ ] Eng consensus table produced
 
 **Phase 3.5 (DX) outputs — only if DX scope detected:**
@@ -840,8 +840,8 @@ Before rendering the Final Approval Gate output block below, aggregate the
 per-phase task lists each review skill wrote.
 
 ```bash
-eval "$(~/.claude/skills/gstack/bin/gstack-slug 2>/dev/null)"
-TASKS_DIR="${HOME}/.gstack/projects/${SLUG:-unknown}"
+eval "$(~/.gemini/skills/gstack/bin/gstack-slug 2>/dev/null)"
+TASKS_DIR="${HOME}/.gemini/projects/${SLUG:-unknown}"
 BRANCH=$(git branch --show-current 2>/dev/null || echo unknown)
 # Commit window: last 5 commits on this branch. Drops stale standalone reviews.
 COMMITS_RECENT=$(git log --format=%H -n 5 2>/dev/null | tr '\n' '|' | sed 's/|$//')
@@ -944,13 +944,13 @@ I recommend [X] — [principle]. But [Y] is also viable:
 
 ### Review Scores
 - CEO: [summary]
-- CEO Voices: Codex [summary], Claude subagent [summary], Consensus [X/6 confirmed]
+- CEO Voices: Codex [summary], Gemini subagent [summary], Consensus [X/6 confirmed]
 - Design: [summary or "skipped, no UI scope"]
-- Design Voices: Codex [summary], Claude subagent [summary], Consensus [X/7 confirmed] (or "skipped")
+- Design Voices: Codex [summary], Gemini subagent [summary], Consensus [X/7 confirmed] (or "skipped")
 - Eng: [summary]
-- Eng Voices: Codex [summary], Claude subagent [summary], Consensus [X/6 confirmed]
+- Eng Voices: Codex [summary], Gemini subagent [summary], Consensus [X/6 confirmed]
 - DX: [summary or "skipped, no developer-facing scope"]
-- DX Voices: Codex [summary], Claude subagent [summary], Consensus [X/6 confirmed] (or "skipped")
+- DX Voices: Codex [summary], Gemini subagent [summary], Consensus [X/6 confirmed] (or "skipped")
 
 ### Cross-Phase Themes
 [For any concern that appeared in 2+ phases' dual voices independently:]
@@ -997,36 +997,36 @@ STATUS is "clean" if no unresolved issues, "issues_open" otherwise.
 COMMIT=$(git rev-parse --short HEAD 2>/dev/null)
 TIMESTAMP=$(date -u +%Y-%m-%dT%H:%M:%SZ)
 
-~/.claude/skills/gstack/bin/gstack-review-log '{"skill":"plan-ceo-review","timestamp":"'"$TIMESTAMP"'","status":"STATUS","unresolved":N,"critical_gaps":N,"mode":"SELECTIVE_EXPANSION","via":"autoplan","commit":"'"$COMMIT"'"}'
+~/.gemini/skills/gstack/bin/gstack-review-log '{"skill":"plan-ceo-review","timestamp":"'"$TIMESTAMP"'","status":"STATUS","unresolved":N,"critical_gaps":N,"mode":"SELECTIVE_EXPANSION","via":"autoplan","commit":"'"$COMMIT"'"}'
 
-~/.claude/skills/gstack/bin/gstack-review-log '{"skill":"plan-eng-review","timestamp":"'"$TIMESTAMP"'","status":"STATUS","unresolved":N,"critical_gaps":N,"issues_found":N,"mode":"FULL_REVIEW","via":"autoplan","commit":"'"$COMMIT"'"}'
+~/.gemini/skills/gstack/bin/gstack-review-log '{"skill":"plan-eng-review","timestamp":"'"$TIMESTAMP"'","status":"STATUS","unresolved":N,"critical_gaps":N,"issues_found":N,"mode":"FULL_REVIEW","via":"autoplan","commit":"'"$COMMIT"'"}'
 ```
 
 If Phase 2 ran (UI scope):
 ```bash
-~/.claude/skills/gstack/bin/gstack-review-log '{"skill":"plan-design-review","timestamp":"'"$TIMESTAMP"'","status":"STATUS","unresolved":N,"via":"autoplan","commit":"'"$COMMIT"'"}'
+~/.gemini/skills/gstack/bin/gstack-review-log '{"skill":"plan-design-review","timestamp":"'"$TIMESTAMP"'","status":"STATUS","unresolved":N,"via":"autoplan","commit":"'"$COMMIT"'"}'
 ```
 
 If Phase 3.5 ran (DX scope):
 ```bash
-~/.claude/skills/gstack/bin/gstack-review-log '{"skill":"plan-devex-review","timestamp":"'"$TIMESTAMP"'","status":"STATUS","initial_score":N,"overall_score":N,"product_type":"TYPE","tthw_current":"TTHW","tthw_target":"TARGET","unresolved":N,"via":"autoplan","commit":"'"$COMMIT"'"}'
+~/.gemini/skills/gstack/bin/gstack-review-log '{"skill":"plan-devex-review","timestamp":"'"$TIMESTAMP"'","status":"STATUS","initial_score":N,"overall_score":N,"product_type":"TYPE","tthw_current":"TTHW","tthw_target":"TARGET","unresolved":N,"via":"autoplan","commit":"'"$COMMIT"'"}'
 ```
 
 Dual voice logs (one per phase that ran):
 ```bash
-~/.claude/skills/gstack/bin/gstack-review-log '{"skill":"autoplan-voices","timestamp":"'"$TIMESTAMP"'","status":"STATUS","source":"SOURCE","phase":"ceo","via":"autoplan","consensus_confirmed":N,"consensus_disagree":N,"commit":"'"$COMMIT"'"}'
+~/.gemini/skills/gstack/bin/gstack-review-log '{"skill":"autoplan-voices","timestamp":"'"$TIMESTAMP"'","status":"STATUS","source":"SOURCE","phase":"ceo","via":"autoplan","consensus_confirmed":N,"consensus_disagree":N,"commit":"'"$COMMIT"'"}'
 
-~/.claude/skills/gstack/bin/gstack-review-log '{"skill":"autoplan-voices","timestamp":"'"$TIMESTAMP"'","status":"STATUS","source":"SOURCE","phase":"eng","via":"autoplan","consensus_confirmed":N,"consensus_disagree":N,"commit":"'"$COMMIT"'"}'
+~/.gemini/skills/gstack/bin/gstack-review-log '{"skill":"autoplan-voices","timestamp":"'"$TIMESTAMP"'","status":"STATUS","source":"SOURCE","phase":"eng","via":"autoplan","consensus_confirmed":N,"consensus_disagree":N,"commit":"'"$COMMIT"'"}'
 ```
 
 If Phase 2 ran (UI scope), also log:
 ```bash
-~/.claude/skills/gstack/bin/gstack-review-log '{"skill":"autoplan-voices","timestamp":"'"$TIMESTAMP"'","status":"STATUS","source":"SOURCE","phase":"design","via":"autoplan","consensus_confirmed":N,"consensus_disagree":N,"commit":"'"$COMMIT"'"}'
+~/.gemini/skills/gstack/bin/gstack-review-log '{"skill":"autoplan-voices","timestamp":"'"$TIMESTAMP"'","status":"STATUS","source":"SOURCE","phase":"design","via":"autoplan","consensus_confirmed":N,"consensus_disagree":N,"commit":"'"$COMMIT"'"}'
 ```
 
 If Phase 3.5 ran (DX scope), also log:
 ```bash
-~/.claude/skills/gstack/bin/gstack-review-log '{"skill":"autoplan-voices","timestamp":"'"$TIMESTAMP"'","status":"STATUS","source":"SOURCE","phase":"dx","via":"autoplan","consensus_confirmed":N,"consensus_disagree":N,"commit":"'"$COMMIT"'"}'
+~/.gemini/skills/gstack/bin/gstack-review-log '{"skill":"autoplan-voices","timestamp":"'"$TIMESTAMP"'","status":"STATUS","source":"SOURCE","phase":"dx","via":"autoplan","consensus_confirmed":N,"consensus_disagree":N,"commit":"'"$COMMIT"'"}'
 ```
 
 SOURCE = "codex+subagent", "codex-only", "subagent-only", or "unavailable".

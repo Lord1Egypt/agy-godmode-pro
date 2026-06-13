@@ -127,12 +127,12 @@ git stash list                                 # Any stashed work
 grep -r "TODO\|FIXME\|HACK\|XXX" -l --exclude-dir=node_modules --exclude-dir=vendor --exclude-dir=.git . | head -30
 git log --since=30.days --name-only --format="" | sort | uniq -c | sort -rn | head -20  # Recently touched files
 ```
-Then read CLAUDE.md, TODOS.md, and any existing architecture docs.
+Then read GEMINI.md, TODOS.md, and any existing architecture docs.
 
 **Design doc check:**
 ```bash
 setopt +o nomatch 2>/dev/null || true  # zsh compat
-SLUG=$(~/.claude/skills/gstack/browse/bin/remote-slug 2>/dev/null || basename "$(git rev-parse --show-toplevel 2>/dev/null || pwd)")
+SLUG=$(~/.gemini/skills/gstack/browse/bin/remote-slug 2>/dev/null || basename "$(git rev-parse --show-toplevel 2>/dev/null || pwd)")
 BRANCH=$(git rev-parse --abbrev-ref HEAD 2>/dev/null | tr '/' '-' || echo 'no-branch')
 DESIGN=$(ls -t ~/.gstack/projects/$SLUG/*-$BRANCH-design-*.md 2>/dev/null | head -1)
 [ -z "$DESIGN" ] && DESIGN=$(ls -t ~/.gstack/projects/$SLUG/*-design-*.md 2>/dev/null | head -1)
@@ -180,7 +180,7 @@ If they choose A:
 Say: "Running /office-hours inline. Once the design doc is ready, I'll pick up
 the review right where we left off."
 
-Read the `/office-hours` skill file at `~/.claude/skills/gstack/office-hours/SKILL.md` using the Read tool.
+Read the `/office-hours` skill file at `~/.gemini/skills/gstack/office-hours/SKILL.md` using the Read tool.
 
 **If unreadable:** Skip with "Could not load /office-hours — skipping." and continue.
 
@@ -203,7 +203,7 @@ Execute every other section at full depth. When the loaded skill's instructions 
 After /office-hours completes, re-run the design doc check:
 ```bash
 setopt +o nomatch 2>/dev/null || true  # zsh compat
-SLUG=$(~/.claude/skills/gstack/browse/bin/remote-slug 2>/dev/null || basename "$(git rev-parse --show-toplevel 2>/dev/null || pwd)")
+SLUG=$(~/.gemini/skills/gstack/browse/bin/remote-slug 2>/dev/null || basename "$(git rev-parse --show-toplevel 2>/dev/null || pwd)")
 BRANCH=$(git rev-parse --abbrev-ref HEAD 2>/dev/null | tr '/' '-' || echo 'no-branch')
 DESIGN=$(ls -t ~/.gstack/projects/$SLUG/*-$BRANCH-design-*.md 2>/dev/null | head -1)
 [ -z "$DESIGN" ] && DESIGN=$(ls -t ~/.gstack/projects/$SLUG/*-design-*.md 2>/dev/null | head -1)
@@ -226,7 +226,7 @@ If they keep going, proceed normally — no guilt, no re-asking.
 
 If they choose A:
 
-Read the `/office-hours` skill file at `~/.claude/skills/gstack/office-hours/SKILL.md` using the Read tool.
+Read the `/office-hours` skill file at `~/.gemini/skills/gstack/office-hours/SKILL.md` using the Read tool.
 
 **If unreadable:** Skip with "Could not load /office-hours — skipping." and continue.
 
@@ -292,12 +292,12 @@ Feed into the Premise Challenge (0A) and Dream State Mapping (0C). If you find a
 Search for relevant learnings from previous sessions:
 
 ```bash
-_CROSS_PROJ=$(~/.claude/skills/gstack/bin/gstack-config get cross_project_learnings 2>/dev/null || echo "unset")
+_CROSS_PROJ=$(~/.gemini/skills/gstack/bin/gstack-config get cross_project_learnings 2>/dev/null || echo "unset")
 echo "CROSS_PROJECT: $_CROSS_PROJ"
 if [ "$_CROSS_PROJ" = "true" ]; then
-  ~/.claude/skills/gstack/bin/gstack-learnings-search --limit 10 --cross-project 2>/dev/null || true
+  ~/.gemini/skills/gstack/bin/gstack-learnings-search --limit 10 --cross-project 2>/dev/null || true
 else
-  ~/.claude/skills/gstack/bin/gstack-learnings-search --limit 10 2>/dev/null || true
+  ~/.gemini/skills/gstack/bin/gstack-learnings-search --limit 10 2>/dev/null || true
 fi
 ```
 
@@ -312,8 +312,8 @@ Options:
 - A) Enable cross-project learnings (recommended)
 - B) Keep learnings project-scoped only
 
-If A: run `~/.claude/skills/gstack/bin/gstack-config set cross_project_learnings true`
-If B: run `~/.claude/skills/gstack/bin/gstack-config set cross_project_learnings false`
+If A: run `~/.gemini/skills/gstack/bin/gstack-config set cross_project_learnings true`
+If B: run `~/.gemini/skills/gstack/bin/gstack-config set cross_project_learnings false`
 
 Then re-run the search with the appropriate flag.
 
@@ -336,17 +336,17 @@ present in the loaded context; ground recommendations in what the brain
 already knows about the user, the product, the goals, and recent decisions.
 
 ```bash
-eval "$(~/.claude/skills/gstack/bin/gstack-slug 2>/dev/null)" 2>/dev/null || true
+eval "$(~/.gemini/skills/gstack/bin/gstack-slug 2>/dev/null)" 2>/dev/null || true
 {
   printf '## Brain Context\n\n'
   printf '\n### %s\n\n' "product"
-  ~/.claude/skills/gstack/bin/gstack-brain-cache get product --project "$SLUG" 2>/dev/null || printf '_(no product digest available yet)_\n'
+  ~/.gemini/skills/gstack/bin/gstack-brain-cache get product --project "$SLUG" 2>/dev/null || printf '_(no product digest available yet)_\n'
   printf '\n### %s\n\n' "goals"
-  ~/.claude/skills/gstack/bin/gstack-brain-cache get goals --project "$SLUG" 2>/dev/null || printf '_(no goals digest available yet)_\n'
+  ~/.gemini/skills/gstack/bin/gstack-brain-cache get goals --project "$SLUG" 2>/dev/null || printf '_(no goals digest available yet)_\n'
   printf '\n### %s\n\n' "recent-decisions"
-  ~/.claude/skills/gstack/bin/gstack-brain-cache get recent-decisions --project "$SLUG" 2>/dev/null || printf '_(no recent-decisions digest available yet)_\n'
+  ~/.gemini/skills/gstack/bin/gstack-brain-cache get recent-decisions --project "$SLUG" 2>/dev/null || printf '_(no recent-decisions digest available yet)_\n'
   printf '\n### %s\n\n' "user-profile"
-  ~/.claude/skills/gstack/bin/gstack-brain-cache get user-profile  2>/dev/null || printf '_(no user-profile digest available yet)_\n'
+  ~/.gemini/skills/gstack/bin/gstack-brain-cache get user-profile  2>/dev/null || printf '_(no user-profile digest available yet)_\n'
 } > /tmp/.gstack-brain-context-$$.md 2>/dev/null
 [ -s /tmp/.gstack-brain-context-$$.md ] && cat /tmp/.gstack-brain-context-$$.md
 rm -f /tmp/.gstack-brain-context-$$.md 2>/dev/null || true
@@ -467,7 +467,7 @@ Both are outcome-framed. Only one makes the user feel the cathedral. Lead with t
 After the opt-in/cherry-pick ceremony, write the plan to disk so the vision and decisions survive beyond this conversation. Only run this step for EXPANSION and SELECTIVE EXPANSION modes.
 
 ```bash
-eval "$(~/.claude/skills/gstack/bin/gstack-slug 2>/dev/null)" && mkdir -p ~/.gstack/projects/$SLUG/ceo-plans
+eval "$(~/.gemini/skills/gstack/bin/gstack-slug 2>/dev/null)" && mkdir -p ~/.gstack/projects/$SLUG/ceo-plans
 ```
 
 Before writing, check for existing CEO plans in the ceo-plans/ directory. If any are >30 days old or their branch has been merged/deleted, offer to archive them:
@@ -615,7 +615,7 @@ Present these mode options via AskUserQuestion using the preamble's AskUserQuest
 **STOP.** AskUserQuestion once per issue. Do NOT batch. Recommend + WHY. If this section turned up zero findings, state "No issues, moving on" and proceed. If the section has findings, you MUST call AskUserQuestion as a tool_use — a finding with an "obvious fix" is still a finding and still needs user approval before any change lands in the plan. Do NOT proceed until the user responds.
 **Reminder: Do NOT make any code changes. Review only.**
 
-> **STOP.** Before running the 11-section deep review, required outputs, and review report (only after Step 0 scope and mode are agreed), Read `~/.claude/skills/gstack/plan-ceo-review/sections/review-sections.md` and execute it
+> **STOP.** Before running the 11-section deep review, required outputs, and review report (only after Step 0 scope and mode are agreed), Read `~/.gemini/skills/gstack/plan-ceo-review/sections/review-sections.md` and execute it
 > in full. Do not work from memory — that section is the source of truth for this step.
 
 ## Section self-check (before you finish)

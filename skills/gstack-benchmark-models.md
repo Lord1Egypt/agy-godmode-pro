@@ -16,8 +16,8 @@ Voice triggers (speech-to-text aliases): "compare models", "model shootout", "wh
 ## Step 0: Locate the binary
 
 ```bash
-BIN="$HOME/.claude/skills/gstack/bin/gstack-model-benchmark"
-[ -x "$BIN" ] || BIN=".claude/skills/gstack/bin/gstack-model-benchmark"
+BIN="$HOME/.gemini/skills/gstack/bin/gstack-model-benchmark"
+[ -x "$BIN" ] || BIN=".gemini/skills/gstack/bin/gstack-model-benchmark"
 [ -x "$BIN" ] || { echo "ERROR: gstack-model-benchmark not found. Run ./setup in the gstack install dir." >&2; exit 1; }
 echo "BIN: $BIN"
 ```
@@ -51,25 +51,25 @@ If C: ask for the path. Verify it exists. Use as positional argument.
 
 Show the dry-run output. The "Adapter availability" section tells the user which providers will actually run (OK) vs skip (NOT READY — remediation hint included).
 
-If ALL three show NOT READY: stop with a clear message — benchmark can't run without at least one authed provider. Suggest `claude login`, `codex login`, or `gemini login` / `export GOOGLE_API_KEY`.
+If ALL three show NOT READY: stop with a clear message — benchmark can't run without at least one authed provider. Suggest `gemini login` / `export GOOGLE_API_KEY` or `codex login`.
 
 If at least one is OK: AskUserQuestion:
 - **Simplify:** "Which models should we include? The dry-run above showed which are authed. Unauthed ones will be skipped cleanly — they won't abort the batch."
 - **RECOMMENDATION:** A (all authed providers) because running as many as possible gives the richest comparison.
 - **Options:**
   - A) All authed providers. Completeness: 10/10.
-  - B) Only Claude. Completeness: 6/10 (no cross-model signal — use /ship's review for solo claude benchmarks instead).
+  - B) Only Gemini. Completeness: 6/10 (no cross-model signal — use /ship's review for solo gemini benchmarks instead).
   - C) Pick two — specify on next turn. Completeness: 8/10.
 
 
 ## Step 3: Decide on judge
 
 ```bash
-[ -n "$ANTHROPIC_API_KEY" ] || grep -q 'ANTHROPIC' "$HOME/.claude/.credentials.json" 2>/dev/null && echo "JUDGE_AVAILABLE" || echo "JUDGE_UNAVAILABLE"
+[ -n "$GOOGLE_API_KEY" ] || grep -q 'GOOGLE' "$HOME/.gemini/.credentials.json" 2>/dev/null && echo "JUDGE_AVAILABLE" || echo "JUDGE_UNAVAILABLE"
 ```
 
 If judge is available, AskUserQuestion:
-- **Simplify:** "The quality judge scores each model's output on a 0-10 scale using Anthropic's Claude as a tiebreaker. Adds ~$0.05/run. Recommended if you care about output quality, not just latency and cost."
+- **Simplify:** "The quality judge scores each model's output on a 0-10 scale using Google's Gemini as a tiebreaker. Adds ~$0.05/run. Recommended if you care about output quality, not just latency and cost."
 - **RECOMMENDATION:** A — the whole point is comparing quality, not just speed.
 - **Options:**
   - A) Enable judge (adds ~$0.05). Completeness: 10/10.

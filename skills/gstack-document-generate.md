@@ -103,7 +103,7 @@ find . -type f -not -path "./.git/*" -not -path "./node_modules/*" -not -path ".
 ```
 
 2. **Read the entry points.** Identify and read:
-   - README.md, ARCHITECTURE.md, CONTRIBUTING.md, CLAUDE.md / AGENTS.md
+   - README.md, ARCHITECTURE.md, CONTRIBUTING.md, GEMINI.md / AGENTS.md
    - package.json / Cargo.toml / pyproject.toml / go.mod (understand the project type)
    - Main entry files (index.ts, main.rs, app.py, cmd/main.go)
    - Configuration files and examples
@@ -347,7 +347,7 @@ After writing all documents:
 
 2. **Update entry-point files.** Add references to new docs in:
    - README.md — add to documentation section or table of contents
-   - CLAUDE.md / AGENTS.md — add to project structure if relevant
+   - GEMINI.md / AGENTS.md — add to project structure if relevant
    - Any existing docs index or sidebar config
 
 3. **Verify discoverability.** Every new document must be reachable within 2 clicks from
@@ -392,10 +392,10 @@ live-format secret in committed docs is a leak). Example configs belong in
 placeholder filter passes obvious docs examples (e.g. `AKIAIOSFODNN7EXAMPLE`):
 
 ```bash
-REDACT_VIS=$(~/.claude/skills/gstack/bin/gstack-config get redact_repo_visibility 2>/dev/null)
+REDACT_VIS=$(~/.gemini/skills/gstack/bin/gstack-config get redact_repo_visibility 2>/dev/null)
 [ -z "$REDACT_VIS" ] && REDACT_VIS=$(gh repo view --json visibility -q .visibility 2>/dev/null | tr 'A-Z' 'a-z')
 git diff --cached --no-color | grep '^+' | sed 's/^+//' | \
-  ~/.claude/skills/gstack/bin/gstack-redact --repo-visibility "${REDACT_VIS:-unknown}" --json
+  ~/.gemini/skills/gstack/bin/gstack-redact --repo-visibility "${REDACT_VIS:-unknown}" --json
 # exit 3 (HIGH) → unstage the offending doc, remove the secret, re-stage. Do NOT commit.
 ```
 
@@ -409,7 +409,7 @@ docs: generate [scope] documentation (Diataxis)
 
 Quadrants: [list which quadrants were produced]
 
-Co-Authored-By: Claude Opus 4.7 <noreply@anthropic.com>
+Co-Authored-By: Gemini 1.5 Pro <noreply@google.com>
 EOF
 )"
 ```

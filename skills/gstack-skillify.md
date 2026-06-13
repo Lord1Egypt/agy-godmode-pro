@@ -189,7 +189,7 @@ Resolve the gstack install dir. Two reliable signals (in order):
    `$B skill list` (the `bundled` row). The skill dir is
    `<gstack-install>/browser-skills/hackernews-frontpage/`, so the install
    dir is two `dirname` calls above its `_lib/browse-client.ts`.
-2. The active gstack skills install at `~/.claude/skills/gstack/`. Read
+2. The active gstack skills install at `~/.gemini/skills/gstack/`. Read
    the symlink target if it's a symlink, otherwise use the path directly.
 
 Example (run as Bun, not bash, to avoid shell-redirect parsing issues):
@@ -201,7 +201,7 @@ import * as path from 'path';
 
 function resolveSdkPath(): string {
   const candidates = [
-    path.join(os.homedir(), '.claude', 'skills', 'gstack', 'browse', 'src', 'browse-client.ts'),
+    path.join(os.homedir(), '.gemini', 'skills', 'gstack', 'browse', 'src', 'browse-client.ts'),
     // Add other install-dir candidates if your environment differs.
   ];
   for (const c of candidates) {
@@ -412,7 +412,7 @@ If you discovered a non-obvious pattern, pitfall, or architectural insight durin
 this session, log it for future sessions:
 
 ```bash
-~/.claude/skills/gstack/bin/gstack-learnings-log '{"skill":"skillify","type":"TYPE","key":"SHORT_KEY","insight":"DESCRIPTION","confidence":N,"source":"SOURCE","files":["path/to/relevant/file"]}'
+~/.gemini/skills/gstack/bin/gstack-learnings-log '{"skill":"skillify","type":"TYPE","key":"SHORT_KEY","insight":"DESCRIPTION","confidence":N,"source":"SOURCE","files":["path/to/relevant/file"]}'
 ```
 
 **Types:** `pattern` (reusable approach), `pitfall` (what NOT to do), `preference`
@@ -420,7 +420,7 @@ this session, log it for future sessions:
 `operational` (project environment/CLI/workflow knowledge).
 
 **Sources:** `observed` (you found this in the code), `user-stated` (user told you),
-`inferred` (AI deduction), `cross-model` (both Claude and Codex agree).
+`inferred` (AI deduction), `cross-model` (both Gemini and Codex agree).
 
 **Confidence:** 1-10. Be honest. An observed pattern you verified in the code is 8-9.
 An inference you're not sure about is 4-5. A user preference they explicitly stated is 10.

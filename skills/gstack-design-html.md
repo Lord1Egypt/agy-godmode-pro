@@ -19,16 +19,16 @@ Voice triggers (speech-to-text aliases): "build the design", "code the mockup", 
 ```bash
 _ROOT=$(git rev-parse --show-toplevel 2>/dev/null)
 D=""
-[ -n "$_ROOT" ] && [ -x "$_ROOT/.claude/skills/gstack/design/dist/design" ] && D="$_ROOT/.claude/skills/gstack/design/dist/design"
-[ -z "$D" ] && D="$HOME/.claude/skills/gstack/design/dist/design"
+[ -n "$_ROOT" ] && [ -x "$_ROOT/.gemini/skills/gstack/design/dist/design" ] && D="$_ROOT/.gemini/skills/gstack/design/dist/design"
+[ -z "$D" ] && D="$HOME/.gemini/skills/gstack/design/dist/design"
 if [ -x "$D" ]; then
   echo "DESIGN_READY: $D"
 else
   echo "DESIGN_NOT_AVAILABLE"
 fi
 B=""
-[ -n "$_ROOT" ] && [ -x "$_ROOT/.claude/skills/gstack/browse/dist/browse" ] && B="$_ROOT/.claude/skills/gstack/browse/dist/browse"
-[ -z "$B" ] && B="$HOME/.claude/skills/gstack/browse/dist/browse"
+[ -n "$_ROOT" ] && [ -x "$_ROOT/.gemini/skills/gstack/browse/dist/browse" ] && B="$_ROOT/.gemini/skills/gstack/browse/dist/browse"
+[ -z "$B" ] && B="$HOME/.gemini/skills/gstack/browse/dist/browse"
 if [ -x "$B" ]; then
   echo "BROWSE_READY: $B"
 else
@@ -147,8 +147,8 @@ else a few taps away with an obvious path to get there.
 ```bash
 _ROOT=$(git rev-parse --show-toplevel 2>/dev/null)
 B=""
-[ -n "$_ROOT" ] && [ -x "$_ROOT/.claude/skills/gstack/browse/dist/browse" ] && B="$_ROOT/.claude/skills/gstack/browse/dist/browse"
-[ -z "$B" ] && B="$HOME/.claude/skills/gstack/browse/dist/browse"
+[ -n "$_ROOT" ] && [ -x "$_ROOT/.gemini/skills/gstack/browse/dist/browse" ] && B="$_ROOT/.gemini/skills/gstack/browse/dist/browse"
+[ -z "$B" ] && B="$HOME/.gemini/skills/gstack/browse/dist/browse"
 if [ -x "$B" ]; then
   echo "READY: $B"
 else
@@ -182,7 +182,7 @@ If `NEEDS_SETUP`:
 ## Step 0: Input Detection
 
 ```bash
-eval "$(~/.claude/skills/gstack/bin/gstack-slug 2>/dev/null)"
+eval "$(~/.gemini/skills/gstack/bin/gstack-slug 2>/dev/null)"
 ```
 
 Detect what design context exists for this project. Run all four checks:
@@ -354,8 +354,8 @@ For **vanilla HTML output**, check for the vendored Pretext bundle:
 ```bash
 _PRETEXT_VENDOR=""
 _ROOT=$(git rev-parse --show-toplevel 2>/dev/null)
-[ -n "$_ROOT" ] && [ -f "$_ROOT/.claude/skills/gstack/design-html/vendor/pretext.js" ] && _PRETEXT_VENDOR="$_ROOT/.claude/skills/gstack/design-html/vendor/pretext.js"
-[ -z "$_PRETEXT_VENDOR" ] && [ -f ~/.claude/skills/gstack/design-html/vendor/pretext.js ] && _PRETEXT_VENDOR=~/.claude/skills/gstack/design-html/vendor/pretext.js
+[ -n "$_ROOT" ] && [ -f "$_ROOT/.gemini/skills/gstack/design-html/vendor/pretext.js" ] && _PRETEXT_VENDOR="$_ROOT/.gemini/skills/gstack/design-html/vendor/pretext.js"
+[ -z "$_PRETEXT_VENDOR" ] && [ -f ~/.gemini/skills/gstack/design-html/vendor/pretext.js ] && _PRETEXT_VENDOR=~/.gemini/skills/gstack/design-html/vendor/pretext.js
 [ -n "$_PRETEXT_VENDOR" ] && echo "VENDOR: $_PRETEXT_VENDOR" || echo "VENDOR_MISSING"
 ```
 

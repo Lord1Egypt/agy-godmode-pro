@@ -35,8 +35,8 @@ The skill will tell you if one is needed and how to set it up.
 ```bash
 _ROOT=$(git rev-parse --show-toplevel 2>/dev/null)
 B=""
-[ -n "$_ROOT" ] && [ -x "$_ROOT/.claude/skills/gstack/browse/dist/browse" ] && B="$_ROOT/.claude/skills/gstack/browse/dist/browse"
-[ -z "$B" ] && B="$HOME/.claude/skills/gstack/browse/dist/browse"
+[ -n "$_ROOT" ] && [ -x "$_ROOT/.gemini/skills/gstack/browse/dist/browse" ] && B="$_ROOT/.gemini/skills/gstack/browse/dist/browse"
+[ -z "$B" ] && B="$HOME/.gemini/skills/gstack/browse/dist/browse"
 if [ -x "$B" ]; then
   echo "READY: $B"
 else
@@ -91,7 +91,7 @@ Options:
 - A) OpenClaw (local or remote)
 - B) Codex / OpenAI Agents (local)
 - C) Cursor (local)
-- D) Another Claude Code session (local or remote)
+- D) Another Gemini / agy session (local or remote)
 - E) Something else (generic HTTP instructions — use this for Hermes)
 
 Based on the answer, set `TARGET_HOST`:

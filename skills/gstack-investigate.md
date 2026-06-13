@@ -44,12 +44,12 @@ Gather context before forming any hypothesis.
 Search for relevant learnings from previous sessions:
 
 ```bash
-_CROSS_PROJ=$(~/.claude/skills/gstack/bin/gstack-config get cross_project_learnings 2>/dev/null || echo "unset")
+_CROSS_PROJ=$(~/.gemini/skills/gstack/bin/gstack-config get cross_project_learnings 2>/dev/null || echo "unset")
 echo "CROSS_PROJECT: $_CROSS_PROJ"
 if [ "$_CROSS_PROJ" = "true" ]; then
-  ~/.claude/skills/gstack/bin/gstack-learnings-search --limit 10 --query "debug investigation root cause hypothesis bug fix" --cross-project 2>/dev/null || true
+  ~/.gemini/skills/gstack/bin/gstack-learnings-search --limit 10 --query "debug investigation root cause hypothesis bug fix" --cross-project 2>/dev/null || true
 else
-  ~/.claude/skills/gstack/bin/gstack-learnings-search --limit 10 --query "debug investigation root cause hypothesis bug fix" 2>/dev/null || true
+  ~/.gemini/skills/gstack/bin/gstack-learnings-search --limit 10 --query "debug investigation root cause hypothesis bug fix" 2>/dev/null || true
 fi
 ```
 
@@ -64,8 +64,8 @@ Options:
 - A) Enable cross-project learnings (recommended)
 - B) Keep learnings project-scoped only
 
-If A: run `~/.claude/skills/gstack/bin/gstack-config set cross_project_learnings true`
-If B: run `~/.claude/skills/gstack/bin/gstack-config set cross_project_learnings false`
+If A: run `~/.gemini/skills/gstack/bin/gstack-config set cross_project_learnings true`
+If B: run `~/.gemini/skills/gstack/bin/gstack-config set cross_project_learnings false`
 
 Then re-run the search with the appropriate flag.
 
@@ -88,7 +88,7 @@ Pick ONE keyword from the hypothesis. The keyword should be a noun: the failing 
 Worked examples (investigate-specific): good keywords are `auth-cookie`, `session-expiry`, `redirect-loop`. Bad: `auth.ts:47`, `fix the auth bug`, `<hypothesis-keyword>`.
 
 ```bash
-~/.claude/skills/gstack/bin/gstack-learnings-search --query "<your-keyword>" --limit 5 2>/dev/null || true
+~/.gemini/skills/gstack/bin/gstack-learnings-search --query "<your-keyword>" --limit 5 2>/dev/null || true
 ```
 
 If any learnings come back, name which one applies to your investigation in one sentence. If none come back, continue without reference — the absence of a matching prior learning is itself useful information.
@@ -107,7 +107,7 @@ _FREEZE_SCRIPT="${CLAUDE_SKILL_DIR}/../freeze/bin/check-freeze.sh"
 **If FREEZE_AVAILABLE:** Identify the narrowest directory containing the affected files. Write it to the freeze state file:
 
 ```bash
-eval "$(~/.claude/skills/gstack/bin/gstack-paths)"
+eval "$(~/.gemini/skills/gstack/bin/gstack-paths)"
 STATE_DIR="$GSTACK_STATE_ROOT"
 mkdir -p "$STATE_DIR"
 echo "<detected-directory>/" > "$STATE_DIR/freeze-dir.txt"
@@ -215,7 +215,7 @@ Status:          DONE | DONE_WITH_CONCERNS | BLOCKED
 Log the investigation as a learning for future sessions. Use `type: "investigation"` and include the affected files so future investigations on the same area can find this:
 
 ```bash
-~/.claude/skills/gstack/bin/gstack-learnings-log '{"skill":"investigate","type":"investigation","key":"ROOT_CAUSE_KEY","insight":"ROOT_CAUSE_SUMMARY","confidence":9,"source":"observed","files":["affected/file1.ts","affected/file2.ts"]}'
+~/.gemini/skills/gstack/bin/gstack-learnings-log '{"skill":"investigate","type":"investigation","key":"ROOT_CAUSE_KEY","insight":"ROOT_CAUSE_SUMMARY","confidence":9,"source":"observed","files":["affected/file1.ts","affected/file2.ts"]}'
 ```
 
 ## Capture Learnings
@@ -224,7 +224,7 @@ If you discovered a non-obvious pattern, pitfall, or architectural insight durin
 this session, log it for future sessions:
 
 ```bash
-~/.claude/skills/gstack/bin/gstack-learnings-log '{"skill":"investigate","type":"TYPE","key":"SHORT_KEY","insight":"DESCRIPTION","confidence":N,"source":"SOURCE","files":["path/to/relevant/file"]}'
+~/.gemini/skills/gstack/bin/gstack-learnings-log '{"skill":"investigate","type":"TYPE","key":"SHORT_KEY","insight":"DESCRIPTION","confidence":N,"source":"SOURCE","files":["path/to/relevant/file"]}'
 ```
 
 **Types:** `pattern` (reusable approach), `pitfall` (what NOT to do), `preference`
@@ -232,7 +232,7 @@ this session, log it for future sessions:
 `operational` (project environment/CLI/workflow knowledge).
 
 **Sources:** `observed` (you found this in the code), `user-stated` (user told you),
-`inferred` (AI deduction), `cross-model` (both Claude and Codex agree).
+`inferred` (AI deduction), `cross-model` (both Gemini and Codex agree).
 
 **Confidence:** 1-10. Be honest. An observed pattern you verified in the code is 8-9.
 An inference you're not sure about is 4-5. A user preference they explicitly stated is 10.

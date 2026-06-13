@@ -16,8 +16,8 @@ Voice triggers (speech-to-text aliases): "show me the browser".
 ```bash
 _ROOT=$(git rev-parse --show-toplevel 2>/dev/null)
 B=""
-[ -n "$_ROOT" ] && [ -x "$_ROOT/.claude/skills/gstack/browse/dist/browse" ] && B="$_ROOT/.claude/skills/gstack/browse/dist/browse"
-[ -z "$B" ] && B="$HOME/.claude/skills/gstack/browse/dist/browse"
+[ -n "$_ROOT" ] && [ -x "$_ROOT/.gemini/skills/gstack/browse/dist/browse" ] && B="$_ROOT/.gemini/skills/gstack/browse/dist/browse"
+[ -z "$B" ] && B="$HOME/.gemini/skills/gstack/browse/dist/browse"
 if [ -x "$B" ]; then
   echo "READY: $B"
 else
@@ -112,8 +112,8 @@ Also find the extension path so you can help the user if they need to load it ma
 ```bash
 _EXT_PATH=""
 _ROOT=$(git rev-parse --show-toplevel 2>/dev/null)
-[ -n "$_ROOT" ] && [ -f "$_ROOT/.claude/skills/gstack/extension/manifest.json" ] && _EXT_PATH="$_ROOT/.claude/skills/gstack/extension"
-[ -z "$_EXT_PATH" ] && [ -f "$HOME/.claude/skills/gstack/extension/manifest.json" ] && _EXT_PATH="$HOME/.claude/skills/gstack/extension"
+[ -n "$_ROOT" ] && [ -f "$_ROOT/.gemini/skills/gstack/extension/manifest.json" ] && _EXT_PATH="$_ROOT/.gemini/skills/gstack/extension"
+[ -z "$_EXT_PATH" ] && [ -f "$HOME/.gemini/skills/gstack/extension/manifest.json" ] && _EXT_PATH="$HOME/.gemini/skills/gstack/extension"
 echo "EXTENSION_PATH: ${_EXT_PATH:-NOT FOUND}"
 ```
 
@@ -180,7 +180,7 @@ $B snapshot -i
 ```
 
 Tell the user: "Check the Side Panel — you should see the `goto` and `snapshot`
-commands appear in the activity feed. Every command Claude runs shows up here
+commands appear in the activity feed. Every command Gemini runs shows up here
 in real time."
 
 ## Step 5: Sidebar chat
@@ -188,13 +188,13 @@ in real time."
 After the activity feed demo, tell the user about the sidebar chat:
 
 > The Side Panel also has a **chat tab**. Try typing a message like "take a
-> snapshot and describe this page." A sidebar agent (a child Claude instance)
+> snapshot and describe this page." A sidebar agent (a child Gemini instance)
 > executes your request in the browser — you'll see the commands appear in
 > the activity feed as they happen.
 >
 > The sidebar agent can navigate pages, click buttons, fill forms, and read
 > content. Each task gets up to 5 minutes. It runs in an isolated session, so
-> it won't interfere with this Claude Code window.
+> it won't interfere with this Antigravity CLI window.
 
 ## Step 6: What's next
 
@@ -202,7 +202,7 @@ Tell the user:
 
 > You're all set! Here's what you can do with the connected Chrome:
 >
-> **Watch Claude work in real time:**
+> **Watch Gemini work in real time:**
 > - Run any gstack skill (`/qa`, `/design-review`, `/benchmark`) and watch
 >   every action happen in the visible Chrome window + Side Panel feed
 > - No cookie import needed — the Playwright browser shares its own session

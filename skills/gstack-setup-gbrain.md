@@ -25,7 +25,7 @@ implemented as a dispatcher binary.
 ## Step 1: Detect current state
 
 ```bash
-~/.claude/skills/gstack/bin/gstack-gbrain-detect
+~/.gemini/skills/gstack/bin/gstack-gbrain-detect
 ```
 
 Capture the JSON output. It contains: `gbrain_on_path`, `gbrain_version`,
@@ -80,7 +80,7 @@ dead Postgres URL). Fire a targeted AskUserQuestion BEFORE Step 2:
 >   ❌ N/A
 > Net: A is the right starting move; B/C are explicit destructive paths; D bails.
 
-**If A (Retry)**: re-run `~/.claude/skills/gstack/bin/gstack-gbrain-detect`
+**If A (Retry)**: re-run `~/.gemini/skills/gstack/bin/gstack-gbrain-detect`
 with `GSTACK_DETECT_NO_CACHE=1` (busts the 60s cache). If the new
 `gbrain_local_status` is `ok`, continue to Step 2. If still `broken-db` or
 `broken-config`, fire the same AskUserQuestion again (the user picks again).
@@ -135,7 +135,7 @@ Options (present based on detected state):
   whose openclaw/hermes provisioned one already. Paste the Session Pooler
   URL from the Supabase dashboard (Settings → Database → Connection Pooler
   → Session). *Trust-surface caveat to include in the prompt:* "Pasting this
-  URL gives your local Claude Code full read/write access to every page your
+  URL gives your local Gemini full read/write access to every page your
   cloud agent can see. If that's not the trust level you want, pick PGLite
   local instead and accept the brains are disjoint."
 - **2a — Supabase, auto-provision a new project.** You'll need a Supabase
@@ -165,7 +165,7 @@ Path 4 subsection).
 For Paths 1, 2a, 2b, 3, switch — only if `gbrain_on_path=false`:
 
 ```bash
-~/.claude/skills/gstack/bin/gstack-gbrain-install
+~/.gemini/skills/gstack/bin/gstack-gbrain-install
 ```
 
 The installer runs D5 detect-first (probes `~/git/gbrain`, `~/gbrain` first),
@@ -184,7 +184,7 @@ Path-specific.
 Source the secret-read helper, collect URL with `read -s` + redacted preview:
 
 ```bash
-. ~/.claude/skills/gstack/bin/gstack-gbrain-lib.sh
+. ~/.gemini/skills/gstack/bin/gstack-gbrain-lib.sh
 read_secret_to_env GBRAIN_POOLER_URL "Paste Session Pooler URL: " \
   --echo-redacted 's#://[^@]*@#://***@#'
 ```
@@ -192,7 +192,7 @@ read_secret_to_env GBRAIN_POOLER_URL "Paste Session Pooler URL: " \
 Then validate structurally:
 
 ```bash
-printf '%s' "$GBRAIN_POOLER_URL" | ~/.claude/skills/gstack/bin/gstack-gbrain-supabase-verify -
+printf '%s' "$GBRAIN_POOLER_URL" | ~/.gemini/skills/gstack/bin/gstack-gbrain-supabase-verify -
 ```
 
 If the verify exit code is 3 (direct-connection URL), the verifier's own
@@ -223,7 +223,7 @@ Show the D11 PAT scope disclosure verbatim BEFORE collecting the token:
 Then:
 
 ```bash
-. ~/.claude/skills/gstack/bin/gstack-gbrain-lib.sh
+. ~/.gemini/skills/gstack/bin/gstack-gbrain-lib.sh
 read_secret_to_env SUPABASE_ACCESS_TOKEN "Paste PAT: "
 ```
 
@@ -236,7 +236,7 @@ tier. Pro may require them to upgrade the org first at supabase.com.
 List orgs, pick one (AskUserQuestion if multiple):
 
 ```bash
-orgs=$(~/.claude/skills/gstack/bin/gstack-gbrain-supabase-provision list-orgs --json)
+orgs=$(~/.gemini/skills/gstack/bin/gstack-gbrain-supabase-provision list-orgs --json)
 ```
 
 If the `.orgs` array is empty, surface: "Your Supabase account has no
@@ -265,11 +265,11 @@ trap 'echo ""; echo "gstack-gbrain: interrupted. In-flight ref: $INFLIGHT_REF"; 
 Create + wait + fetch:
 
 ```bash
-result=$(~/.claude/skills/gstack/bin/gstack-gbrain-supabase-provision \
+result=$(~/.gemini/skills/gstack/bin/gstack-gbrain-supabase-provision \
   create gbrain "$REGION" "$ORG_SLUG" --json)
 INFLIGHT_REF=$(echo "$result" | jq -r .ref)
-~/.claude/skills/gstack/bin/gstack-gbrain-supabase-provision wait "$INFLIGHT_REF" --json
-pooler=$(~/.claude/skills/gstack/bin/gstack-gbrain-supabase-provision \
+~/.gemini/skills/gstack/bin/gstack-gbrain-supabase-provision wait "$INFLIGHT_REF" --json
+pooler=$(~/.gemini/skills/gstack/bin/gstack-gbrain-supabase-provision \
   pooler-url "$INFLIGHT_REF" --json)
 GBRAIN_DATABASE_URL=$(echo "$pooler" | jq -r .pooler_url)
 export GBRAIN_DATABASE_URL
@@ -334,7 +334,7 @@ non-loopback host); refuse `http://` for non-localhost.
 **4b. Collect bearer token via the secret-read helper (D10, never argv).**
 
 ```bash
-. ~/.claude/skills/gstack/bin/gstack-gbrain-lib.sh
+. ~/.gemini/skills/gstack/bin/gstack-gbrain-lib.sh
 read_secret_to_env GBRAIN_MCP_TOKEN "Paste bearer token: " \
   --echo-redacted 's/.\{6\}$/***REDACTED***/'
 ```
@@ -344,7 +344,7 @@ classified JSON output:
 
 ```bash
 verify_json=$(GBRAIN_MCP_TOKEN="$GBRAIN_MCP_TOKEN" \
-  ~/.claude/skills/gstack/bin/gstack-gbrain-mcp-verify "$MCP_URL")
+  ~/.gemini/skills/gstack/bin/gstack-gbrain-mcp-verify "$MCP_URL")
 status=$(echo "$verify_json" | jq -r .status)
 ```
 
@@ -356,7 +356,7 @@ on a failed verify — partial registration would leave the user with a
 half-broken state.
 
 Capture two values from the verify output for downstream steps:
-- `SERVER_VERSION` (e.g., `0.27.1`) — written to the CLAUDE.md block in Step 8.
+- `SERVER_VERSION` (e.g., `0.27.1`) — written to the GEMINI.md block in Step 8.
 - `URL_FORM_SUPPORTED` (`true|false`) — passed to `gstack-artifacts-init` in
   Step 7 to control which form of the brain-admin hookup command is printed.
 
@@ -378,14 +378,14 @@ Capture two values from the verify output for downstream steps:
 >   ✅ Unlocks `gbrain code-def`, `code-refs`, `code-callers` per worktree
 >   ✅ Independent engine — won't disturb remote brain or share transcripts
 > B) No, remote MCP only
->   ✅ Zero local state — only `~/.claude.json` MCP registration
+>   ✅ Zero local state — only `~/.gemini.json` MCP registration
 >   ❌ Symbol code queries fall back to Grep in this repo's worktrees
 > Net: A = full split-engine; B = remote-only.
 
 **If A (Yes)**: install + init local PGLite with rollback-safe semantics (D7):
 
 ```bash
-~/.claude/skills/gstack/bin/gstack-gbrain-install || exit $?
+~/.gemini/skills/gstack/bin/gstack-gbrain-install || exit $?
 # At this point the local gbrain CLI is on PATH. Init PGLite, but back up any
 # existing ~/.gbrain/config.json first (rollback if init fails).
 if [ -f "$HOME/.gbrain/config.json" ]; then
@@ -408,7 +408,7 @@ fi
 ```
 
 Then continue to Step 5a. The remote-http MCP registration in 5a runs as
-today; the local PGLite is independent of MCP registration (Claude Code talks
+today; the local PGLite is independent of MCP registration (Gemini talks
 to the remote brain via MCP for queries; `gbrain` CLI talks to local PGLite
 for code-def/refs/callers).
 
@@ -427,7 +427,7 @@ The bearer token (`GBRAIN_MCP_TOKEN`) stays in process env until Step 5a's
 `claude mcp add --header` consumes it; then `unset GBRAIN_MCP_TOKEN`
 immediately. Token security trade-off documented in
 `setup-gbrain/memory.md`: brief argv exposure during `claude mcp add`,
-resting state in `~/.claude.json` mode 0600.
+resting state in `~/.gemini.json` mode 0600.
 
 ### Switch (from detect's existing-engine state)
 
@@ -462,9 +462,9 @@ If status is `ok` or `warnings`, proceed. Anything else → surface the full
 doctor output and STOP.
 
 
-## Step 5a: Register gbrain as Claude Code MCP (D18)
+## Step 5a: Register gbrain as Gemini MCP (D18)
 
-Only if `which claude` resolves. Ask: "Give Claude Code a typed tool surface
+Only if `which claude` resolves. Ask: "Give Gemini a typed tool surface
 for gbrain? (recommended yes)"
 
 The registration form depends on the path picked in Step 2:
@@ -486,17 +486,17 @@ claude mcp list | grep gbrain  # verify: should show "✓ Connected"
 
 **Token-storage note:** `claude mcp add --header "Authorization: Bearer ..."`
 puts the bearer on argv during process startup, briefly visible to `ps` for
-~10ms. The token's resting state is `~/.claude.json` (mode 0600 — Claude
-Code's own credential surface for every MCP server). This trade-off is
-documented in `setup-gbrain/memory.md`. If a future Claude Code release adds
+~10ms. The token's resting state is `~/.gemini.json` (mode 0600 — Gemini's
+own credential surface for every MCP server). This trade-off is
+documented in `setup-gbrain/memory.md`. If a future Gemini release adds
 a stdin or env-var input form for headers, switch to that.
 
 ### Paths 1, 2a, 2b, 3 (Local stdio)
 
 Register at **user scope** with an **absolute path** to the gbrain
-binary. User scope makes the MCP available in every Claude Code session on
+binary. User scope makes the MCP available in every Gemini session on
 this machine, not just the current workspace. Absolute path avoids PATH
-resolution issues when Claude Code spawns `gbrain serve` as a subprocess.
+resolution issues when Gemini spawns `gbrain serve` as a subprocess.
 
 ```bash
 GBRAIN_BIN=$(command -v gbrain)
@@ -510,12 +510,12 @@ claude mcp list | grep gbrain  # verify: should show "✓ Connected"
 ### Both paths
 
 If `claude` is not on PATH: emit "MCP registration skipped — this skill is
-Claude-Code-targeted; register `gbrain serve` (or your remote MCP URL) in
+Gemini-targeted; register `gbrain serve` (or your remote MCP URL) in
 your agent's MCP config manually." Continue to step 6.
 
-**Heads-up for the user:** an already-open Claude Code session will not
+**Heads-up for the user:** an already-open Gemini session will not
 pick up the new MCP tools until restart. Tell them: "Restart any open
-Claude Code sessions to see `mcp__gbrain__*` tools — they're loaded at
+Gemini sessions to see `mcp__gbrain__*` tools — they're loaded at
 session start, not mid-session."
 
 
@@ -524,7 +524,7 @@ session start, not mid-session."
 If we're in a git repo with an `origin` remote, check the policy:
 
 ```bash
-current_tier=$(~/.claude/skills/gstack/bin/gstack-gbrain-repo-policy get)
+current_tier=$(~/.gemini/skills/gstack/bin/gstack-gbrain-repo-policy get)
 ```
 
 Branches:
@@ -542,7 +542,7 @@ Branches:
 
   On answer (other than skip-for-now):
   ```bash
-  ~/.claude/skills/gstack/bin/gstack-gbrain-repo-policy set "$REMOTE" "$TIER"
+  ~/.gemini/skills/gstack/bin/gstack-gbrain-repo-policy set "$REMOTE" "$TIER"
   ```
   Then import iff `read-write`.
 
@@ -576,8 +576,8 @@ verify output (Path 4) or `false` (Paths 1/2/3 — local mode doesn't probe):
 
 ```bash
 URL_FORM=${URL_FORM_SUPPORTED:-false}
-~/.claude/skills/gstack/bin/gstack-artifacts-init --url-form-supported "$URL_FORM"
-~/.claude/skills/gstack/bin/gstack-config set artifacts_sync_mode artifacts-only
+~/.gemini/skills/gstack/bin/gstack-artifacts-init --url-form-supported "$URL_FORM"
+~/.gemini/skills/gstack/bin/gstack-config set artifacts_sync_mode artifacts-only
 # or "full" if user picked yes-full
 ```
 
@@ -613,7 +613,7 @@ try:
 except Exception:
     pass
 ")
-~/.claude/skills/gstack/bin/gstack-gbrain-source-wireup --strict \
+~/.gemini/skills/gstack/bin/gstack-gbrain-source-wireup --strict \
   ${GBRAIN_URL:+--database-url "$GBRAIN_URL"}
 ```
 
@@ -635,14 +635,14 @@ repo (set up in Step 7) on whatever schedule they prefer. Set
 
 For Paths 1, 2a, 2b, 3:
 
-After memory sync is wired (Step 7) but before persisting the CLAUDE.md
+After memory sync is wired (Step 7) but before persisting the GEMINI.md
 config (Step 8), offer to bring this Mac's coding-agent transcripts +
 curated `~/.gstack/` artifacts into gbrain so the retrieval surface
 (per-skill manifests, salience block) has data to surface.
 
 Run the probe to size the operation:
 ```bash
-~/.claude/skills/gstack/bin/gstack-memory-ingest --probe
+~/.gemini/skills/gstack/bin/gstack-memory-ingest --probe
 ```
 
 Read the output. If `Total files in window: 0`, skip — there's nothing
@@ -686,8 +686,8 @@ Options:
 
 After answer:
 ```bash
-~/.claude/skills/gstack/bin/gstack-config set transcript_ingest_mode <choice>
-~/.claude/skills/gstack/bin/gstack-gbrain-sync --full --no-brain-sync
+~/.gemini/skills/gstack/bin/gstack-config set transcript_ingest_mode <choice>
+~/.gemini/skills/gstack/bin/gstack-gbrain-sync --full --no-brain-sync
 ```
 (`--no-brain-sync` because Step 7 already wired that path; this just
 runs the code import + memory ingest stages. Brain-sync will run on the
@@ -697,11 +697,11 @@ If A/D/E, ingest is incremental from this point on; preamble-boundary
 hook runs `gstack-gbrain-sync --incremental --quiet` on every skill
 start (cheap mtime fast-path).
 
-Reference doc for users: `setup-gbrain/memory.md` (linked from CLAUDE.md
+Reference doc for users: `setup-gbrain/memory.md` (linked from GEMINI.md
 Step 8).
 
 
-## Step 8: Persist `## GBrain Configuration` in CLAUDE.md
+## Step 8: Persist `## GBrain Configuration` in GEMINI.md
 
 Find-and-replace (or append) the section. Block format depends on mode:
 
@@ -714,14 +714,14 @@ Find-and-replace (or append) the section. Block format depends on mode:
 - Server version: gbrain v{SERVER_VERSION}  (from Step 4c verify)
 - Setup date: {today}
 - MCP registered: yes (user scope)
-- Token: stored in ~/.claude.json (do not commit; never written to CLAUDE.md)
+- Token: stored in ~/.gemini.json (do not commit; never written to GEMINI.md)
 - Artifacts repo: {gstack_artifacts_remote URL or "none"}
 - Artifacts sync: {off|artifacts-only|full}
 - Current repo policy: {read-write|read-only|deny|unset}
 ```
 
-The bearer token is **never** written to CLAUDE.md (CLAUDE.md is checked
-in to git in many projects). It lives only in `~/.claude.json` where
+The bearer token is **never** written to GEMINI.md (GEMINI.md is checked
+in to git in many projects). It lives only in `~/.gemini.json` where
 `claude mcp add` placed it.
 
 ### Paths 1, 2a, 2b, 3 (Local stdio)
@@ -787,15 +787,15 @@ the round-trip works.
 ### Path 4 (Remote MCP)
 
 The `mcp__gbrain__*` tools aren't visible mid-session — they're loaded at
-Claude Code session start. So the live smoke test in this same skill run is
+Gemini session start. So the live smoke test in this same skill run is
 informational: print the curl-equivalent the user can run after restarting
-Claude Code. The verify round-trip in Step 4c already proved the server is
+Gemini. The verify round-trip in Step 4c already proved the server is
 reachable + authed + on a compatible MCP version, so we don't re-test that.
 
 Print to stdout:
 
 ```
-After restarting Claude Code, the `mcp__gbrain__*` tools become callable.
+After restarting Gemini, the `mcp__gbrain__*` tools become callable.
 Smoke test: ask the agent to run `mcp__gbrain__search` with any query
 ("test page" works). You should see a JSON list of pages.
 
@@ -832,8 +832,8 @@ MCP (shared) gets both policies tracked separately.
 Detect the active endpoint hash + current policy:
 
 ```bash
-_HASH=$(~/.claude/skills/gstack/bin/gstack-config endpoint-hash 2>/dev/null)
-_POLICY=$(~/.claude/skills/gstack/bin/gstack-config get brain_trust_policy@$_HASH 2>/dev/null || echo unset)
+_HASH=$(~/.gemini/skills/gstack/bin/gstack-config endpoint-hash 2>/dev/null)
+_POLICY=$(~/.gemini/skills/gstack/bin/gstack-config get brain_trust_policy@$_HASH 2>/dev/null || echo unset)
 echo "ENDPOINT_HASH: $_HASH"
 echo "BRAIN_TRUST_POLICY: $_POLICY"
 ```
@@ -847,7 +847,7 @@ Branch on transport + current policy:
 (local engines are inherently single-tenant). No AskUserQuestion.
 
 ```bash
-~/.claude/skills/gstack/bin/gstack-config set brain_trust_policy@$_HASH personal
+~/.gemini/skills/gstack/bin/gstack-config set brain_trust_policy@$_HASH personal
 echo "Trust policy auto-set to 'personal' for local PGLite (single-tenant by construction)."
 ```
 
@@ -873,16 +873,16 @@ Options:
 After answer, persist:
 
 ```bash
-~/.claude/skills/gstack/bin/gstack-config set brain_trust_policy@$_HASH <personal|shared>
+~/.gemini/skills/gstack/bin/gstack-config set brain_trust_policy@$_HASH <personal|shared>
 ```
 
 If `personal` was selected AND `artifacts_sync_mode` is still `off`, also
 default it to `full` (D4 auto-push convention):
 
 ```bash
-_CURRENT_SYNC=$(~/.claude/skills/gstack/bin/gstack-config get artifacts_sync_mode 2>/dev/null || echo off)
+_CURRENT_SYNC=$(~/.gemini/skills/gstack/bin/gstack-config get artifacts_sync_mode 2>/dev/null || echo off)
 if [ "$_CURRENT_SYNC" = "off" ]; then
-  ~/.claude/skills/gstack/bin/gstack-config set artifacts_sync_mode full
+  ~/.gemini/skills/gstack/bin/gstack-config set artifacts_sync_mode full
   echo "artifacts_sync_mode auto-set to 'full' (personal brain default)."
 fi
 ```
@@ -898,9 +898,9 @@ configured Mac is a first-class doctor path: every step detects existing
 state, repairs only what's missing, and reports here.
 
 ```bash
-~/.claude/skills/gstack/bin/gstack-gbrain-detect 2>/dev/null || true
-~/.claude/skills/gstack/bin/gstack-config get transcript_ingest_mode 2>/dev/null || echo "off"
-~/.claude/skills/gstack/bin/gstack-config get artifacts_sync_mode 2>/dev/null || echo "off"
+~/.gemini/skills/gstack/bin/gstack-gbrain-detect 2>/dev/null || true
+~/.gemini/skills/gstack/bin/gstack-config get transcript_ingest_mode 2>/dev/null || echo "off"
+~/.gemini/skills/gstack/bin/gstack-config get artifacts_sync_mode 2>/dev/null || echo "off"
 [ -f ~/.gstack/.gbrain-sync-state.json ] && cat ~/.gstack/.gbrain-sync-state.json || echo "{}"
 ```
 
@@ -921,10 +921,10 @@ gbrain status: GREEN  (mode: remote-http)
   Artifacts sync .. OK   {artifacts_sync_mode}
   Transcripts ..... OK   route to artifacts repo → remote brain (plan D11)
   Code search ..... {OK local-pglite (~/.gbrain/pglite) | N/A declined at Step 4d}
-  CLAUDE.md ....... OK
+  GEMINI.md ....... OK
   Smoke test ...... INFO printed for post-restart manual verification
 
-Restart Claude Code to pick up the `mcp__gbrain__*` tools.
+Restart Gemini to pick up the `mcp__gbrain__*` tools.
 Re-run `/setup-gbrain` any time the bearer rotates or the URL moves.
 ```
 
@@ -951,7 +951,7 @@ gbrain status: GREEN  (mode: local-stdio)
   Code import ..... OK   <last_imported_head>
   Artifacts sync .. OK   <artifacts_sync_mode> to <remote>
   Transcripts ..... OK   <N> sessions, last ingest <when>
-  CLAUDE.md ....... OK
+  GEMINI.md ....... OK
   Smoke test ...... OK   put → search → delete round-trip
 
 Run `/setup-gbrain` again any time gbrain feels off; it's safe and idempotent.
@@ -1005,7 +1005,7 @@ telemetry payload (SAFE — no free-form secrets, never the URL or PAT):
   `switch-to-pglite` | `repo-flip-only` | `cleanup-orphans` |
   `resume-provision`
 - `install_performed`: `yes` | `no` (D5 reuse) | `skipped` (pre-existing)
-- `mcp_registered`: `yes` | `no` | `claude-missing`
+- `mcp_registered`: `yes` | `no` | `gemini-missing`
 - `trust_tier_set`: `read-write` | `read-only` | `deny` |
   `skip-for-now` | `n/a` (outside git repo)
 
@@ -1028,5 +1028,5 @@ this at build time.
   (atomic). If the mkdir fails, abort with: "Another `/setup-gbrain` instance
   is running. Wait for it, or `rm -rf ~/.gstack/.setup-gbrain.lock.d` if
   you're sure it's stale." Release on normal exit AND in the SIGINT trap.
-- **CLAUDE.md is the audit trail.** Always update it in Step 8 after a
+- **GEMINI.md is the audit trail.** Always update it in Step 8 after a
   successful setup.

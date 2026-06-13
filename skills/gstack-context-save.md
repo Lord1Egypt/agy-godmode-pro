@@ -8,7 +8,7 @@ Captures git state, decisions made, and remaining work
 so any future session can pick up without losing a beat.
 Use when asked to "save progress", "save state", "context save", or
 "save my work". Pair with /context-restore to resume later.
-Formerly /checkpoint — renamed because Claude Code treats /checkpoint as a
+Formerly /checkpoint — renamed because Gemini treats /checkpoint as a
 native rewind alias in current environments, which was shadowing this skill.
 
 ## Detect command
@@ -30,7 +30,7 @@ If the user types `/context-save resume` or `/context-save restore`, tell them:
 ### Step 1: Gather state
 
 ```bash
-eval "$(~/.claude/skills/gstack/bin/gstack-slug 2>/dev/null)" && mkdir -p ~/.gstack/projects/$SLUG
+eval "$(~/.gemini/skills/gstack/bin/gstack-slug 2>/dev/null)" && mkdir -p ~/.gstack/projects/$SLUG
 ```
 
 Collect the current working state:
@@ -90,8 +90,8 @@ inject shell metacharacters into any subsequent command. The sanitizer is an
 allowlist: only `a-z 0-9 - .` survive.
 
 ```bash
-eval "$(~/.claude/skills/gstack/bin/gstack-slug 2>/dev/null)" && mkdir -p ~/.gstack/projects/$SLUG
-eval "$(~/.claude/skills/gstack/bin/gstack-paths)"
+eval "$(~/.gemini/skills/gstack/bin/gstack-slug 2>/dev/null)" && mkdir -p ~/.gstack/projects/$SLUG
+eval "$(~/.gemini/skills/gstack/bin/gstack-paths)"
 CHECKPOINT_DIR="$GSTACK_STATE_ROOT/projects/$SLUG/checkpoints"
 mkdir -p "$CHECKPOINT_DIR"
 TIMESTAMP=$(date +%Y%m%d-%H%M%S)
@@ -174,8 +174,8 @@ Restore later with /context-restore.
 ### Step 1: Gather saved contexts
 
 ```bash
-eval "$(~/.claude/skills/gstack/bin/gstack-slug 2>/dev/null)" && mkdir -p ~/.gstack/projects/$SLUG
-eval "$(~/.claude/skills/gstack/bin/gstack-paths)"
+eval "$(~/.gemini/skills/gstack/bin/gstack-slug 2>/dev/null)" && mkdir -p ~/.gstack/projects/$SLUG
+eval "$(~/.gemini/skills/gstack/bin/gstack-paths)"
 CHECKPOINT_DIR="$GSTACK_STATE_ROOT/projects/$SLUG/checkpoints"
 if [ -d "$CHECKPOINT_DIR" ]; then
   echo "CHECKPOINT_DIR=$CHECKPOINT_DIR"
@@ -237,6 +237,6 @@ If there are no saved contexts, tell the user: "No saved contexts yet. Run
   save creates a new file.
 - **Infer, don't interrogate.** Use git state and conversation context to fill in
   the file. Only use AskUserQuestion if the title genuinely cannot be inferred.
-- **This is a gstack skill, not a Claude Code built-in.** When the user types
+- **This is a gstack skill, not a Gemini built-in.** When the user types
   `/context-save`, invoke this skill via the Skill tool. The old `/checkpoint`
-  name collided with Claude Code's native `/rewind` alias — the rename fixed that.
+  name collided with Gemini's native `/rewind` alias — the rename fixed that.

@@ -33,7 +33,7 @@ Look for office-hours output:
 
 ```bash
 setopt +o nomatch 2>/dev/null || true  # zsh compat
-eval "$(~/.claude/skills/gstack/bin/gstack-slug 2>/dev/null)"
+eval "$(~/.gemini/skills/gstack/bin/gstack-slug 2>/dev/null)"
 ls ~/.gstack/projects/$SLUG/*office-hours* 2>/dev/null | head -5
 ls .context/*office-hours* .context/attachments/*office-hours* 2>/dev/null | head -5
 ```
@@ -49,8 +49,8 @@ If the codebase is empty and purpose is unclear, say: *"I don't have a clear pic
 ```bash
 _ROOT=$(git rev-parse --show-toplevel 2>/dev/null)
 B=""
-[ -n "$_ROOT" ] && [ -x "$_ROOT/.claude/skills/gstack/browse/dist/browse" ] && B="$_ROOT/.claude/skills/gstack/browse/dist/browse"
-[ -z "$B" ] && B="$HOME/.claude/skills/gstack/browse/dist/browse"
+[ -n "$_ROOT" ] && [ -x "$_ROOT/.gemini/skills/gstack/browse/dist/browse" ] && B="$_ROOT/.gemini/skills/gstack/browse/dist/browse"
+[ -z "$B" ] && B="$HOME/.gemini/skills/gstack/browse/dist/browse"
 if [ -x "$B" ]; then
   echo "READY: $B"
 else
@@ -89,16 +89,16 @@ If browse is not available, that's fine — visual research is optional. The ski
 ```bash
 _ROOT=$(git rev-parse --show-toplevel 2>/dev/null)
 D=""
-[ -n "$_ROOT" ] && [ -x "$_ROOT/.claude/skills/gstack/design/dist/design" ] && D="$_ROOT/.claude/skills/gstack/design/dist/design"
-[ -z "$D" ] && D="$HOME/.claude/skills/gstack/design/dist/design"
+[ -n "$_ROOT" ] && [ -x "$_ROOT/.gemini/skills/gstack/design/dist/design" ] && D="$_ROOT/.gemini/skills/gstack/design/dist/design"
+[ -z "$D" ] && D="$HOME/.gemini/skills/gstack/design/dist/design"
 if [ -x "$D" ]; then
   echo "DESIGN_READY: $D"
 else
   echo "DESIGN_NOT_AVAILABLE"
 fi
 B=""
-[ -n "$_ROOT" ] && [ -x "$_ROOT/.claude/skills/gstack/browse/dist/browse" ] && B="$_ROOT/.claude/skills/gstack/browse/dist/browse"
-[ -z "$B" ] && B="$HOME/.claude/skills/gstack/browse/dist/browse"
+[ -n "$_ROOT" ] && [ -x "$_ROOT/.gemini/skills/gstack/browse/dist/browse" ] && B="$_ROOT/.gemini/skills/gstack/browse/dist/browse"
+[ -z "$B" ] && B="$HOME/.gemini/skills/gstack/browse/dist/browse"
 if [ -x "$B" ]; then
   echo "BROWSE_READY: $B"
 else
@@ -139,12 +139,12 @@ If `DESIGN_NOT_AVAILABLE`: Phase 5 falls back to the HTML preview page (still go
 Search for relevant learnings from previous sessions:
 
 ```bash
-_CROSS_PROJ=$(~/.claude/skills/gstack/bin/gstack-config get cross_project_learnings 2>/dev/null || echo "unset")
+_CROSS_PROJ=$(~/.gemini/skills/gstack/bin/gstack-config get cross_project_learnings 2>/dev/null || echo "unset")
 echo "CROSS_PROJECT: $_CROSS_PROJ"
 if [ "$_CROSS_PROJ" = "true" ]; then
-  ~/.claude/skills/gstack/bin/gstack-learnings-search --limit 10 --cross-project 2>/dev/null || true
+  ~/.gemini/skills/gstack/bin/gstack-learnings-search --limit 10 --cross-project 2>/dev/null || true
 else
-  ~/.claude/skills/gstack/bin/gstack-learnings-search --limit 10 2>/dev/null || true
+  ~/.gemini/skills/gstack/bin/gstack-learnings-search --limit 10 2>/dev/null || true
 fi
 ```
 
@@ -159,8 +159,8 @@ Options:
 - A) Enable cross-project learnings (recommended)
 - B) Keep learnings project-scoped only
 
-If A: run `~/.claude/skills/gstack/bin/gstack-config set cross_project_learnings true`
-If B: run `~/.claude/skills/gstack/bin/gstack-config set cross_project_learnings false`
+If A: run `~/.gemini/skills/gstack/bin/gstack-config set cross_project_learnings true`
+If B: run `~/.gemini/skills/gstack/bin/gstack-config set cross_project_learnings false`
 
 Then re-run the search with the appropriate flag.
 
@@ -242,7 +242,7 @@ as a one-off?"
 happens at read time, not write time, so the file only grows on change.
 
 **Schema migration:** If the file has no `version` field or `version: 0`, it's
-the legacy approved.json aggregate — `~/.claude/skills/gstack/bin/gstack-taste-update`
+the legacy approved.json aggregate — `~/.gemini/skills/gstack/bin/gstack-taste-update`
 will migrate it to schema v1 on the next write.
 
 If a taste profile exists for this project, factor it into your Phase 3 proposal.
@@ -302,7 +302,7 @@ If the user said no research, skip entirely and proceed to Phase 3 using your bu
 ## Design Outside Voices (parallel)
 
 Use AskUserQuestion:
-> "Want outside design voices? Codex evaluates against OpenAI's design hard rules + litmus checks; Claude subagent does an independent design direction proposal."
+> "Want outside design voices? Codex evaluates against OpenAI's design hard rules + litmus checks; Gemini subagent does an independent design direction proposal."
 >
 > A) Yes — run outside design voices
 > B) No — proceed without
@@ -335,7 +335,7 @@ Use a 5-minute timeout (`timeout: 300000`). After the command completes, read st
 cat "$TMPERR_DESIGN" && rm -f "$TMPERR_DESIGN"
 ```
 
-2. **Claude design subagent** (via Agent tool):
+2. **Gemini design subagent** (via Agent tool):
 Dispatch a subagent with this prompt:
 "Given this product context, propose a design direction that would SURPRISE. What would the cool indie studio do that the enterprise UI team wouldn't?
 - Propose an aesthetic direction, typography stack (specific font names), color palette (hex values)
@@ -348,24 +348,24 @@ Be bold. Be specific. No hedging."
 - **Auth failure:** If stderr contains "auth", "login", "unauthorized", or "API key": "Codex authentication failed. Run `codex login` to authenticate."
 - **Timeout:** "Codex timed out after 5 minutes."
 - **Empty response:** "Codex returned no response."
-- On any Codex error: proceed with Claude subagent output only, tagged `[single-model]`.
-- If Claude subagent also fails: "Outside voices unavailable — continuing with primary review."
+- On any Codex error: proceed with Gemini subagent output only, tagged `[single-model]`.
+- If Gemini subagent also fails: "Outside voices unavailable — continuing with primary review."
 
 Present Codex output under a `CODEX SAYS (design direction):` header.
-Present subagent output under a `CLAUDE SUBAGENT (design direction):` header.
+Present subagent output under a `GEMINI SUBAGENT (design direction):` header.
 
-**Synthesis:** Claude main references both Codex and subagent proposals in the Phase 3 proposal. Present:
-- Areas of agreement between all three voices (Claude main + Codex + subagent)
+**Synthesis:** Gemini main references both Codex and subagent proposals in the Phase 3 proposal. Present:
+- Areas of agreement between all three voices (Gemini main + Codex + subagent)
 - Genuine divergences as creative alternatives for the user to choose from
 - "Codex and I agree on X. Codex suggested Y where I'm proposing Z — here's why..."
 
 **Log the result:**
 ```bash
-~/.claude/skills/gstack/bin/gstack-review-log '{"skill":"design-outside-voices","timestamp":"'"$(date -u +%Y-%m-%dT%H:%M:%SZ)"'","status":"STATUS","source":"SOURCE","commit":"'"$(git rev-parse --short HEAD)"'"}'
+~/.gemini/skills/gstack/bin/gstack-review-log '{"skill":"design-outside-voices","timestamp":"'"$(date -u +%Y-%m-%dT%H:%M:%SZ)"'","status":"STATUS","source":"SOURCE","commit":"'"$(git rev-parse --short HEAD)"'"}'
 ```
 Replace STATUS with "clean" or "issues_found", SOURCE with "codex+subagent", "codex-only", "subagent-only", or "unavailable".
 
-> **STOP.** Before building the complete design-system proposal, drill-downs, the design preview, and writing DESIGN.md (Phases 3-6, after product context and research), Read `~/.claude/skills/gstack/design-consultation/sections/proposal-and-preview.md` and execute it
+> **STOP.** Before building the complete design-system proposal, drill-downs, the design preview, and writing DESIGN.md (Phases 3-6, after product context and research), Read `~/.gemini/skills/gstack/design-consultation/sections/proposal-and-preview.md` and execute it
 > in full. Do not work from memory — that section is the source of truth for this step.
 ## Capture Learnings
 
@@ -373,7 +373,7 @@ If you discovered a non-obvious pattern, pitfall, or architectural insight durin
 this session, log it for future sessions:
 
 ```bash
-~/.claude/skills/gstack/bin/gstack-learnings-log '{"skill":"design-consultation","type":"TYPE","key":"SHORT_KEY","insight":"DESCRIPTION","confidence":N,"source":"SOURCE","files":["path/to/relevant/file"]}'
+~/.gemini/skills/gstack/bin/gstack-learnings-log '{"skill":"design-consultation","type":"TYPE","key":"SHORT_KEY","insight":"DESCRIPTION","confidence":N,"source":"SOURCE","files":["path/to/relevant/file"]}'
 ```
 
 **Types:** `pattern` (reusable approach), `pitfall` (what NOT to do), `preference`
@@ -381,7 +381,7 @@ this session, log it for future sessions:
 `operational` (project environment/CLI/workflow knowledge).
 
 **Sources:** `observed` (you found this in the code), `user-stated` (user told you),
-`inferred` (AI deduction), `cross-model` (both Claude and Codex agree).
+`inferred` (AI deduction), `cross-model` (both Gemini and Codex agree).
 
 **Confidence:** 1-10. Be honest. An observed pattern you verified in the code is 8-9.
 An inference you're not sure about is 4-5. A user preference they explicitly stated is 10.

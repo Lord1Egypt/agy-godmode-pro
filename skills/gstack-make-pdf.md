@@ -171,7 +171,7 @@ Metadata:
   --date "..."               Date for cover (defaults to today)
 ```
 
-## When Claude should run it
+## When Gemini should run it
 
 Watch for markdown-to-PDF intent. Any of these patterns → run `$P generate`:
 
