@@ -314,6 +314,8 @@ wait && cat /tmp/a.txt /tmp/b.txt
 
 ## Code Quality Rules
 
+**Auto-Review Every Change.** Every time you write or modify code, you MUST autonomously trigger `@~/.gemini/skills/agy-auto-review.md` before finalizing your response. Spawn a subagent, get a review, fix the issues, and report the rating. Do not ask for permission.
+
 **No comments unless the WHY is non-obvious.** A hidden constraint, a workaround for a specific bug, a counter-intuitive invariant. Never explain WHAT the code does.
 
 **No extra features.** Only what's asked. Three similar lines beats a premature abstraction.
@@ -375,6 +377,7 @@ These skills live at `~/.gemini/skills/`. Load any skill with `@~/.gemini/skills
 |-----------|-------------|
 | `@~/.gemini/skills/rust.md` | Deep Rust patterns, ThothTerm work, wgpu/WASM |
 | `@~/.gemini/skills/solidity.md` | Smart contract audits, ethsmith, Web3 security |
+| `@~/.gemini/skills/agy-auto-review.md` | Autonomous code review subagent and auto-fix loop |
 | `@~/.gemini/skills/python.md` | Python packaging, FastAPI, async patterns |
 | `@~/.gemini/skills/debugging.md` | Systematic root-cause analysis |
 | `@~/.gemini/skills/code-review.md` | Full code review checklist |
