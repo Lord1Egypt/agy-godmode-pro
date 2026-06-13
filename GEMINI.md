@@ -487,31 +487,22 @@ Concise. Direct. Zero preamble.
 
 ## Developer Profile
 
-Fill this section in `~/GEMINI.md` after running `install.sh` — it is intentionally blank in the public repo.
-
 ```
-| GitHub  | <your-github-username> |
-| OS      | WSL2 / Linux           |
-| Python  | ~/miniconda3/          |
-| Vercel  | <your-vercel-team>     |
+| GitHub    | Lord1Egypt                                      |
+| OS        | Linux / Ubuntu (antigravity-cli environment)     |
+| Python    | python3                                         |
+| CLI Tools | gh (GitHub CLI) installed & fully authenticated  |
 ```
 
 ### Active Projects
 
-List your active projects here with their local paths:
-```
-- **ProjectName** (`~/path/to/project`) — one-line description
-```
+- **agy-godmode-pro** (`/home/userland/agy-godmode-pro`) — Elite Antigravity CLI configuration and preloaded skill library combining godmode rules and 50+ gstack skills.
 
-### Project Rules
+### Project Rules & Memory
 
-Add your personal project conventions here in `~/GEMINI.md` after running `install.sh`.
-
-Example conventions to document:
-- Filesystem naming limits
-- Dependency policy (stdlib-first, etc.)
-- README/demo standards
-- Deployment platform rules (Vercel, Railway, etc.)
+- **Continuity & Context Logging**: Always note every key step, decision, and project detail to maintain seamless context across sessions.
+- **Clean Environment**: All testing projects (classic projects) and 145 forked repositories in A-mon-Ra have been deleted to keep the workspace and account clean.
+- **Skill Activation**: 66 skills are fully active in `~/.gemini/skills/` and ready to be preloaded manually with `@` or auto-loaded by the agent.
 
 ---
 
