@@ -370,10 +370,6 @@ These skills live at `~/.gemini/skills/`. To load a skill autonomously, use `vie
 | `@~/.gemini/skills/gstack-make-pdf.md` | Turn any markdown file into a publication-quality PDF. (gstack) |
 | `@~/.gemini/skills/gstack-office-hours.md` | YC Office Hours — two modes. (gstack) |
 | `@~/.gemini/skills/gstack-open-gstack-browser.md` | Launch GStack Browser — AI-controlled Chromium with the sidebar extension baked in. |
-| `@~/.gemini/skills/gstack-openclaw-ceo-review.md` | Use when asked to review a plan, challenge a proposal, run a CEO review, poke holes in an approach, think bigger about scope, or decide whether to expand or reduce the plan. |
-| `@~/.gemini/skills/gstack-openclaw-investigate.md` | Use when asked to debug, fix a bug, investigate an error, or do root cause analysis, and when users report errors, stack traces, unexpected behavior, or say something stopped working. |
-| `@~/.gemini/skills/gstack-openclaw-office-hours.md` | Use when asked to brainstorm, evaluate whether an idea is worth building, run office hours, or think through a new product idea or design direction before any code is written. |
-| `@~/.gemini/skills/gstack-openclaw-retro.md` | Weekly engineering retrospective. Analyzes commit history, work patterns, and code quality metrics with persistent history and trend tracking. Team-aware with per-person contributions, praise, and growth areas. Use when asked for weekly retro, what shipped this week, or engineering retrospective. |
 | `@~/.gemini/skills/gstack-pair-agent.md` | Pair a remote AI agent with your browser. (gstack) |
 | `@~/.gemini/skills/gstack-plan-ceo-review.md` | CEO/founder-mode plan review. (gstack) |
 | `@~/.gemini/skills/gstack-plan-design-review.md` | Designer's eye plan review — interactive, like CEO and Eng review. (gstack) |
