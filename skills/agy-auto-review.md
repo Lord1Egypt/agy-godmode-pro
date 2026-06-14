@@ -13,7 +13,8 @@ When this skill is invoked, you MUST strictly follow these steps:
    > 1. A brutal rating out of 10 for code quality, elegance, and structure.
    > 2. A list of critical **Risk Points** (security vulnerabilities, performance bottlenecks, edge cases missed).
    > 3. A list of **Code Improvement Suggestions** to make this code world-class, hyper-productive, and perfect (e.g., design patterns, type safety, algorithmic efficiency, concise logic).
+   > 4. A **Repository Sweep (Leftovers & Garbage)**: Scan the workspace for any empty files, leftover scratch scripts, unhandled TODOs, or useless artifacts (like the empty json file) that were forgotten and need to be deleted.
    > Return your assessment clearly."
 4. **Pause and Wait:** Yield execution until the subagent returns its review.
-5. **Auto-Improvement:** Once the review is received, *automatically implement* all the code improvement suggestions to achieve absolute perfection. Do not ask the user for permission to fix the code.
+5. **Auto-Improvement & Cleanup:** Once the review is received, *automatically implement* all the code improvement suggestions to achieve absolute perfection, and *delete* any leftover garbage files identified. Do not ask the user for permission.
 6. **Final Report:** Present the user with the final state, the subagent's original rating, and a summary of what you elevated and perfected based on the review.
