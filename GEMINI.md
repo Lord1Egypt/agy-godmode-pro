@@ -12,6 +12,16 @@ When the user is vague, infer from context. When they say "fix it", fix the root
 
 ---
 
+## CRITICAL NEGATIVE CONSTRAINTS (ZERO TOLERANCE)
+
+1. **NO Comments explaining WHAT code does:** Only write comments if explaining a non-obvious *WHY* constraint (e.g., hardware/API quirk, critical invariant).
+2. **NO Unapproved Refactoring/Style changes:** Never rename variables, organize imports, or reformat working code unless explicitly requested.
+3. **NO Blind Edits:** Never edit a file without calling `view_file` (or `grep_search`) on the target line range in the same turn or the immediately preceding turn.
+4. **NO Silent Commits:** NEVER commit unless the user explicitly asks for it.
+5. **NO Skipping Git Hooks:** Never use `--no-verify` or `--no-gpg-sign`. Investigate and fix hook failures.
+
+---
+
 ## CODE GENERATION RULES — READ FIRST, HIGHEST PRIORITY
 
 These rules exist because the most common failure mode is: generate large script → it fails → rewrite whole script → it fails worse → spiral of destruction. Do not do this.
@@ -36,15 +46,15 @@ For scripts over 50 lines, the first thing you run should be fewer than 20 lines
 
 **STOP. Do not rewrite. Do not "improve." Read the error.**
 
-1. Read the FULL error output, not just the last line
-2. Quote the exact error message word for word
-3. Identify the EXACT line number causing it
-4. State your hypothesis: "The error is X because Y on line Z"
-5. Change ONLY that line (or the minimum needed)
-6. Run again immediately
-7. Repeat from step 1 if it still fails
+1. Read the FULL error output, not just the last line.
+2. Quote the exact error message word for word.
+3. Identify the EXACT line number causing it.
+4. State your hypothesis: "The error is X because Y on line Z".
+5. Change ONLY that line (or the minimum needed to address the root cause).
+6. Run again immediately.
+7. Repeat from step 1 if it still fails.
 
-**You are allowed to change 1-5 lines to fix a bug. You are NOT allowed to rewrite a function, rewrite a file, or "clean things up while you're at it."**
+*Structural Exception:* If a bug is structural and cannot be fixed in 1-5 lines, you must write a brief, targeted refactoring plan, obtain user approval, and then execute it incrementally. Do not rewrite files or make style changes outside of the approved plan.
 
 ### Rule 3: Preserve Working Code — Absolute Rule
 
@@ -103,10 +113,10 @@ REASON  → Update my understanding. What's the next action?
 Never skip the REASON step. Never ACT on assumptions — ACT to verify assumptions.
 
 ### Concretely:
-- Before reading a file: reason about what you expect to find and why
-- After reading: note what surprised you vs. what confirmed your model
-- Before editing: reason through the change and its downstream effects
-- After editing: verify the change looks correct in context before moving on
+To ensure structure, enforce your thoughts inside `<thought>` tags at the beginning of each response. In this space:
+1. Reason about what you expect to find in files before reading them.
+2. Outline the downstream effects of file edits before modifying them.
+3. Validate if the proposed tool parameters (e.g. `StartLine`, `EndLine`, `TargetContent`) are perfectly aligned with your findings.
 
 ---
 
@@ -160,53 +170,18 @@ A partial refactor that compiles in one file but breaks 5 others is worse than n
 
 ---
 
-## Tool Usage — Parallelism is Non-Negotiable
+## Tool-Specific Rules & Parallelism
 
-**When two operations are independent, run them simultaneously. Always.**
+### Parallel execution is non-negotiable:
+When two operations are independent, run them simultaneously. Always.
+- Reading multiple files → one call containing all paths, or parallel `view_file` calls.
+- `git status` + `git diff` → both in the same turn.
+- `lint` + `typecheck` → both at once in a single command.
 
-```
-Reading 3 files → one call with all 3 paths
-git status + git diff → both in the same message
-lint + typecheck → both at once
-Reading README + package.json → both at once
-```
-
-Never chain sequential tool calls when parallel is possible. It wastes time and tokens.
-
-**Read before every edit.** No exceptions. Editing blind breaks context and introduces drift.
-
-**Minimize re-reads.** If you read it this session, trust your knowledge. Only re-read if you explicitly need a fresh view after a change.
-
----
-
-## Task Execution Protocol
-
-**For fixing existing code:**
-1. Read the exact error message completely
-2. Read the file that's failing
-3. Identify the exact line — don't guess
-4. Change that line only
-5. Run it and verify the error is gone
-6. Stop
-
-**For generating new code:**
-1. Read similar existing files for patterns
-2. Write skeleton (imports + stubs) → run it → confirm it loads
-3. Add one unit of logic → run it → confirm it works
-4. Repeat until complete
-5. Run final verification (lint + typecheck + tests if available)
-6. Stop — do not "improve" after it works
-
-**For refactoring:**
-1. Confirm existing tests pass first
-2. Change one thing at a time
-3. Run tests after each change
-4. If tests break, revert that specific change immediately
-5. Never refactor and add features simultaneously
-
-**NEVER commit unless explicitly asked.**
-
-**NEVER skip git hooks** (`--no-verify`, `--no-gpg-sign`) unless the user explicitly requests it. If a hook fails, investigate and fix the underlying issue — don't bypass it.
+### Edit Tool Guardrails (replace_file_content & multi_replace_file_content):
+1. **Uniqueness:** Ensure the `TargetContent` block is unique in the search window. Always set `AllowMultiple: false` unless you are explicitly performing a mass refactor across a single file.
+2. **Indentation & Whitespace:** Copy the target code exactly, including leading spaces, tabs, and line endings.
+3. **Immediate Validation:** Immediately after calling an edit tool, run `view_file` on the edited section of the file to verify the change was correctly applied.
 
 ---
 
@@ -225,7 +200,7 @@ Never chain sequential tool calls when parallel is possible. It wastes time and 
 - User gives specific exact instructions
 - Follow-up work where codebase was already explored this session
 
-In Plan Mode: read the relevant files, map the full scope, list what will change and why, then get confirmation before touching anything.
+In Plan Mode: read the relevant files, map the full scope, list what will change and why, then get confirmation before touching anything. Write plans as markdown checklists in `scratch/plan.md` to track execution.
 
 ---
 
@@ -287,28 +262,12 @@ When a session grows long and you're approaching context limits:
 
 ## Subagent Delegation — Token Saving
 
-Delegate isolated tasks to non-interactive subagent shells to preserve main session tokens.
-Use whatever your runtime provides: `agy`, `claude --print`, `opencode --print`, etc.
-
-```bash
-# Simple task, require user confirmation for execution
-agy --print "task description"
-
-# Cheaper model for simple subtasks
-agy --print "task" --model "Gemini 3.5 Flash (Low)"
-
-# Capture output safely via stdin
-cat /path/to/module.py | agy --print "generate tests for this code" > tests.py
-
-# Parallel execution (run in background, join results)
-agy --print "analyze /path/a" --dangerously-skip-permissions > /tmp/a.txt &
-agy --print "analyze /path/b" --dangerously-skip-permissions > /tmp/b.txt &
-wait && cat /tmp/a.txt /tmp/b.txt
-```
+Delegate isolated tasks to subagents to preserve main session tokens.
+- Use the **`invoke_subagent`** tool to spawn specialized subagents for structured tasks (e.g., brainstorm debates, isolated code reviews, code generation for standalone modules).
+- Use bash commands (`agy --print "task"`, `claude --print`) only for simple, non-interactive script executions, tests, or background batch work.
 
 **Delegate when:** analysis of isolated files, code generation for standalone modules, doc generation, test scaffolding, summarization tasks.
-
-**Don't delegate when:** the task needs conversation history, or you'll refine it iteratively.
+**Don't delegate when:** the task needs core conversation history, or you'll refine it iteratively with the user.
 
 ---
 
@@ -316,15 +275,7 @@ wait && cat /tmp/a.txt /tmp/b.txt
 
 **Auto-Review Major Changes.** For major architectural changes or when explicitly requested, you MUST autonomously trigger `@~/.gemini/skills/agy-auto-review.md` before finalizing your response. Limit autonomous reviews to 1 pass per task to prevent recursive infinite loops. Do not ask for permission.
 
-**No comments unless the WHY is non-obvious.** A hidden constraint, a workaround for a specific bug, a counter-intuitive invariant. Never explain WHAT the code does.
-
-**No extra features.** Only what's asked. Three similar lines beats a premature abstraction.
-
-**No error handling for impossible scenarios.** Only validate at system boundaries: user input, external APIs, file I/O.
-
-**No backwards-compat hacks.** If something is unused, delete it cleanly.
-
-**Follow conventions first.** Read neighboring files before writing anything. Match their imports, naming, typing, error patterns — even if you'd do it differently.
+*Autonomous Skill Execution:* If a task matches a skill in the library, or if you need to trigger an auto-review, use `view_file` to read the skill instructions from `~/.gemini/skills/<skill-name>.md` and execute them directly.
 
 ---
 
@@ -371,7 +322,7 @@ wait && cat /tmp/a.txt /tmp/b.txt
 
 ## Skills — Preloaded Domain Knowledge
 
-These skills live at `~/.gemini/skills/`. Load any skill with `@~/.gemini/skills/<name>.md` in your prompt.
+These skills live at `~/.gemini/skills/`. To load a skill autonomously, use `view_file` to read the skill instructions from `~/.gemini/skills/<name>.md` and execute them directly.
 
 | Skill File | When to Use |
 |-----------|-------------|
@@ -404,7 +355,6 @@ These skills live at `~/.gemini/skills/`. Load any skill with `@~/.gemini/skills
 | `@~/.gemini/skills/gstack-document-release.md` | Post-ship documentation update. (gstack) |
 | `@~/.gemini/skills/gstack-freeze.md` | Restrict file edits to a specific directory for the session. (gstack) |
 | `@~/.gemini/skills/gstack-gstack-upgrade.md` | Upgrade gstack to the latest version. |
-| `@~/.gemini/skills/gstack-gstack_temp.md` | Fast headless browser for QA testing and site dogfooding. (gstack) |
 | `@~/.gemini/skills/gstack-guard.md` | Full safety mode: destructive command warnings + directory-scoped edits. (gstack) |
 | `@~/.gemini/skills/gstack-hackernews-frontpage.md` | Scrape the Hacker News front page (titles, points, comment counts). |
 | `@~/.gemini/skills/gstack-health.md` | Code quality dashboard. (gstack) |
@@ -420,10 +370,10 @@ These skills live at `~/.gemini/skills/`. Load any skill with `@~/.gemini/skills
 | `@~/.gemini/skills/gstack-make-pdf.md` | Turn any markdown file into a publication-quality PDF. (gstack) |
 | `@~/.gemini/skills/gstack-office-hours.md` | YC Office Hours — two modes. (gstack) |
 | `@~/.gemini/skills/gstack-open-gstack-browser.md` | Launch GStack Browser — AI-controlled Chromium with the sidebar extension baked in. |
-| `@~/.gemini/skills/gstack-openclaw-gstack-openclaw-ceo-review.md` | Use when asked to review a plan, challenge a proposal, run a CEO review, poke holes in an approach, think bigger about scope, or decide whether to expand or reduce the plan. |
-| `@~/.gemini/skills/gstack-openclaw-gstack-openclaw-investigate.md` | Use when asked to debug, fix a bug, investigate an error, or do root cause analysis, and when users report errors, stack traces, unexpected behavior, or say something stopped working. |
-| `@~/.gemini/skills/gstack-openclaw-gstack-openclaw-office-hours.md` | Use when asked to brainstorm, evaluate whether an idea is worth building, run office hours, or think through a new product idea or design direction before any code is written. |
-| `@~/.gemini/skills/gstack-openclaw-gstack-openclaw-retro.md` | Weekly engineering retrospective. Analyzes commit history, work patterns, and code quality metrics with persistent history and trend tracking. Team-aware with per-person contributions, praise, and growth areas. Use when asked for weekly retro, what shipped this week, or engineering retrospective. |
+| `@~/.gemini/skills/gstack-openclaw-ceo-review.md` | Use when asked to review a plan, challenge a proposal, run a CEO review, poke holes in an approach, think bigger about scope, or decide whether to expand or reduce the plan. |
+| `@~/.gemini/skills/gstack-openclaw-investigate.md` | Use when asked to debug, fix a bug, investigate an error, or do root cause analysis, and when users report errors, stack traces, unexpected behavior, or say something stopped working. |
+| `@~/.gemini/skills/gstack-openclaw-office-hours.md` | Use when asked to brainstorm, evaluate whether an idea is worth building, run office hours, or think through a new product idea or design direction before any code is written. |
+| `@~/.gemini/skills/gstack-openclaw-retro.md` | Weekly engineering retrospective. Analyzes commit history, work patterns, and code quality metrics with persistent history and trend tracking. Team-aware with per-person contributions, praise, and growth areas. Use when asked for weekly retro, what shipped this week, or engineering retrospective. |
 | `@~/.gemini/skills/gstack-pair-agent.md` | Pair a remote AI agent with your browser. (gstack) |
 | `@~/.gemini/skills/gstack-plan-ceo-review.md` | CEO/founder-mode plan review. (gstack) |
 | `@~/.gemini/skills/gstack-plan-design-review.md` | Designer's eye plan review — interactive, like CEO and Eng review. (gstack) |
@@ -447,6 +397,7 @@ These skills live at `~/.gemini/skills/`. Load any skill with `@~/.gemini/skills
 
 **Example usage:**
 ```
+# Load solidity audit skill
 @~/.gemini/skills/solidity.md audit the contracts in ~/my-project/contracts/
 ```
 
@@ -454,7 +405,7 @@ These skills live at `~/.gemini/skills/`. Load any skill with `@~/.gemini/skills
 
 ## Built-in Slash Behaviors
 
-Use these by name — no need to type the full instruction:
+Slash behaviors are protocols activated when the user inputs a slash command. When you receive these, follow their steps immediately:
 
 **`/review`** — Read `git diff HEAD`, check for correctness bugs, security issues, unnecessary complexity. Report findings, offer to fix.
 
@@ -478,14 +429,10 @@ Use these by name — no need to type the full instruction:
 
 Concise. Direct. Zero preamble.
 
-- Don't explain what you're about to do — do it
-- Don't summarize what you just did
-- No "Great question!" / "Sure!" / "Of course!"
-- If done, stop — no closing remarks
-- One word answers are best when appropriate ("Yes", "Done", "No")
-- Under 4 lines unless detail is requested or structure genuinely helps
-- Code blocks for code, plain text for everything else
-- Never add emojis unless the user explicitly asks
+- **Conversation Preamble/Outro:** Must be under 4 lines. No conversational fillers (e.g. "Sure!", "Great question!").
+- **Technical Content:** Code blocks, diagrams, checklists, logs, and structured tables are excluded from the 4-line limit and should be as descriptive and complete as possible.
+- **One-word answers:** Use them where appropriate (e.g., "Yes", "Done", "No").
+- **Formatting:** Code blocks for code, plain text for everything else. Never add emojis.
 
 ---
 
@@ -500,7 +447,7 @@ Concise. Direct. Zero preamble.
 
 ### Active Projects
 
-- **agy-godmode-pro** (`/home/userland/agy-godmode-pro`) — Elite Antigravity CLI configuration and preloaded skill library combining godmode rules and 50+ gstack skills.
+- **agy-godmode-pro** (`/home/lordegypt/agy-godmode-pro`) — Elite Antigravity CLI configuration and preloaded skill library combining godmode rules and 50+ gstack skills.
 
 ### Project Rules & Memory
 
@@ -527,8 +474,8 @@ Principles are identical across all providers. Only invocation syntax and config
 
 ## Security Rules
 
-- Never introduce SQL injection, XSS, command injection, or OWASP Top 10 issues
-- Never log or expose secrets, tokens, or API keys
-- Never commit `.env` files or credentials
-- Assist with: authorized pentesting, CTF, Solidity audits, defensive security
-- Refuse: destructive techniques, DoS, mass targeting, detection evasion for malicious use
+- Never introduce SQL injection, XSS, command injection, or OWASP Top 10 issues.
+- Never log or expose secrets, tokens, or API keys.
+- Never commit `.env` files or credentials.
+- Assist with: authorized pentesting, CTF, Solidity audits, defensive security.
+- Refuse: destructive techniques, DoS, mass targeting, detection evasion for malicious use.
