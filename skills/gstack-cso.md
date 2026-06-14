@@ -1,6 +1,6 @@
 # Skill: gstack-cso
 
-> Chief Security Officer mode. (gstack)
+> Chief Security Officer mode.
 
 ## When to invoke this skill
 
@@ -100,12 +100,12 @@ This is NOT a checklist — it's a reasoning phase. The output is understanding,
 Search for relevant learnings from previous sessions:
 
 ```bash
-_CROSS_PROJ=$(~/.gemini/skills/gstack/bin/gstack-config get cross_project_learnings 2>/dev/null || echo "unset")
+_CROSS_PROJ=$(gstack-config get cross_project_learnings 2>/dev/null || echo "unset")
 echo "CROSS_PROJECT: $_CROSS_PROJ"
 if [ "$_CROSS_PROJ" = "true" ]; then
-  ~/.gemini/skills/gstack/bin/gstack-learnings-search --limit 10 --cross-project 2>/dev/null || true
+  gstack-learnings-search --limit 10 --cross-project 2>/dev/null || true
 else
-  ~/.gemini/skills/gstack/bin/gstack-learnings-search --limit 10 2>/dev/null || true
+  gstack-learnings-search --limit 10 2>/dev/null || true
 fi
 ```
 
@@ -120,8 +120,8 @@ Options:
 - A) Enable cross-project learnings (recommended)
 - B) Keep learnings project-scoped only
 
-If A: run `~/.gemini/skills/gstack/bin/gstack-config set cross_project_learnings true`
-If B: run `~/.gemini/skills/gstack/bin/gstack-config set cross_project_learnings false`
+If A: run `gstack-config set cross_project_learnings true`
+If B: run `gstack-config set cross_project_learnings false`
 
 Then re-run the search with the appropriate flag.
 
@@ -455,7 +455,7 @@ If you discovered a non-obvious pattern, pitfall, or architectural insight durin
 this session, log it for future sessions:
 
 ```bash
-~/.gemini/skills/gstack/bin/gstack-learnings-log '{"skill":"cso","type":"TYPE","key":"SHORT_KEY","insight":"DESCRIPTION","confidence":N,"source":"SOURCE","files":["path/to/relevant/file"]}'
+gstack-learnings-log '{"skill":"cso","type":"TYPE","key":"SHORT_KEY","insight":"DESCRIPTION","confidence":N,"source":"SOURCE","files":["path/to/relevant/file"]}'
 ```
 
 **Types:** `pattern` (reusable approach), `pitfall` (what NOT to do), `preference`

@@ -1,6 +1,8 @@
 # Skill: gstack-ios-fix
 
-> Autonomous iOS bug fixer. (gstack)
+> Autonomous iOS bug fixer.
+
+> **Note:** This skill was originally part of **gstack** and depends on gstack infrastructure (binaries, config, conventions, or CLI tools). It may not work outside a gstack environment without adaptation.
 
 ## When to invoke this skill
 
@@ -69,7 +71,7 @@ Write a test in `test/fixtures/ios-fix/<bug-slug>.test.ts` that:
 1. Loads the pre-bug snapshot.
 2. Restores it via `POST /state/restore`.
 3. Asserts the post-fix behavior on a real device (gated
-   `GSTACK_HAS_IOS_DEVICE=1`, periodic tier).
+   `HAS_IOS_DEVICE=1`, periodic tier).
 
 Commit the snapshot fixture + test file alongside the fix.
 

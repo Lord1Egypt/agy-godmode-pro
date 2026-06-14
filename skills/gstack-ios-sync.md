@@ -1,6 +1,8 @@
 # Skill: gstack-ios-sync
 
-> Regenerate the iOS debug bridge against the latest upstream gstack templates. (gstack)
+> Regenerate the iOS debug bridge against the latest upstream gstack templates.
+
+> **Note:** This skill was originally part of **gstack** and depends on gstack infrastructure (binaries, config, conventions, or CLI tools). It may not work outside a gstack environment without adaptation.
 
 ## When to invoke this skill
 
@@ -16,7 +18,7 @@ Voice triggers (speech-to-text aliases): "resync the iOS debug bridge", "regener
 
 1. Read `<app>/DebugBridgeGenerated/.gstack-version` (written by /ios-qa
    during install). If missing, treat the install as "unknown old version".
-2. Read upstream version from `$GSTACK_HOME/ios-qa/.gstack-version` (or the
+2. Read upstream version from `.gstack/ios-qa/.gstack-version` (or the
    value baked into the installed gstack binary).
 3. If versions match AND no new `@Observable` classes were added, exit
    early with "already up to date".
@@ -26,7 +28,7 @@ Voice triggers (speech-to-text aliases): "resync the iOS debug bridge", "regener
 Run `gstack-ios-qa-regen` (or the underlying SwiftPM tool directly):
 
 ```bash
-swift run --package-path "$GSTACK_HOME/ios-qa/scripts/gen-accessors-tool" \
+swift run --package-path ".gstack/ios-qa/scripts/gen-accessors-tool" \
   gen-accessors --input "$APP_SOURCE_DIR" --output "$APP_SOURCE_DIR/DebugBridgeGenerated"
 ```
 
@@ -41,7 +43,7 @@ For each file that comes from `ios-qa/templates/*.swift.template`:
 1. Read the current installed file at
    `<app>/DebugBridgeGenerated/<Name>.swift`.
 2. Read the upstream template at
-   `$GSTACK_HOME/ios-qa/templates/<Name>.swift.template`.
+   `.gstack/ios-qa/templates/<Name>.swift.template`.
 3. If the installed file has a `// GSTACK-EDIT-LINE` marker, fold the user's
    edits forward.
 4. Otherwise, replace the file outright with the new template (after

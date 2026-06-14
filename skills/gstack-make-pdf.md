@@ -1,6 +1,6 @@
 # Skill: gstack-make-pdf
 
-> Turn any markdown file into a publication-quality PDF. (gstack)
+> Turn any markdown file into a publication-quality PDF.
 
 ## When to invoke this skill
 

@@ -1,6 +1,6 @@
 # Skill: gstack-diagram
 
-> Turn an English description (or mermaid source) into a diagram triplet: the source, an editable .excalidraw file you can open (gstack)
+> Turn an English description (or mermaid source) into a diagram triplet: the source, an editable .excalidraw file you can open
 
 ## When to invoke this skill
 
@@ -37,7 +37,7 @@ so concurrent sessions and mixed gstack versions never clobber each other:
 
 ```bash
 BUNDLE=""
-for c in "$HOME/.gemini/skills/gstack/lib/diagram-render/dist/diagram-render.html" \
+for c in ".gemini/skills/gstack/lib/diagram-render/dist/diagram-render.html" \
          "$(git rev-parse --show-toplevel 2>/dev/null)/lib/diagram-render/dist/diagram-render.html"; do
   [ -f "$c" ] && BUNDLE="$c" && break
 done

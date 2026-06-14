@@ -1,6 +1,8 @@
 # Skill: gstack-codex
 
-> OpenAI Codex CLI wrapper — three modes. (gstack)
+> OpenAI Codex CLI wrapper — three modes.
+
+> **Note:** This skill was originally part of **gstack** and depends on gstack infrastructure (binaries, config, conventions, or CLI tools). It may not work outside a gstack environment without adaptation.
 
 ## When to invoke this skill
 
@@ -71,8 +73,8 @@ If `NOT_FOUND`: stop and tell the user:
 
 If `NOT_FOUND`, also log the event:
 ```bash
-_TEL=$(~/.gemini/skills/gstack/bin/gstack-config get telemetry 2>/dev/null || echo off)
-source ~/.gemini/skills/gstack/bin/gstack-codex-probe 2>/dev/null && _gstack_codex_log_event "codex_cli_missing" 2>/dev/null || true
+_TEL=$(gstack-config get telemetry 2>/dev/null || echo off)
+source gstack-codex-probe 2>/dev/null && _gstack_codex_log_event "codex_cli_missing" 2>/dev/null || true
 ```
 
 
@@ -83,8 +85,8 @@ CLI version isn't in the known-bad list. Sourcing `gstack-codex-probe` loads the
 shared helpers that both `/codex` and `/autoplan` use.
 
 ```bash
-_TEL=$(~/.gemini/skills/gstack/bin/gstack-config get telemetry 2>/dev/null || echo off)
-source ~/.gemini/skills/gstack/bin/gstack-codex-probe
+_TEL=$(gstack-config get telemetry 2>/dev/null || echo off)
+source gstack-codex-probe
 
 if ! _gstack_codex_auth_probe >/dev/null; then
   _gstack_codex_log_event "codex_auth_failed"
@@ -117,7 +119,7 @@ This keeps the skill working whether installed as a Gemini plugin
 container where `HOME` may be unset and `/tmp` may be read-only.
 
 ```bash
-eval "$(~/.gemini/skills/gstack/bin/gstack-paths)"
+eval "$(gstack-paths)"
 ```
 
 After this, every subsequent bash block in this skill uses `"$PLAN_ROOT"` and
@@ -300,7 +302,7 @@ CROSS-MODEL ANALYSIS:
 
 7. Persist the review result:
 ```bash
-~/.gemini/skills/gstack/bin/gstack-review-log '{"skill":"codex-review","timestamp":"TIMESTAMP","status":"STATUS","gate":"GATE","findings":N,"findings_fixed":N,"commit":"'"$(git rev-parse --short HEAD)"'"}'
+gstack-review-log '{"skill":"codex-review","timestamp":"TIMESTAMP","status":"STATUS","gate":"GATE","findings":N,"findings_fixed":N,"commit":"'"$(git rev-parse --short HEAD)"'"}'
 ```
 
 Substitute: TIMESTAMP (ISO 8601), STATUS ("clean" if PASS, "issues_found" if FAIL),

@@ -1,6 +1,6 @@
 # Skill: gstack-plan-tune
 
-> Self-tuning question sensitivity + developer psychographic for gstack (v1: observational). (gstack)
+> Self-tuning question sensitivity + developer psychographic for gstack (v1: observational).
 
 ## When to invoke this skill
 
@@ -51,8 +51,8 @@ When no implicit gate fires, route by user intent:
 8. **"Show the gap" / "how far off is my profile"** → run `Show gap`.
 9. **"Dream cycle" / "distill" / "what have I been free-texting"** →
    run `Dream cycle distill` below (triggers `gstack-distill-free-text`).
-10. **"Turn it off" / "disable"** → `~/.gemini/skills/gstack/bin/gstack-config set question_tuning false`
-11. **"Turn it on" / "enable"** → `~/.gemini/skills/gstack/bin/gstack-config set question_tuning true && touch ~/.gstack/.question-tuning-prompted`
+10. **"Turn it off" / "disable"** → `gstack-config set question_tuning false`
+11. **"Turn it on" / "enable"** → `gstack-config set question_tuning true && touch ~/.gstack/.question-tuning-prompted`
 12. **Clear ambiguity** — if you can't tell what the user wants, ask plainly:
     "Do you want to (a) see your profile, (b) review recent questions, (c) set
     a preference, (d) update your declared profile, (e) run the dream cycle,
@@ -82,8 +82,8 @@ explicit.
 
 1. Detect contributor state (for prompt framing only, not for auto-action):
    ```bash
-   _QT=$(~/.gemini/skills/gstack/bin/gstack-config get question_tuning 2>/dev/null || echo "false")
-   _CONTRIB=$(~/.gemini/skills/gstack/bin/gstack-config get gstack_contributor 2>/dev/null || echo "false")
+   _QT=$(gstack-config get question_tuning 2>/dev/null || echo "false")
+   _CONTRIB=$(gstack-config get gstack_contributor 2>/dev/null || echo "false")
    echo "QUESTION_TUNING: $_QT"
    echo "CONTRIBUTOR: $_CONTRIB"
    ```
@@ -126,7 +126,7 @@ explicit.
 
 4. If A or B: enable:
    ```bash
-   ~/.gemini/skills/gstack/bin/gstack-config set question_tuning true
+   gstack-config set question_tuning true
    ```
 
 5. If C: do nothing else. Tell the user: "Question tuning stays off. Re-enable
@@ -178,10 +178,10 @@ explicit.
 
    ```bash
    # Ensure profile exists
-   ~/.gemini/skills/gstack/bin/gstack-developer-profile --read >/dev/null
+   gstack-developer-profile --read >/dev/null
    # Update declared dimensions atomically
-   eval "$(~/.gemini/skills/gstack/bin/gstack-paths)"
-   _PROFILE="$GSTACK_STATE_ROOT/developer-profile.json"
+   eval "$(gstack-paths)"
+   _PROFILE=".gstack/state/developer-profile.json"
    bun -e "
      const fs = require('fs');
      const p = JSON.parse(fs.readFileSync('$_PROFILE','utf-8'));
@@ -215,7 +215,7 @@ explicit.
 ## Inspect profile
 
 ```bash
-~/.gemini/skills/gstack/bin/gstack-developer-profile --profile
+gstack-developer-profile --profile
 ```
 
 Parse the JSON. Present in **plain English**, not raw floats:
@@ -253,9 +253,9 @@ Parse the JSON. Present in **plain English**, not raw floats:
 ## Review question log
 
 ```bash
-eval "$(~/.gemini/skills/gstack/bin/gstack-slug 2>/dev/null)"
-eval "$(~/.gemini/skills/gstack/bin/gstack-paths)"
-_LOG="$GSTACK_STATE_ROOT/projects/$SLUG/question-log.jsonl"
+eval "$(gstack-slug 2>/dev/null)"
+eval "$(gstack-paths)"
+_LOG=".gstack/state/projects/$SLUG/question-log.jsonl"
 if [ ! -f "$_LOG" ]; then
   echo "NO_LOG"
 else
@@ -312,7 +312,7 @@ scope expansion comes up", etc).
 
 4. Write:
    ```bash
-   ~/.gemini/skills/gstack/bin/gstack-question-preference --write '{"question_id":"<id>","preference":"<never-ask|always-ask|ask-only-for-one-way>","source":"plan-tune","free_text":"<original phrase>"}'
+   gstack-question-preference --write '{"question_id":"<id>","preference":"<never-ask|always-ask|ask-only-for-one-way>","source":"plan-tune","free_text":"<original phrase>"}'
    ```
 
 5. Confirm: "Set `<id>` → `<preference>`. Active immediately. One-way doors
@@ -346,8 +346,8 @@ is a trust boundary (Codex #15 in the design doc).
 
 3. After Y, write:
    ```bash
-   eval "$(~/.gemini/skills/gstack/bin/gstack-paths)"
-   _PROFILE="$GSTACK_STATE_ROOT/developer-profile.json"
+   eval "$(gstack-paths)"
+   _PROFILE=".gstack/state/developer-profile.json"
    bun -e "
      const fs = require('fs');
      const p = JSON.parse(fs.readFileSync('$_PROFILE','utf-8'));
@@ -366,7 +366,7 @@ is a trust boundary (Codex #15 in the design doc).
 ## Show gap
 
 ```bash
-~/.gemini/skills/gstack/bin/gstack-developer-profile --gap
+gstack-developer-profile --gap
 ```
 
 Parse the JSON. For each dimension where both declared and inferred exist:
@@ -388,10 +388,10 @@ vs agent-enriched), marked vs hash-only, auto-decided count, and dream
 cycle cost-to-date.
 
 ```bash
-~/.gemini/skills/gstack/bin/gstack-question-preference --stats
-eval "$(~/.gemini/skills/gstack/bin/gstack-slug 2>/dev/null)"
-eval "$(~/.gemini/skills/gstack/bin/gstack-paths)"
-_LOG="$GSTACK_STATE_ROOT/projects/$SLUG/question-log.jsonl"
+gstack-question-preference --stats
+eval "$(gstack-slug 2>/dev/null)"
+eval "$(gstack-paths)"
+_LOG=".gstack/state/projects/$SLUG/question-log.jsonl"
 if [ -f "$_LOG" ]; then
   bun -e "
     const lines = require('fs').readFileSync('$_LOG','utf-8').trim().split('\n').filter(Boolean);
@@ -414,7 +414,7 @@ if [ -f "$_LOG" ]; then
 else
   echo 'TOTAL_LOGGED: 0'
 fi
-~/.gemini/skills/gstack/bin/gstack-developer-profile --profile | bun -e "
+gstack-developer-profile --profile | bun -e "
   const p = JSON.parse(await Bun.stdin.text());
   const d = p.inferred?.diversity || {};
   console.log('SKILLS_COVERED: ' + (d.skills_covered ?? 0));
@@ -423,7 +423,7 @@ fi
   console.log('CALIBRATED: ' + (p.inferred?.sample_size >= 20 && d.skills_covered >= 3 && d.question_ids_covered >= 8 && d.days_span >= 7));
 "
 echo '---DISTILL---'
-~/.gemini/skills/gstack/bin/gstack-distill-free-text --status
+gstack-distill-free-text --status
 ```
 
 Present as a compact summary with plain-English calibration status ("5 more
@@ -440,9 +440,9 @@ Show the last 10 questions where the PreToolUse hook auto-decided (source=
 any that misfired via `always-ask`.
 
 ```bash
-eval "$(~/.gemini/skills/gstack/bin/gstack-slug 2>/dev/null)"
-eval "$(~/.gemini/skills/gstack/bin/gstack-paths)"
-_LOG="$GSTACK_STATE_ROOT/projects/$SLUG/question-log.jsonl"
+eval "$(gstack-slug 2>/dev/null)"
+eval "$(gstack-paths)"
+_LOG=".gstack/state/projects/$SLUG/question-log.jsonl"
 [ ! -f "$_LOG" ] && echo 'NO_LOG' || bun -e "
   const lines = require('fs').readFileSync('$_LOG','utf-8').trim().split('\n').filter(Boolean);
   const auto = [];
@@ -471,9 +471,9 @@ the skill template — D18 progressive markers). Surfacing them drives marker
 adoption: high-traffic unmarked questions are the next candidates to retrofit.
 
 ```bash
-eval "$(~/.gemini/skills/gstack/bin/gstack-slug 2>/dev/null)"
-eval "$(~/.gemini/skills/gstack/bin/gstack-paths)"
-_LOG="$GSTACK_STATE_ROOT/projects/$SLUG/question-log.jsonl"
+eval "$(gstack-slug 2>/dev/null)"
+eval "$(gstack-paths)"
+_LOG=".gstack/state/projects/$SLUG/question-log.jsonl"
 [ ! -f "$_LOG" ] && echo 'NO_LOG' || bun -e "
   const lines = require('fs').readFileSync('$_LOG','utf-8').trim().split('\n').filter(Boolean);
   const counts = {};
@@ -513,7 +513,7 @@ invokes via `/plan-tune distill` / `dream`.
 
 1. Show the proposals:
    ```bash
-   ~/.gemini/skills/gstack/bin/gstack-distill-apply --list
+   gstack-distill-apply --list
    ```
 
 2. For each unapplied proposal, present it as a numbered item and use
@@ -531,19 +531,19 @@ invokes via `/plan-tune distill` / `dream`.
    # If gbrain is configured, mirror via MCP first.
    # (Pseudo — actual gbrain call happens at the agent layer via
    # mcp__gbrain__put_page; the bin records the published flag.)
-   ~/.gemini/skills/gstack/bin/gstack-distill-apply --proposal N --gbrain-published true|false
+   gstack-distill-apply --proposal N --gbrain-published true|false
    ```
 
    For `preference`:
    ```bash
-   ~/.gemini/skills/gstack/bin/gstack-distill-apply --proposal N
+   gstack-distill-apply --proposal N
    ```
 
    For `declared-nudge`:
    ```bash
    # Same bin; updates developer-profile.json declared dim with the
    # clamped delta.
-   ~/.gemini/skills/gstack/bin/gstack-distill-apply --proposal N
+   gstack-distill-apply --proposal N
    ```
 
 4. **On decline**: skip without marking. User can re-decide later (the
@@ -571,7 +571,7 @@ invokes via `/plan-tune distill` / `dream`.
 
 1. Run distill:
    ```bash
-   ~/.gemini/skills/gstack/bin/gstack-distill-free-text
+   gstack-distill-free-text
    ```
 
 2. If `RATE_CAPPED`: tell the user "You've hit today's 3 distills/day cap.
@@ -584,7 +584,7 @@ invokes via `/plan-tune distill` / `dream`.
 
 For background mode (e.g., the user wants to keep working):
 ```bash
-~/.gemini/skills/gstack/bin/gstack-distill-free-text --background
+gstack-distill-free-text --background
 ```
 
 

@@ -1,6 +1,6 @@
 # Skill: gstack-retro
 
-> Weekly engineering retrospective. (gstack)
+> Weekly engineering retrospective.
 
 ## When to invoke this skill
 
@@ -93,12 +93,12 @@ Usage: /retro [window | compare | global]
 Search for relevant learnings from previous sessions:
 
 ```bash
-_CROSS_PROJ=$(~/.gemini/skills/gstack/bin/gstack-config get cross_project_learnings 2>/dev/null || echo "unset")
+_CROSS_PROJ=$(gstack-config get cross_project_learnings 2>/dev/null || echo "unset")
 echo "CROSS_PROJECT: $_CROSS_PROJ"
 if [ "$_CROSS_PROJ" = "true" ]; then
-  ~/.gemini/skills/gstack/bin/gstack-learnings-search --limit 10 --cross-project 2>/dev/null || true
+  gstack-learnings-search --limit 10 --cross-project 2>/dev/null || true
 else
-  ~/.gemini/skills/gstack/bin/gstack-learnings-search --limit 10 2>/dev/null || true
+  gstack-learnings-search --limit 10 2>/dev/null || true
 fi
 ```
 
@@ -113,8 +113,8 @@ Options:
 - A) Enable cross-project learnings (recommended)
 - B) Keep learnings project-scoped only
 
-If A: run `~/.gemini/skills/gstack/bin/gstack-config set cross_project_learnings true`
-If B: run `~/.gemini/skills/gstack/bin/gstack-config set cross_project_learnings false`
+If A: run `gstack-config set cross_project_learnings true`
+If B: run `gstack-config set cross_project_learnings false`
 
 Then re-run the search with the appropriate flag.
 
@@ -427,7 +427,7 @@ If you discovered a non-obvious pattern, pitfall, or architectural insight durin
 this session, log it for future sessions:
 
 ```bash
-~/.gemini/skills/gstack/bin/gstack-learnings-log '{"skill":"retro","type":"TYPE","key":"SHORT_KEY","insight":"DESCRIPTION","confidence":N,"source":"SOURCE","files":["path/to/relevant/file"]}'
+gstack-learnings-log '{"skill":"retro","type":"TYPE","key":"SHORT_KEY","insight":"DESCRIPTION","confidence":N,"source":"SOURCE","files":["path/to/relevant/file"]}'
 ```
 
 **Types:** `pattern` (reusable approach), `pitfall` (what NOT to do), `preference`
@@ -629,7 +629,7 @@ Check review JSONL logs for plan completion data from /ship runs this period:
 
 ```bash
 setopt +o nomatch 2>/dev/null || true  # zsh compat
-eval "$(~/.gemini/skills/gstack/bin/gstack-slug 2>/dev/null)"
+eval "$(gstack-slug 2>/dev/null)"
 cat ~/.gstack/projects/$SLUG/*-reviews.jsonl 2>/dev/null | grep '"skill":"ship"' | grep '"plan_items_total"' || echo "NO_PLAN_DATA"
 ```
 
@@ -711,7 +711,7 @@ Locate and run the discovery script using this fallback chain:
 
 ```bash
 DISCOVER_BIN=""
-[ -x ~/.gemini/skills/gstack/bin/gstack-global-discover ] && DISCOVER_BIN=~/.gemini/skills/gstack/bin/gstack-global-discover
+[ -x gstack-global-discover ] && DISCOVER_BIN=gstack-global-discover
 [ -z "$DISCOVER_BIN" ] && [ -x .gemini/skills/gstack/bin/gstack-global-discover ] && DISCOVER_BIN=.gemini/skills/gstack/bin/gstack-global-discover
 [ -z "$DISCOVER_BIN" ] && which gstack-global-discover >/dev/null 2>&1 && DISCOVER_BIN=$(which gstack-global-discover)
 [ -z "$DISCOVER_BIN" ] && [ -f bin/gstack-global-discover.ts ] && DISCOVER_BIN="bun run bin/gstack-global-discover.ts"

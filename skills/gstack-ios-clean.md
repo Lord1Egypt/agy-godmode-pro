@@ -1,6 +1,8 @@
 # Skill: gstack-ios-clean
 
-> Remove the DebugBridge SPM package and all #if DEBUG wiring from an iOS app. (gstack)
+> Remove the DebugBridge SPM package and all #if DEBUG wiring from an iOS app.
+
+> **Note:** This skill was originally part of **gstack** and depends on gstack infrastructure (binaries, config, conventions, or CLI tools). It may not work outside a gstack environment without adaptation.
 
 ## When to invoke this skill
 

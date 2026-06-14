@@ -1,6 +1,8 @@
 # Skill: gstack-setup-browser-cookies
 
-> Import cookies from your real Chromium browser into the headless browse session. (gstack)
+> Import cookies from your real Chromium browser into the headless browse session.
+
+> **Note:** This skill was originally part of **gstack** and depends on gstack infrastructure (binaries, config, conventions, or CLI tools). It may not work outside a gstack environment without adaptation.
 
 ## When to invoke this skill
 
@@ -33,7 +35,7 @@ If `CDP_MODE=true`: tell the user "Not needed — you're connected to your real 
 _ROOT=$(git rev-parse --show-toplevel 2>/dev/null)
 B=""
 [ -n "$_ROOT" ] && [ -x "$_ROOT/.gemini/skills/gstack/browse/dist/browse" ] && B="$_ROOT/.gemini/skills/gstack/browse/dist/browse"
-[ -z "$B" ] && B="$HOME/.gemini/skills/gstack/browse/dist/browse"
+[ -z "$B" ] && B=".gemini/skills/gstack/browse/dist/browse"
 if [ -x "$B" ]; then
   echo "READY: $B"
 else

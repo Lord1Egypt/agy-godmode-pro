@@ -1,6 +1,8 @@
 # Skill: gstack-skillify
 
-> Codify the most recent successful /scrape flow into a permanent browser-skill on disk. (gstack)
+> Codify the most recent successful /scrape flow into a permanent browser-skill on disk.
+
+> **Note:** This skill was originally part of **gstack** and depends on gstack infrastructure (binaries, config, conventions, or CLI tools). It may not work outside a gstack environment without adaptation.
 
 ## When to invoke this skill
 
@@ -412,7 +414,7 @@ If you discovered a non-obvious pattern, pitfall, or architectural insight durin
 this session, log it for future sessions:
 
 ```bash
-~/.gemini/skills/gstack/bin/gstack-learnings-log '{"skill":"skillify","type":"TYPE","key":"SHORT_KEY","insight":"DESCRIPTION","confidence":N,"source":"SOURCE","files":["path/to/relevant/file"]}'
+gstack-learnings-log '{"skill":"skillify","type":"TYPE","key":"SHORT_KEY","insight":"DESCRIPTION","confidence":N,"source":"SOURCE","files":["path/to/relevant/file"]}'
 ```
 
 **Types:** `pattern` (reusable approach), `pitfall` (what NOT to do), `preference`

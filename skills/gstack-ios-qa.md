@@ -1,6 +1,8 @@
 # Skill: gstack-ios-qa
 
-> Live-device iOS QA for SwiftUI apps. (gstack)
+> Live-device iOS QA for SwiftUI apps.
+
+> **Note:** This skill was originally part of **gstack** and depends on gstack infrastructure (binaries, config, conventions, or CLI tools). It may not work outside a gstack environment without adaptation.
 
 ## When to invoke this skill
 
@@ -60,7 +62,7 @@ UDID, tunnel address, and accessor hash. Invalidate the cache when:
 - The daemon reports the cached UDID is no longer connected.
 
 ```bash
-SESSION="$HOME/.gstack/ios-qa-session.json"
+SESSION=".gstack/ios-qa-session.json"
 if [ -f "$SESSION" ] && [ "$COLD" != "1" ]; then
   CACHED_UDID=$(python3 -c "import json,os; d=json.load(open(os.path.expanduser('$SESSION'))); print(d['udid'])")
   CACHED_PORT=$(python3 -c "import json,os; d=json.load(open(os.path.expanduser('$SESSION'))); print(d['daemon_port'])")
@@ -75,7 +77,7 @@ fi
 1. Walk the app source (passed as `--source <dir>`) and identify all `@Observable`
    classes. Note any property marked with the `@Snapshotable` wrapper — those
    are the snapshot-eligible fields.
-2. Run `swift run --package-path $GSTACK_HOME/ios-qa/scripts/gen-accessors-tool gen-accessors --input <source-dir>`.
+2. Run `swift run --package-path .gstack/ios-qa/scripts/gen-accessors-tool gen-accessors --input <source-dir>`.
    First invocation builds the swift-syntax dependency tree (cold: 2-5 min).
    Subsequent runs are content-hash-cached and finish in ~50ms.
 3. Show the user the accessor list and ask whether to install the DebugBridge

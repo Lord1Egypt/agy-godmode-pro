@@ -2,6 +2,8 @@
 
 > Configure deployment settings for /land-and-deploy.
 
+> **Note:** This skill was originally part of **gstack** and depends on gstack infrastructure (binaries, config, conventions, or CLI tools). It may not work outside a gstack environment without adaptation.
+
 ## When to invoke this skill
 
 Detects your deploy

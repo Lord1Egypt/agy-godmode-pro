@@ -1,6 +1,6 @@
 # Skill: gstack-landing-report
 
-> Read-only queue dashboard for workspace-aware ship. (gstack)
+> Read-only queue dashboard for workspace-aware ship.
 
 ## When to invoke this skill
 

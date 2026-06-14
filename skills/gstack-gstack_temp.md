@@ -1,6 +1,6 @@
 # Skill: gstack-gstack_temp
 
-> Fast headless browser for QA testing and site dogfooding. (gstack)
+> Fast headless browser for QA testing and site dogfooding.
 
 ## When to invoke this skill
 
@@ -15,7 +15,7 @@ test a site, verify a deployment, dogfood a user flow, or file a bug with screen
 _ROOT=$(git rev-parse --show-toplevel 2>/dev/null)
 B=""
 [ -n "$_ROOT" ] && [ -x "$_ROOT/.gemini/skills/gstack/browse/dist/browse" ] && B="$_ROOT/.gemini/skills/gstack/browse/dist/browse"
-[ -z "$B" ] && B="$HOME/.gemini/skills/gstack/browse/dist/browse"
+[ -z "$B" ] && B=".gemini/skills/gstack/browse/dist/browse"
 if [ -x "$B" ]; then
   echo "READY: $B"
 else

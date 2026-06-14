@@ -1,4 +1,5 @@
 # install.ps1 for Windows PowerShell / PowerShell Core
+$ErrorActionPreference = 'Stop'
 $ScriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
 $HomeDir = [System.Environment]::GetFolderPath("UserProfile")
 $AgyConfig = Join-Path $HomeDir ".gemini\antigravity-cli\settings.json"
@@ -15,6 +16,10 @@ Write-Host "[3/4] Injecting GEMINI.md into agy settings (systemPrompt)..."
 $GeminiContent = Get-Content (Join-Path $HomeDir "GEMINI.md") -Raw -Encoding UTF8
 
 if (Test-Path $AgyConfig) {
+    # Backup existing config
+    Copy-Item $AgyConfig "$AgyConfig.bak" -Force
+    Write-Host "      Created backup at $AgyConfig.bak"
+    
     $Settings = Get-Content $AgyConfig -Raw -Encoding UTF8 | ConvertFrom-Json
     $Settings.systemPrompt = $GeminiContent
     $Settings | ConvertTo-Json -Depth 10 | Set-Content $AgyConfig -Encoding UTF8

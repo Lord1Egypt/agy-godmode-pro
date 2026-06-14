@@ -1,6 +1,8 @@
 # Skill: gstack-benchmark-models
 
-> Cross-model benchmark for gstack skills. (gstack)
+> Cross-model benchmark for gstack skills.
+
+> **Note:** This skill was originally part of **gstack** and depends on gstack infrastructure (binaries, config, conventions, or CLI tools). It may not work outside a gstack environment without adaptation.
 
 ## When to invoke this skill
 
@@ -16,7 +18,7 @@ Voice triggers (speech-to-text aliases): "compare models", "model shootout", "wh
 ## Step 0: Locate the binary
 
 ```bash
-BIN="$HOME/.gemini/skills/gstack/bin/gstack-model-benchmark"
+BIN=".gemini/skills/gstack/bin/gstack-model-benchmark"
 [ -x "$BIN" ] || BIN=".gemini/skills/gstack/bin/gstack-model-benchmark"
 [ -x "$BIN" ] || { echo "ERROR: gstack-model-benchmark not found. Run ./setup in the gstack install dir." >&2; exit 1; }
 echo "BIN: $BIN"
@@ -65,7 +67,7 @@ If at least one is OK: AskUserQuestion:
 ## Step 3: Decide on judge
 
 ```bash
-[ -n "$GOOGLE_API_KEY" ] || grep -q 'GOOGLE' "$HOME/.gemini/.credentials.json" 2>/dev/null && echo "JUDGE_AVAILABLE" || echo "JUDGE_UNAVAILABLE"
+[ -n "$GOOGLE_API_KEY" ] || grep -q 'GOOGLE' ".gemini/.credentials.json" 2>/dev/null && echo "JUDGE_AVAILABLE" || echo "JUDGE_UNAVAILABLE"
 ```
 
 If judge is available, AskUserQuestion:

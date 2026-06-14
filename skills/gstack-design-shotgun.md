@@ -1,6 +1,6 @@
 # Skill: gstack-design-shotgun
 
-> Design shotgun: generate multiple AI design variants, open a comparison board, collect structured feedback, and iterate. (gstack)
+> Design shotgun: generate multiple AI design variants, open a comparison board, collect structured feedback, and iterate.
 
 ## When to invoke this skill
 
@@ -16,7 +16,7 @@ what it could look like.
 _ROOT=$(git rev-parse --show-toplevel 2>/dev/null)
 D=""
 [ -n "$_ROOT" ] && [ -x "$_ROOT/.gemini/skills/gstack/design/dist/design" ] && D="$_ROOT/.gemini/skills/gstack/design/dist/design"
-[ -z "$D" ] && D="$HOME/.gemini/skills/gstack/design/dist/design"
+[ -z "$D" ] && D=".gemini/skills/gstack/design/dist/design"
 if [ -x "$D" ]; then
   echo "DESIGN_READY: $D"
 else
@@ -24,7 +24,7 @@ else
 fi
 B=""
 [ -n "$_ROOT" ] && [ -x "$_ROOT/.gemini/skills/gstack/browse/dist/browse" ] && B="$_ROOT/.gemini/skills/gstack/browse/dist/browse"
-[ -z "$B" ] && B="$HOME/.gemini/skills/gstack/browse/dist/browse"
+[ -z "$B" ] && B=".gemini/skills/gstack/browse/dist/browse"
 if [ -x "$B" ]; then
   echo "BROWSE_READY: $B"
 else
@@ -143,7 +143,7 @@ else a few taps away with an obvious path to get there.
 Check for prior design exploration sessions for this project:
 
 ```bash
-eval "$(~/.gemini/skills/gstack/bin/gstack-slug 2>/dev/null)"
+eval "$(gstack-slug 2>/dev/null)"
 setopt +o nomatch 2>/dev/null || true
 _PREV=$(find ~/.gstack/projects/$SLUG/designs/ -name "approved.json" -maxdepth 2 2>/dev/null | sort -r | head -5)
 [ -n "$_PREV" ] && echo "PREVIOUS_SESSIONS_FOUND" || echo "NO_PREVIOUS_SESSIONS"
@@ -268,7 +268,7 @@ as a one-off?"
 happens at read time, not write time, so the file only grows on change.
 
 **Schema migration:** If the file has no `version` field or `version: 0`, it's
-the legacy approved.json aggregate — `~/.gemini/skills/gstack/bin/gstack-taste-update`
+the legacy approved.json aggregate — `gstack-taste-update`
 will migrate it to schema v1 on the next write.
 
 **Per-session approved.json files (legacy, still supported):**
@@ -286,8 +286,8 @@ approved.json files add the specific recent approval context.
 Limit to last 10 sessions. Try/catch JSON parse on each (skip corrupted files).
 
 **Updating taste profile after a design-shotgun session:** When the user picks a
-variant, call `~/.gemini/skills/gstack/bin/gstack-taste-update approved <variant-path>`. When they
-explicitly reject a variant, call `~/.gemini/skills/gstack/bin/gstack-taste-update rejected <variant-path>`.
+variant, call `gstack-taste-update approved <variant-path>`. When they
+explicitly reject a variant, call `gstack-taste-update rejected <variant-path>`.
 The CLI handles schema migration from approved.json, decay, and conflict flagging.
 
 ## Step 3: Generate Variants
@@ -295,8 +295,8 @@ The CLI handles schema migration from approved.json, decay, and conflict flaggin
 Set up the output directory:
 
 ```bash
-eval "$(~/.gemini/skills/gstack/bin/gstack-slug 2>/dev/null)"
-_DESIGN_DIR="$HOME/.gstack/projects/$SLUG/designs/<screen-name>-$(date +%Y%m%d)"
+eval "$(gstack-slug 2>/dev/null)"
+_DESIGN_DIR=".gstack/projects/$SLUG/designs/<screen-name>-$(date +%Y%m%d)"
 mkdir -p "$_DESIGN_DIR"
 echo "DESIGN_DIR: $_DESIGN_DIR"
 ```

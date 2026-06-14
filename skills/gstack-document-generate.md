@@ -1,6 +1,6 @@
 # Skill: gstack-document-generate
 
-> Generate missing documentation from scratch for a feature, module, or entire project. (gstack)
+> Generate missing documentation from scratch for a feature, module, or entire project.
 
 ## When to invoke this skill
 
@@ -392,10 +392,10 @@ live-format secret in committed docs is a leak). Example configs belong in
 placeholder filter passes obvious docs examples (e.g. `AKIAIOSFODNN7EXAMPLE`):
 
 ```bash
-REDACT_VIS=$(~/.gemini/skills/gstack/bin/gstack-config get redact_repo_visibility 2>/dev/null)
+REDACT_VIS=$(gstack-config get redact_repo_visibility 2>/dev/null)
 [ -z "$REDACT_VIS" ] && REDACT_VIS=$(gh repo view --json visibility -q .visibility 2>/dev/null | tr 'A-Z' 'a-z')
 git diff --cached --no-color | grep '^+' | sed 's/^+//' | \
-  ~/.gemini/skills/gstack/bin/gstack-redact --repo-visibility "${REDACT_VIS:-unknown}" --json
+  gstack-redact --repo-visibility "${REDACT_VIS:-unknown}" --json
 # exit 3 (HIGH) → unstage the offending doc, remove the secret, re-stage. Do NOT commit.
 ```
 

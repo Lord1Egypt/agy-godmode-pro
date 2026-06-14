@@ -1,6 +1,6 @@
 # Skill: gstack-freeze
 
-> Restrict file edits to a specific directory for the session. (gstack)
+> Restrict file edits to a specific directory for the session.
 
 <!-- AUTO-GENERATED from SKILL.md.tmpl — do not edit directly -->
 <!-- Regenerate: bun run gen:skill-docs -->
@@ -42,8 +42,8 @@ echo "$FREEZE_DIR"
 2. Ensure trailing slash and save to the freeze state file:
 ```bash
 FREEZE_DIR="${FREEZE_DIR%/}/"
-eval "$(~/.gemini/skills/gstack/bin/gstack-paths)"
-STATE_DIR="$GSTACK_STATE_ROOT"
+eval "$(gstack-paths)"
+STATE_DIR=".gstack/state"
 mkdir -p "$STATE_DIR"
 echo "$FREEZE_DIR" > "$STATE_DIR/freeze-dir.txt"
 echo "Freeze boundary set: $FREEZE_DIR"

@@ -2,6 +2,8 @@
 
 > Launch GStack Browser — AI-controlled Chromium with the sidebar extension baked in.
 
+> **Note:** This skill was originally part of **gstack** and depends on gstack infrastructure (binaries, config, conventions, or CLI tools). It may not work outside a gstack environment without adaptation.
+
 ## When to invoke this skill
 
 Opens a visible browser window where you can watch every action in real time.
@@ -17,7 +19,7 @@ Voice triggers (speech-to-text aliases): "show me the browser".
 _ROOT=$(git rev-parse --show-toplevel 2>/dev/null)
 B=""
 [ -n "$_ROOT" ] && [ -x "$_ROOT/.gemini/skills/gstack/browse/dist/browse" ] && B="$_ROOT/.gemini/skills/gstack/browse/dist/browse"
-[ -z "$B" ] && B="$HOME/.gemini/skills/gstack/browse/dist/browse"
+[ -z "$B" ] && B=".gemini/skills/gstack/browse/dist/browse"
 if [ -x "$B" ]; then
   echo "READY: $B"
 else
@@ -63,7 +65,7 @@ if [ -f "$(git rev-parse --show-toplevel 2>/dev/null)/.gstack/browse.json" ]; th
   rm -f "$(git rev-parse --show-toplevel)/.gstack/browse.json"
 fi
 # Clean Chromium profile locks (can persist after crashes)
-_PROFILE_DIR="$HOME/.gstack/chromium-profile"
+_PROFILE_DIR=".gstack/chromium-profile"
 for _LF in SingletonLock SingletonSocket SingletonCookie; do
   rm -f "$_PROFILE_DIR/$_LF" 2>/dev/null || true
 done
@@ -113,7 +115,7 @@ Also find the extension path so you can help the user if they need to load it ma
 _EXT_PATH=""
 _ROOT=$(git rev-parse --show-toplevel 2>/dev/null)
 [ -n "$_ROOT" ] && [ -f "$_ROOT/.gemini/skills/gstack/extension/manifest.json" ] && _EXT_PATH="$_ROOT/.gemini/skills/gstack/extension"
-[ -z "$_EXT_PATH" ] && [ -f "$HOME/.gemini/skills/gstack/extension/manifest.json" ] && _EXT_PATH="$HOME/.gemini/skills/gstack/extension"
+[ -z "$_EXT_PATH" ] && [ -f ".gemini/skills/gstack/extension/manifest.json" ] && _EXT_PATH=".gemini/skills/gstack/extension"
 echo "EXTENSION_PATH: ${_EXT_PATH:-NOT FOUND}"
 ```
 

@@ -1,6 +1,8 @@
 # Skill: gstack-sync-gbrain
 
-> Keep gbrain current with this repo's code and refresh agent search guidance in GEMINI.md. Wraps the gstack-gbrain-sync orchestrator with state (gstack)
+> Keep gbrain current with this repo's code and refresh agent search guidance in GEMINI.md. Wraps the gstack-gbrain-sync orchestrator with state
+
+> **Note:** This skill was originally part of **gstack** and depends on gstack infrastructure (binaries, config, conventions, or CLI tools). It may not work outside a gstack environment without adaptation.
 
 ## When to invoke this skill
 
@@ -26,7 +28,7 @@ the skill itself, not a dispatcher binary):
 - `/sync-gbrain --audit` — emit summary of gstack-owned pages per project + sensitive-content audit (v1.48 / D10 lifecycle). Read-only.
 
 Pass-through args go straight to the orchestrator at
-`~/.gemini/skills/gstack/bin/gstack-gbrain-sync.ts`.
+`gstack-gbrain-sync.ts`.
 
 **`--refresh-cache` short-circuit:** when this flag is present, the skill
 runs ONLY the cache refresh (`gstack-brain-cache refresh --project <slug>`
@@ -47,7 +49,7 @@ modifications to brain or cache.
 Before doing anything, check that /setup-gbrain has been run on this Mac.
 
 ```bash
-~/.gemini/skills/gstack/bin/gstack-gbrain-detect 2>/dev/null
+gstack-gbrain-detect 2>/dev/null
 ```
 
 **Brain trust policy gate (v1.48 / Phase 1.5 / D4 — added by T13+T5c):**
@@ -57,8 +59,8 @@ the orchestrator runs. Local engines auto-set to `personal` silently per
 the per-transport default table.
 
 ```bash
-_HASH=$(~/.gemini/skills/gstack/bin/gstack-config endpoint-hash 2>/dev/null)
-_POLICY=$(~/.gemini/skills/gstack/bin/gstack-config get brain_trust_policy@$_HASH 2>/dev/null || echo unset)
+_HASH=$(gstack-config endpoint-hash 2>/dev/null)
+_POLICY=$(gstack-config get brain_trust_policy@$_HASH 2>/dev/null || echo unset)
 echo "BRAIN_TRUST_POLICY[$_HASH]: $_POLICY"
 ```
 
@@ -70,7 +72,7 @@ flip for personal). Then continue.
 If `_POLICY == "unset"` AND `_HASH == "local"`, auto-set personal:
 
 ```bash
-~/.gemini/skills/gstack/bin/gstack-config set brain_trust_policy@$_HASH personal
+gstack-config set brain_trust_policy@$_HASH personal
 ```
 
 **Split-engine model (v1.34.0.0+).** Code stage runs locally against the
@@ -141,7 +143,7 @@ Pass user args to the orchestrator. Do not paraphrase them — pass through
 as-is.
 
 ```bash
-bun run ~/.gemini/skills/gstack/bin/gstack-gbrain-sync.ts <user-args>
+bun run gstack-gbrain-sync.ts <user-args>
 ```
 
 The orchestrator runs three stages: code → memory → brain-sync (per the

@@ -1,6 +1,8 @@
 # Skill: gstack-ios-design-review
 
-> Visual design audit for iOS apps on real hardware. (gstack)
+> Visual design audit for iOS apps on real hardware.
+
+> **Note:** This skill was originally part of **gstack** and depends on gstack infrastructure (binaries, config, conventions, or CLI tools). It may not work outside a gstack environment without adaptation.
 
 ## When to invoke this skill
 

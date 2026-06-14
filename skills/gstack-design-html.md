@@ -1,6 +1,6 @@
 # Skill: gstack-design-html
 
-> Design finalization: generates production-quality Pretext-native HTML/CSS. (gstack)
+> Design finalization: generates production-quality Pretext-native HTML/CSS.
 
 ## When to invoke this skill
 
@@ -20,7 +20,7 @@ Voice triggers (speech-to-text aliases): "build the design", "code the mockup", 
 _ROOT=$(git rev-parse --show-toplevel 2>/dev/null)
 D=""
 [ -n "$_ROOT" ] && [ -x "$_ROOT/.gemini/skills/gstack/design/dist/design" ] && D="$_ROOT/.gemini/skills/gstack/design/dist/design"
-[ -z "$D" ] && D="$HOME/.gemini/skills/gstack/design/dist/design"
+[ -z "$D" ] && D=".gemini/skills/gstack/design/dist/design"
 if [ -x "$D" ]; then
   echo "DESIGN_READY: $D"
 else
@@ -28,7 +28,7 @@ else
 fi
 B=""
 [ -n "$_ROOT" ] && [ -x "$_ROOT/.gemini/skills/gstack/browse/dist/browse" ] && B="$_ROOT/.gemini/skills/gstack/browse/dist/browse"
-[ -z "$B" ] && B="$HOME/.gemini/skills/gstack/browse/dist/browse"
+[ -z "$B" ] && B=".gemini/skills/gstack/browse/dist/browse"
 if [ -x "$B" ]; then
   echo "BROWSE_READY: $B"
 else
@@ -148,7 +148,7 @@ else a few taps away with an obvious path to get there.
 _ROOT=$(git rev-parse --show-toplevel 2>/dev/null)
 B=""
 [ -n "$_ROOT" ] && [ -x "$_ROOT/.gemini/skills/gstack/browse/dist/browse" ] && B="$_ROOT/.gemini/skills/gstack/browse/dist/browse"
-[ -z "$B" ] && B="$HOME/.gemini/skills/gstack/browse/dist/browse"
+[ -z "$B" ] && B=".gemini/skills/gstack/browse/dist/browse"
 if [ -x "$B" ]; then
   echo "READY: $B"
 else
@@ -182,7 +182,7 @@ If `NEEDS_SETUP`:
 ## Step 0: Input Detection
 
 ```bash
-eval "$(~/.gemini/skills/gstack/bin/gstack-slug 2>/dev/null)"
+eval "$(gstack-slug 2>/dev/null)"
 ```
 
 Detect what design context exists for this project. Run all four checks:

@@ -1,6 +1,6 @@
 # Skill: gstack-unfreeze
 
-> Clear the freeze boundary set by /freeze, allowing edits to all directories again. (gstack)
+> Clear the freeze boundary set by /freeze, allowing edits to all directories again.
 
 <!-- AUTO-GENERATED from SKILL.md.tmpl — do not edit directly -->
 <!-- Regenerate: bun run gen:skill-docs -->
@@ -24,8 +24,8 @@ echo '{"skill":"unfreeze","ts":"'$(date -u +%Y-%m-%dT%H:%M:%SZ)'","repo":"'$(bas
 ## Clear the boundary
 
 ```bash
-eval "$(~/.gemini/skills/gstack/bin/gstack-paths)"
-STATE_DIR="$GSTACK_STATE_ROOT"
+eval "$(gstack-paths)"
+STATE_DIR=".gstack/state"
 if [ -f "$STATE_DIR/freeze-dir.txt" ]; then
   PREV=$(cat "$STATE_DIR/freeze-dir.txt")
   rm -f "$STATE_DIR/freeze-dir.txt"

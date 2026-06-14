@@ -1,6 +1,6 @@
 # Skill: gstack-document-release
 
-> Post-ship documentation update. (gstack)
+> Post-ship documentation update.
 
 ## When to invoke this skill
 

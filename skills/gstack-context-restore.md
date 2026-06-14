@@ -1,6 +1,6 @@
 # Skill: gstack-context-restore
 
-> Restore working context saved earlier by /context-save. (gstack)
+> Restore working context saved earlier by /context-save.
 
 ## When to invoke this skill
 
@@ -27,9 +27,9 @@ Parse the user's input:
 ### Step 1: Find saved contexts
 
 ```bash
-eval "$(~/.gemini/skills/gstack/bin/gstack-slug 2>/dev/null)" && mkdir -p ~/.gstack/projects/$SLUG
-eval "$(~/.gemini/skills/gstack/bin/gstack-paths)"
-CHECKPOINT_DIR="$GSTACK_STATE_ROOT/projects/$SLUG/checkpoints"
+eval "$(gstack-slug 2>/dev/null)" && mkdir -p ~/.gstack/projects/$SLUG
+eval "$(gstack-paths)"
+CHECKPOINT_DIR=".gstack/state/projects/$SLUG/checkpoints"
 if [ ! -d "$CHECKPOINT_DIR" ]; then
   echo "NO_CHECKPOINTS"
 else

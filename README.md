@@ -15,15 +15,12 @@ agy-godmode-pro/
 ├── install.ps1        ← Windows PowerShell installer
 ├── install.bat        ← Windows cmd/bat wrapper
 ├── README.md          ← This guide
-└── skills/            ← Preloaded skill library
-    ├── rust.md        ← Rust, wgpu, WASM, ThothTerm patterns
-    ├── solidity.md    ← Smart contract audits + ethsmith workflows
-    ├── python.md      ← Python best practices, async, packaging
-    ├── debugging.md   ← Systematic root-cause protocols
-    ├── code-review.md ← PR & Diff checklist (CRITICAL → NIT)
-    ├── git-mastery.md ← advanced git bisect & gh CLI workflows
-    ├── multi-agent.md ← agy subshell token-saving patterns
-    └── gstack-*.md    ← 55+ converted gstack engineering roles
+└── skills/            ← Preloaded skill library (66 files)
+    ├── rust.md / solidity.md / python.md     ← Language expertise
+    ├── debugging.md / code-review.md         ← Engineering protocols
+    ├── git-mastery.md / multi-agent.md       ← Workflow mastery
+    ├── agy-auto-review.md / agy-brainstorm.md ← AGY-specific tools
+    └── gstack-*.md                           ← 55+ converted roles
 ```
 
 ---
@@ -48,7 +45,7 @@ install.bat
 
 The installer will:
 1. Copy `GEMINI.md` to your user home directory `~/GEMINI.md`.
-2. Copy all skill files to `~/.gemini/skills/`.
+2. Symlink/copy all skill files to `~/.gemini/skills/`.
 3. Inject the `systemPrompt` into `~/.gemini/antigravity-cli/settings.json`.
 
 ---

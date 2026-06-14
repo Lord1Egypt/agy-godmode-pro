@@ -2,6 +2,8 @@
 
 > Upgrade gstack to the latest version.
 
+> **Note:** This skill was originally part of **gstack** and depends on gstack infrastructure (binaries, config, conventions, or CLI tools). It may not work outside a gstack environment without adaptation.
+
 <!-- AUTO-GENERATED from SKILL.md.tmpl — do not edit directly -->
 <!-- Regenerate: bun run gen:skill-docs -->
 
@@ -27,8 +29,8 @@ This section is referenced by all skill preambles when they detect `UPGRADE_AVAI
 First, check if auto-upgrade is enabled:
 ```bash
 _AUTO=""
-[ "${GSTACK_AUTO_UPGRADE:-}" = "1" ] && _AUTO="true"
-[ -z "$_AUTO" ] && _AUTO=$(~/.gemini/skills/gstack/bin/gstack-config get auto_upgrade 2>/dev/null || true)
+[ "${AUTO_UPGRADE:-}" = "1" ] && _AUTO="true"
+[ -z "$_AUTO" ] && _AUTO=$(gstack-config get auto_upgrade 2>/dev/null || true)
 echo "AUTO_UPGRADE=$_AUTO"
 ```
 
@@ -42,13 +44,13 @@ echo "AUTO_UPGRADE=$_AUTO"
 
 **If "Always keep me up to date":**
 ```bash
-~/.gemini/skills/gstack/bin/gstack-config set auto_upgrade true
+gstack-config set auto_upgrade true
 ```
 Tell user: "Auto-upgrade enabled. Future updates will install automatically." Then proceed to Step 2.
 
 **If "Not now":** Write snooze state with escalating backoff (first snooze = 24h, second = 48h, third+ = 1 week), then continue with the current skill. Do not mention the upgrade again.
 ```bash
-_SNOOZE_FILE="$HOME/.gstack/update-snoozed"
+_SNOOZE_FILE=".gstack/update-snoozed"
 _REMOTE_VER="{new}"
 _CUR_LEVEL=0
 if [ -f "$_SNOOZE_FILE" ]; then
@@ -68,20 +70,20 @@ Tell user the snooze duration: "Next reminder in 24h" (or 48h or 1 week, dependi
 
 **If "Never ask again":**
 ```bash
-~/.gemini/skills/gstack/bin/gstack-config set update_check false
+gstack-config set update_check false
 ```
-Tell user: "Update checks disabled. Run `~/.gemini/skills/gstack/bin/gstack-config set update_check true` to re-enable."
+Tell user: "Update checks disabled. Run `gstack-config set update_check true` to re-enable."
 Continue with the current skill.
 
 ### Step 2: Detect install type
 
 ```bash
-if [ -d "$HOME/.gemini/skills/gstack/.git" ]; then
+if [ -d ".gemini/skills/gstack/.git" ]; then
   INSTALL_TYPE="global-git"
-  INSTALL_DIR="$HOME/.gemini/skills/gstack"
-elif [ -d "$HOME/.gstack/repos/gstack/.git" ]; then
+  INSTALL_DIR=".gemini/skills/gstack"
+elif [ -d ".gstack/repos/gstack/.git" ]; then
   INSTALL_TYPE="global-git"
-  INSTALL_DIR="$HOME/.gstack/repos/gstack"
+  INSTALL_DIR=".gstack/repos/gstack"
 elif [ -d ".gemini/skills/gstack/.git" ]; then
   INSTALL_TYPE="local-git"
   INSTALL_DIR=".gemini/skills/gstack"
@@ -91,9 +93,9 @@ elif [ -d ".agents/skills/gstack/.git" ]; then
 elif [ -d ".gemini/skills/gstack" ]; then
   INSTALL_TYPE="vendored"
   INSTALL_DIR=".gemini/skills/gstack"
-elif [ -d "$HOME/.gemini/skills/gstack" ]; then
+elif [ -d ".gemini/skills/gstack" ]; then
   INSTALL_TYPE="vendored-global"
-  INSTALL_DIR="$HOME/.gemini/skills/gstack"
+  INSTALL_DIR=".gemini/skills/gstack"
 else
   echo "ERROR: gstack not found"
   exit 1
@@ -150,7 +152,7 @@ if [ -n "$_ROOT" ] && [ -d "$_ROOT/.gemini/skills/gstack" ]; then
     LOCAL_GSTACK="$_ROOT/.gemini/skills/gstack"
   fi
 fi
-_TEAM_MODE=$(~/.gemini/skills/gstack/bin/gstack-config get team_mode 2>/dev/null || echo "false")
+_TEAM_MODE=$(gstack-config get team_mode 2>/dev/null || echo "false")
 echo "LOCAL_GSTACK=$LOCAL_GSTACK"
 echo "TEAM_MODE=$_TEAM_MODE"
 ```
@@ -246,7 +248,7 @@ When invoked directly as `/gstack-upgrade` (not from a preamble):
 
 1. Force a fresh update check (bypass cache):
 ```bash
-~/.gemini/skills/gstack/bin/gstack-update-check --force 2>/dev/null || \
+gstack-update-check --force 2>/dev/null || \
 .gemini/skills/gstack/bin/gstack-update-check --force 2>/dev/null || true
 ```
 Use the output to determine if an upgrade is available.
