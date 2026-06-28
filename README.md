@@ -2,7 +2,7 @@
 
 Elite configuration and preloaded skill library for **Antigravity CLI (agy)** and other compatible AI coding agents. 
 
-This repository merges the elite system instructions and core workflows of `agy-godmode` with over 50+ professional, converted specialist skills from Garry Tan's `gstack` workflow.
+This repository merges the elite system instructions and core workflows of `agy-godmode` with over 50+ professional, converted specialist skills from Garry Tan's `gstack` workflow, now fully adapted for AGY.
 
 ---
 
@@ -15,12 +15,12 @@ agy-godmode-pro/
 ├── install.ps1        ← Windows PowerShell installer
 ├── install.bat        ← Windows cmd/bat wrapper
 ├── README.md          ← This guide
-└── skills/            ← Preloaded skill library (66 files)
-    ├── rust.md / solidity.md / python.md     ← Language expertise
+├── skills/            ← Preloaded skill library (53 files)
+│   ├── rust.md / solidity.md / python.md     ← Language expertise
     ├── debugging.md / code-review.md         ← Engineering protocols
     ├── git-mastery.md / multi-agent.md       ← Workflow mastery
     ├── agy-auto-review.md / agy-brainstorm.md ← AGY-specific tools
-    └── gstack-*.md                           ← 55+ converted roles
+    └── agy-*.md                           ← 44+ adapted specialist skills
 ```
 
 ---
@@ -57,13 +57,13 @@ Prefix any query/prompt with `@~/.gemini/skills/<skill-name>.md` to load it on-d
 ```bash
 # Analyze product concept before writing code
 agy
-> @~/.gemini/skills/gstack-office-hours.md rethink this YC startup idea
+> @~/.gemini/skills/agy-office-hours.md rethink this YC startup idea
 
 # Run CEO review to think bigger and expand scope
-> @~/.gemini/skills/gstack-plan-ceo-review.md evaluate our current roadmap
+> @~/.gemini/skills/agy-plan-ceo-review.md evaluate our current roadmap
 
 # Visual audit & QA on website layout
-> @~/.gemini/skills/gstack-qa.md test the user signup flow on http://localhost:3000
+> @~/.gemini/skills/agy-qa.md test the user signup flow on http://localhost:3000
 ```
 
 *Originally compiled and curated by [Lord1Egypt](https://github.com/Lord1Egypt).*

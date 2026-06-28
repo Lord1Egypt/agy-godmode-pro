@@ -264,7 +264,7 @@ When a session grows long and you're approaching context limits:
 
 Delegate isolated tasks to subagents to preserve main session tokens.
 - Use the **`invoke_subagent`** tool to spawn specialized subagents for structured tasks (e.g., brainstorm debates, isolated code reviews, code generation for standalone modules).
-- Use bash commands (`agy --print "task"`, `claude --print`) only for simple, non-interactive script executions, tests, or background batch work.
+- Use bash commands (`agy --print "task" --dangerously-skip-permissions`) only for simple, non-interactive script executions, tests, or background batch work.
 
 **Delegate when:** analysis of isolated files, code generation for standalone modules, doc generation, test scaffolding, summarization tasks.
 **Don't delegate when:** the task needs core conversation history, or you'll refine it iteratively with the user.
@@ -335,60 +335,48 @@ These skills live at `~/.gemini/skills/`. To load a skill autonomously, use `vie
 | `@~/.gemini/skills/code-review.md` | Full code review checklist |
 | `@~/.gemini/skills/git-mastery.md` | Git archaeology, advanced workflows |
 | `@~/.gemini/skills/multi-agent.md` | Orchestrating agy subshells for complex tasks |
-| `@~/.gemini/skills/gstack-autoplan.md` | Auto-review pipeline — reads the full CEO, design, eng, and DX review skills from disk and runs them sequentially with auto-decisions using 6 decision principles. (gstack) |
-| `@~/.gemini/skills/gstack-benchmark-models.md` | Cross-model benchmark for gstack skills. (gstack) |
-| `@~/.gemini/skills/gstack-benchmark.md` | Performance regression detection using the browse daemon. (gstack) |
-| `@~/.gemini/skills/gstack-browse.md` | Fast headless browser for QA testing and site dogfooding. (gstack) |
-| `@~/.gemini/skills/gstack-canary.md` | Post-deploy canary monitoring. (gstack) |
-| `@~/.gemini/skills/gstack-careful.md` | Safety guardrails for destructive commands. (gstack) |
-| `@~/.gemini/skills/gstack-codex.md` | OpenAI Codex CLI wrapper — three modes. (gstack) |
-| `@~/.gemini/skills/gstack-context-restore.md` | Restore working context saved earlier by /context-save. (gstack) |
-| `@~/.gemini/skills/gstack-context-save.md` | Save working context. (gstack) |
-| `@~/.gemini/skills/gstack-cso.md` | Chief Security Officer mode. (gstack) |
-| `@~/.gemini/skills/gstack-design-consultation.md` | Design consultation: understands your product, researches the landscape, proposes a complete design system (aesthetic, typography, color, layout, spacing, motion), and generates font+color preview... (gstack) |
-| `@~/.gemini/skills/gstack-design-html.md` | Design finalization: generates production-quality Pretext-native HTML/CSS. (gstack) |
-| `@~/.gemini/skills/gstack-design-review.md` | Designer's eye QA: finds visual inconsistency, spacing issues, hierarchy problems, AI slop patterns, and slow interactions — then fixes them. (gstack) |
-| `@~/.gemini/skills/gstack-design-shotgun.md` | Design shotgun: generate multiple AI design variants, open a comparison board, collect structured feedback, and iterate. (gstack) |
-| `@~/.gemini/skills/gstack-devex-review.md` | Live developer experience audit. (gstack) |
-| `@~/.gemini/skills/gstack-diagram.md` | Turn an English description (or mermaid source) into a diagram triplet: the source, an editable .excalidraw file you can open (gstack) |
-| `@~/.gemini/skills/gstack-document-generate.md` | Generate missing documentation from scratch for a feature, module, or entire project. (gstack) |
-| `@~/.gemini/skills/gstack-document-release.md` | Post-ship documentation update. (gstack) |
-| `@~/.gemini/skills/gstack-freeze.md` | Restrict file edits to a specific directory for the session. (gstack) |
-| `@~/.gemini/skills/gstack-gstack-upgrade.md` | Upgrade gstack to the latest version. |
-| `@~/.gemini/skills/gstack-guard.md` | Full safety mode: destructive command warnings + directory-scoped edits. (gstack) |
-| `@~/.gemini/skills/gstack-hackernews-frontpage.md` | Scrape the Hacker News front page (titles, points, comment counts). |
-| `@~/.gemini/skills/gstack-health.md` | Code quality dashboard. (gstack) |
-| `@~/.gemini/skills/gstack-investigate.md` | Systematic debugging with root cause investigation. (gstack) |
-| `@~/.gemini/skills/gstack-ios-clean.md` | Remove the DebugBridge SPM package and all #if DEBUG wiring from an iOS app. (gstack) |
-| `@~/.gemini/skills/gstack-ios-design-review.md` | Visual design audit for iOS apps on real hardware. (gstack) |
-| `@~/.gemini/skills/gstack-ios-fix.md` | Autonomous iOS bug fixer. (gstack) |
-| `@~/.gemini/skills/gstack-ios-qa.md` | Live-device iOS QA for SwiftUI apps. (gstack) |
-| `@~/.gemini/skills/gstack-ios-sync.md` | Regenerate the iOS debug bridge against the latest upstream gstack templates. (gstack) |
-| `@~/.gemini/skills/gstack-land-and-deploy.md` | Land and deploy workflow. (gstack) |
-| `@~/.gemini/skills/gstack-landing-report.md` | Read-only queue dashboard for workspace-aware ship. (gstack) |
-| `@~/.gemini/skills/gstack-learn.md` | Manage project learnings. |
-| `@~/.gemini/skills/gstack-make-pdf.md` | Turn any markdown file into a publication-quality PDF. (gstack) |
-| `@~/.gemini/skills/gstack-office-hours.md` | YC Office Hours — two modes. (gstack) |
-| `@~/.gemini/skills/gstack-open-gstack-browser.md` | Launch GStack Browser — AI-controlled Chromium with the sidebar extension baked in. |
-| `@~/.gemini/skills/gstack-pair-agent.md` | Pair a remote AI agent with your browser. (gstack) |
-| `@~/.gemini/skills/gstack-plan-ceo-review.md` | CEO/founder-mode plan review. (gstack) |
-| `@~/.gemini/skills/gstack-plan-design-review.md` | Designer's eye plan review — interactive, like CEO and Eng review. (gstack) |
-| `@~/.gemini/skills/gstack-plan-devex-review.md` | Interactive developer experience plan review. (gstack) |
-| `@~/.gemini/skills/gstack-plan-eng-review.md` | Eng manager-mode plan review. (gstack) |
-| `@~/.gemini/skills/gstack-plan-tune.md` | Self-tuning question sensitivity + developer psychographic for gstack (v1: observational). (gstack) |
-| `@~/.gemini/skills/gstack-qa-only.md` | Report-only QA testing. (gstack) |
-| `@~/.gemini/skills/gstack-qa.md` | Systematically QA test a web application and fix bugs found. (gstack) |
-| `@~/.gemini/skills/gstack-retro.md` | Weekly engineering retrospective. (gstack) |
-| `@~/.gemini/skills/gstack-review.md` | Pre-landing PR review. (gstack) |
-| `@~/.gemini/skills/gstack-scrape.md` | Pull data from a web page. (gstack) |
-| `@~/.gemini/skills/gstack-setup-browser-cookies.md` | Import cookies from your real Chromium browser into the headless browse session. (gstack) |
-| `@~/.gemini/skills/gstack-setup-deploy.md` | Configure deployment settings for /land-and-deploy. |
-| `@~/.gemini/skills/gstack-setup-gbrain.md` | Set up gbrain for this coding agent: install the CLI, initialize a local PGLite or Supabase brain, register MCP, capture per-remote trust policy. (gstack) |
-| `@~/.gemini/skills/gstack-ship.md` | Ship workflow: detect + merge base branch, run tests, review diff, bump VERSION, update CHANGELOG, commit, push, create PR. (gstack) |
-| `@~/.gemini/skills/gstack-skillify.md` | Codify the most recent successful /scrape flow into a permanent browser-skill on disk. (gstack) |
-| `@~/.gemini/skills/gstack-spec.md` | Turn vague intent into a precise, executable spec in five phases. (gstack) |
-| `@~/.gemini/skills/gstack-sync-gbrain.md` | Keep gbrain current with this repo's code and refresh agent search guidance in GEMINI.md. Wraps the gstack-gbrain-sync orchestrator with state (gstack) |
-| `@~/.gemini/skills/gstack-unfreeze.md` | Clear the freeze boundary set by /freeze, allowing edits to all directories again. (gstack) |
+| `@~/.gemini/skills/agy-autoplan.md` | Auto-review pipeline — reads the full CEO, design, eng, and DX review skills from disk and runs them sequentially with auto-decisions using 6 decision principles. (agy) |
+| `@~/.gemini/skills/agy-benchmark-models.md` | Cross-model benchmark for agy skills. (agy) |
+| `@~/.gemini/skills/agy-benchmark.md` | Performance regression detection using the browse daemon. (agy) |
+| `@~/.gemini/skills/agy-browse.md` | Fast headless browser for QA testing and site dogfooding. (agy) |
+| `@~/.gemini/skills/agy-canary.md` | Post-deploy canary monitoring. (agy) |
+| `@~/.gemini/skills/agy-careful.md` | Safety guardrails for destructive commands. (agy) |
+| `@~/.gemini/skills/agy-context-restore.md` | Restore working context saved earlier by /context-save. (agy) |
+| `@~/.gemini/skills/agy-context-save.md` | Save working context. (agy) |
+| `@~/.gemini/skills/agy-cso.md` | Chief Security Officer mode. (agy) |
+| `@~/.gemini/skills/agy-design-consultation.md` | Design consultation: understands your product, researches the landscape, proposes a complete design system (aesthetic, typography, color, layout, spacing, motion), and generates font+color preview... (agy) |
+| `@~/.gemini/skills/agy-design-html.md` | Design finalization: generates production-quality Pretext-native HTML/CSS. (agy) |
+| `@~/.gemini/skills/agy-design-review.md` | Designer's eye QA: finds visual inconsistency, spacing issues, hierarchy problems, AI slop patterns, and slow interactions — then fixes them. (agy) |
+| `@~/.gemini/skills/agy-design-shotgun.md` | Design shotgun: generate multiple AI design variants, open a comparison board, collect structured feedback, and iterate. (agy) |
+| `@~/.gemini/skills/agy-devex-review.md` | Live developer experience audit. (agy) |
+| `@~/.gemini/skills/agy-diagram.md` | Turn an English description (or mermaid source) into a diagram triplet: the source, an editable .excalidraw file you can open (agy) |
+| `@~/.gemini/skills/agy-document-generate.md` | Generate missing documentation from scratch for a feature, module, or entire project. (agy) |
+| `@~/.gemini/skills/agy-document-release.md` | Post-ship documentation update. (agy) |
+| `@~/.gemini/skills/agy-freeze.md` | Restrict file edits to a specific directory for the session. (agy) |
+| `@~/.gemini/skills/agy-upgrade.md` | Upgrade agy to the latest version. |
+| `@~/.gemini/skills/agy-guard.md` | Full safety mode: destructive command warnings + directory-scoped edits. (agy) |
+| `@~/.gemini/skills/agy-hackernews-frontpage.md` | Scrape the Hacker News front page (titles, points, comment counts). |
+| `@~/.gemini/skills/agy-health.md` | Code quality dashboard. (agy) |
+| `@~/.gemini/skills/agy-investigate.md` | Systematic debugging with root cause investigation. (agy) |
+| `@~/.gemini/skills/agy-land-and-deploy.md` | Land and deploy workflow. (agy) |
+| `@~/.gemini/skills/agy-landing-report.md` | Read-only queue dashboard for workspace-aware ship. (agy) |
+| `@~/.gemini/skills/agy-learn.md` | Manage project learnings. |
+| `@~/.gemini/skills/agy-make-pdf.md` | Turn any markdown file into a publication-quality PDF. (agy) |
+| `@~/.gemini/skills/agy-office-hours.md` | YC Office Hours — two modes. (agy) |
+| `@~/.gemini/skills/agy-open-browser.md` | Launch AI-controlled Chromium with the sidebar extension baked in. (agy) |
+| `@~/.gemini/skills/agy-plan-ceo-review.md` | CEO/founder-mode plan review. (agy) |
+| `@~/.gemini/skills/agy-plan-design-review.md` | Designer's eye plan review — interactive, like CEO and Eng review. (agy) |
+| `@~/.gemini/skills/agy-plan-devex-review.md` | Interactive developer experience plan review. (agy) |
+| `@~/.gemini/skills/agy-plan-eng-review.md` | Eng manager-mode plan review. (agy) |
+| `@~/.gemini/skills/agy-plan-tune.md` | Self-tuning question sensitivity + developer psychographic for agy (v1: observational). (agy) |
+| `@~/.gemini/skills/agy-qa-only.md` | Report-only QA testing. (agy) |
+| `@~/.gemini/skills/agy-qa.md` | Systematically QA test a web application and fix bugs found. (agy) |
+| `@~/.gemini/skills/agy-retro.md` | Weekly engineering retrospective. (agy) |
+| `@~/.gemini/skills/agy-review.md` | Pre-landing PR review. (agy) |
+| `@~/.gemini/skills/agy-scrape.md` | Pull data from a web page. (agy) |
+| `@~/.gemini/skills/agy-ship.md` | Ship workflow: detect + merge base branch, run tests, review diff, bump VERSION, update CHANGELOG, commit, push, create PR. (agy) |
+| `@~/.gemini/skills/agy-spec.md` | Turn vague intent into a precise, executable spec in five phases. (agy) |
+| `@~/.gemini/skills/agy-unfreeze.md` | Clear the freeze boundary set by /freeze, allowing edits to all directories again. (agy) |
 
 
 **Example usage:**
@@ -443,13 +431,13 @@ Concise. Direct. Zero preamble.
 
 ### Active Projects
 
-- **agy-godmode-pro** (`/home/lordegypt/agy-godmode-pro`) — Elite Antigravity CLI configuration and preloaded skill library combining godmode rules and 50+ gstack skills.
+- **agy-godmode-pro** (`/home/lordegypt/agy-godmode-pro`) — Elite Antigravity CLI configuration and preloaded skill library combining godmode rules and 50+ agy skills.
 
 ### Project Rules & Memory
 
 - **Continuity & Context Logging**: Always note every key step, decision, and project detail to maintain seamless context across sessions.
 - **Clean Environment**: All testing projects (classic projects) and 145 forked repositories in A-mon-Ra have been deleted to keep the workspace and account clean.
-- **Skill Activation**: 66 skills are fully active in `~/.gemini/skills/` and ready to be preloaded manually with `@` or auto-loaded by the agent.
+- **Skill Activation**: 53 skills are fully active in `~/.gemini/skills/` and ready to be preloaded manually with `@` or auto-loaded by the agent.
 
 ---
 
@@ -460,11 +448,6 @@ These instructions are universal. Provider-specific mappings:
 | Provider | Config File | Subagent Command | Skill Loading |
 |----------|------------|-----------------|---------------|
 | Gemini CLI (agy) | `~/GEMINI.md` | `agy --print "task" --dangerously-skip-permissions` | `@~/.gemini/skills/<name>.md` |
-| Claude Code | `~/CLAUDE.md` | `claude --print "task"` | `/slash-command` or skills system |
-| OpenCode | `AGENTS.md` | `opencode run "task"` | inline skill files |
-| CommandCode | `.commandcode/taste/taste.md` | subshell | `@path/to/skill.md` |
-
-Principles are identical across all providers. Only invocation syntax and config path differ.
 
 ---
 

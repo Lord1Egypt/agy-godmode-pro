@@ -153,6 +153,6 @@ Please review the proposed plan. You can:
 ---
 
 ## 5. Downstream Skill Linkages
-- **Spec Generation:** Pass the Master Plan to `gstack-spec.md` to finalize the API surface.
-- **Task Planning:** Use `gstack-plan-eng-review.md` to break the Master Plan down into atomic tasks.
+- **Spec Generation:** Pass the Master Plan to `agy-spec.md` to finalize the API surface.
+- **Task Planning:** Use `agy-plan-eng-review.md` to break the Master Plan down into atomic tasks.
 - **Verification:** When running code reviews via `agy-auto-review.md`, supply the review agent with the Master Plan and explicitly check if all critiques raised in Phase 3 are successfully addressed in the final code.
